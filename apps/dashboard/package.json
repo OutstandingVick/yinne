@@ -1,0 +1,40 @@
+{
+  "name": "@yinne/dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ../../tooling/scripts/with-root-env.mjs next dev",
+    "dev:e2e": "node ../../tooling/scripts/with-root-env.mjs next dev --port 3010",
+    "build": "node ../../tooling/scripts/with-root-env.mjs next build",
+    "start": "node ../../tooling/scripts/with-root-env.mjs next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yinne/auth": "workspace:*",
+    "@yinne/application": "workspace:*",
+    "@yinne/commerce": "workspace:*",
+    "@yinne/config": "workspace:*",
+    "@yinne/contracts": "workspace:*",
+    "@yinne/core": "workspace:*",
+    "@yinne/database": "workspace:*",
+    "@yinne/organizations": "workspace:*",
+    "@yinne/sdk": "workspace:*",
+    "@yinne/ui": "workspace:*",
+    "@next/env": "15.5.24",
+    "drizzle-orm": "0.44.5",
+    "next": "15.5.24",
+    "next-auth": "5.0.0-beta.30",
+    "pino": "9.9.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.17"
+  }
+}

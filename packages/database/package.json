@@ -1,0 +1,33 @@
+{
+  "name": "@yinne/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:check": "tsx scripts/check.ts",
+    "verify:clean-db": "tsx scripts/verify-clean-database.ts"
+  },
+  "dependencies": {
+    "@yinne/auth": "workspace:*",
+    "@yinne/config": "workspace:*",
+    "@yinne/core": "workspace:*",
+    "@yinne/events": "workspace:*",
+    "dotenv": "16.6.1",
+    "drizzle-orm": "0.44.5",
+    "postgres": "3.4.7"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.4",
+    "tsx": "4.20.5"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@yinne/auth",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./api-keys": "./src/api-keys.ts",
+    "./passwords": "./src/passwords.ts",
+    "./principal": "./src/principal.ts",
+    "./rbac": "./src/rbac.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "2.0.2",
+    "@yinne/core": "workspace:*"
+  },
+  "devDependencies": {}
+}

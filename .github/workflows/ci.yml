@@ -1,0 +1,54 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: yinne
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d yinne"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://yinne_app:yinne_app@localhost:5432/yinne
+      WORKER_DATABASE_URL: postgresql://yinne_worker:yinne_worker_local@localhost:5432/yinne
+      MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/yinne
+      AUTH_SECRET: ci-auth-secret-at-least-thirty-two-characters
+      API_KEY_PEPPER: ci-api-key-pepper-at-least-thirty-two-chars
+      AUTH_TRUST_HOST: true
+      NEXT_PUBLIC_YINNE_MODE: test
+      YINNE_ALLOWED_ORIGINS: http://localhost:3000
+      YINNE_SEED_PASSWORD: AcmeLocalOnly!2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.19.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm db:migrate
+      - run: pnpm worker:migrate
+      - run: pnpm db:seed
+      - run: pnpm db:check
+      - run: pnpm verify:clean-db
+      - run: pnpm openapi:validate
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test:all
+      - run: pnpm test:e2e
+      - run: pnpm build

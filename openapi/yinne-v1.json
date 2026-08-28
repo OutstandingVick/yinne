@@ -1,0 +1,494 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Yinne API",
+    "version": "2026-08-28",
+    "description": "Phase 2 Core Commerce. Monetary amounts are integer minor-unit strings. Orders are commercial records and are not proof of payment."
+  },
+  "servers": [{ "url": "http://localhost:3000" }],
+  "security": [{ "bearerAuth": [] }],
+  "paths": {
+    "/v1/customers": {
+      "get": {
+        "operationId": "listCustomers",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" },
+          { "$ref": "#/components/parameters/Search" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/CustomerPage" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createCustomer",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CustomerInput" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Customer created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["customer", "request_id"],
+                  "properties": {
+                    "customer": { "$ref": "#/components/schemas/Customer" },
+                    "request_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/customers/{customer_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/CustomerId" }],
+      "get": {
+        "operationId": "retrieveCustomer",
+        "responses": {
+          "200": {
+            "description": "Customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "customer": { "$ref": "#/components/schemas/Customer" },
+                    "request_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "updateCustomer",
+        "requestBody": { "$ref": "#/components/requestBodies/Customer" },
+        "responses": {
+          "200": { "description": "Customer updated" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/products": {
+      "get": {
+        "operationId": "listProducts",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" },
+          { "$ref": "#/components/parameters/Search" },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/ProductStatus" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Product page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createProduct",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ProductInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Product created" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/products/{product_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/ProductId" }],
+      "get": {
+        "operationId": "retrieveProduct",
+        "responses": {
+          "200": { "description": "Product" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "updateProduct",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "slug": { "type": "string" },
+                  "description": { "type": ["string", "null"] },
+                  "status": { "const": "active" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Product updated" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/products/{product_id}/archive": {
+      "parameters": [{ "$ref": "#/components/parameters/ProductId" }],
+      "post": {
+        "operationId": "archiveProduct",
+        "responses": {
+          "200": { "description": "Product archived" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/products/{product_id}/variants": {
+      "parameters": [{ "$ref": "#/components/parameters/ProductId" }],
+      "post": {
+        "operationId": "createVariant",
+        "requestBody": { "$ref": "#/components/requestBodies/Variant" },
+        "responses": {
+          "201": { "description": "Variant created" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/products/{product_id}/variants/{variant_id}": {
+      "parameters": [
+        { "$ref": "#/components/parameters/ProductId" },
+        { "$ref": "#/components/parameters/VariantId" }
+      ],
+      "patch": {
+        "operationId": "updateVariant",
+        "requestBody": { "$ref": "#/components/requestBodies/Variant" },
+        "responses": {
+          "200": { "description": "Variant updated" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/inventory-levels": {
+      "get": {
+        "operationId": "listInventoryLevels",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" },
+          { "$ref": "#/components/parameters/Search" },
+          {
+            "name": "location_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          { "name": "variant_id", "in": "query", "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Inventory level page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/inventory-adjustments": {
+      "post": {
+        "operationId": "adjustInventory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/InventoryAdjustmentInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Append-only inventory adjustment recorded" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/orders": {
+      "get": {
+        "operationId": "listOrders",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" },
+          { "$ref": "#/components/parameters/Search" },
+          {
+            "name": "location_id",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "financial_status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/FinancialStatus" }
+          },
+          {
+            "name": "fulfilment_status",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/FulfilmentStatus" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Order page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createOrder",
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/OrderInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Unpaid order created or replayed" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/orders/{order_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/OrderId" }],
+      "get": {
+        "operationId": "retrieveOrder",
+        "responses": {
+          "200": { "description": "Order with immutable items" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/orders/{order_id}/cancel": {
+      "parameters": [{ "$ref": "#/components/parameters/OrderId" }],
+      "post": {
+        "operationId": "cancelOrder",
+        "responses": {
+          "200": { "description": "Unpaid order cancelled" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "Yinne API key" }
+    },
+    "parameters": {
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+      },
+      "After": { "name": "after", "in": "query", "schema": { "type": "string" } },
+      "Search": {
+        "name": "search",
+        "in": "query",
+        "schema": { "type": "string", "maxLength": 120 }
+      },
+      "CustomerId": {
+        "name": "customer_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "ProductId": {
+        "name": "product_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "VariantId": {
+        "name": "variant_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "OrderId": {
+        "name": "order_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string", "minLength": 16, "maxLength": 255 }
+      }
+    },
+    "schemas": {
+      "Money": {
+        "type": "string",
+        "pattern": "^(0|[1-9][0-9]*)$",
+        "description": "Integer minor units; never a floating-point value."
+      },
+      "ProductStatus": { "type": "string", "enum": ["draft", "active", "archived"] },
+      "FinancialStatus": {
+        "type": "string",
+        "enum": ["unpaid", "paid", "partially_refunded", "refunded"]
+      },
+      "FulfilmentStatus": { "type": "string", "enum": ["unfulfilled", "fulfilled", "cancelled"] },
+      "CustomerInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 160 },
+          "email": { "type": ["string", "null"], "format": "email" },
+          "phone": { "type": ["string", "null"], "maxLength": 40 },
+          "external_ref": { "type": ["string", "null"], "maxLength": 160 },
+          "metadata": { "type": "object" }
+        }
+      },
+      "Customer": {
+        "allOf": [
+          { "$ref": "#/components/schemas/CustomerInput" },
+          {
+            "type": "object",
+            "required": ["id", "version", "pii_redacted", "created_at", "updated_at"],
+            "properties": {
+              "id": { "type": "string", "format": "uuid" },
+              "version": { "type": "integer" },
+              "pii_redacted": { "type": "boolean" },
+              "created_at": { "type": "string", "format": "date-time" },
+              "updated_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        ]
+      },
+      "VariantInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sku", "title", "unit_amount", "currency"],
+        "properties": {
+          "sku": { "type": "string", "maxLength": 100 },
+          "title": { "type": "string", "maxLength": 160 },
+          "unit_amount": { "$ref": "#/components/schemas/Money" },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "track_inventory": { "type": "boolean", "default": true }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "slug"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 160 },
+          "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "description": { "type": ["string", "null"], "maxLength": 10000 },
+          "metadata": { "type": "object" },
+          "variants": {
+            "type": "array",
+            "maxItems": 100,
+            "items": { "$ref": "#/components/schemas/VariantInput" }
+          }
+        }
+      },
+      "InventoryAdjustmentInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["variant_id", "location_id", "delta", "reason"],
+        "properties": {
+          "variant_id": { "type": "string", "format": "uuid" },
+          "location_id": { "type": "string", "format": "uuid" },
+          "delta": { "type": "string", "pattern": "^-?[1-9][0-9]*$" },
+          "reason": { "type": "string", "minLength": 2, "maxLength": 240 }
+        }
+      },
+      "OrderInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["merchant_id", "location_id", "currency", "items"],
+        "properties": {
+          "merchant_id": { "type": "string", "format": "uuid" },
+          "location_id": { "type": "string", "format": "uuid" },
+          "customer_id": { "type": ["string", "null"], "format": "uuid" },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["variant_id", "quantity"],
+              "properties": {
+                "variant_id": { "type": "string", "format": "uuid" },
+                "quantity": { "type": "integer", "minimum": 1, "maximum": 10000 }
+              }
+            }
+          },
+          "metadata": { "type": "object" }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["type", "code", "message", "param", "request_id", "details"],
+            "properties": {
+              "type": { "type": "string" },
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "param": { "type": ["string", "null"] },
+              "request_id": { "type": "string" },
+              "details": { "type": "array", "items": { "type": "object" } }
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "Customer": {
+        "required": true,
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/CustomerInput" } }
+        }
+      },
+      "Variant": {
+        "required": true,
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/VariantInput" } }
+        }
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Canonical API error",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } } }
+      },
+      "CustomerPage": {
+        "description": "Cursor-paginated customers",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["data", "has_more", "next_cursor", "request_id"],
+              "properties": {
+                "data": { "type": "array", "items": { "$ref": "#/components/schemas/Customer" } },
+                "has_more": { "type": "boolean" },
+                "next_cursor": { "type": ["string", "null"] },
+                "request_id": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

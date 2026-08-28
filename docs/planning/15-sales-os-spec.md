@@ -1,0 +1,40 @@
+# Merchant Sales OS and reference-app inventory
+
+Information architecture is domain-led. “Transactions” is renamed “Payments & transactions” to prevent ledger implication; Events and Deliveries are separated. Marketplace and Capital appear only when enabled.
+
+| Page                               | Purpose / user / key actions                   | Data and states                                                                              | Permission                   | Release                 |
+| ---------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------- | ----------------------- |
+| Home                               | Owner/manager pulse; inspect anomalies/actions | paid sales by currency, orders, recent events; zero-data setup checklist; stale/error banner | analytics:read scoped        | V1                      |
+| Commerce / Orders                  | Staff fulfil/cancel, finance inspect           | status, customer, location, totals; no-orders CTA; retry/error                               | orders read/write/fulfil     | V1                      |
+| Commerce / Products                | Manager create/edit/publish                    | variants, prices, channel state; create CTA; validation errors                               | products read/write/publish  | V1                      |
+| Commerce / Inventory               | Staff adjust/count                             | levels/movements/location; setup stock; conflict retry                                       | inventory read/adjust        | V1                      |
+| Commerce / Customers               | Operator manage records                        | contact, order summary; import later; PII-redacted state                                     | customers read/write/pii     | V1                      |
+| Commerce / Storefront              | Admin configure/preview/publish                | theme, URL, products; setup wizard; publish diagnostics                                      | products publish + org write | V1                      |
+| Payments / Payments & transactions | Finance reconcile                              | payment, attempt, evidence, provider ref; filters; delayed-provider warning                  | payments/transactions read   | V1                      |
+| Payments / Payment links           | Manager create/share/disable                   | kind/status/usage/conversion; creation CTA                                                   | links write                  | V1                      |
+| Payments / Checkout sessions       | Support/developer inspect                      | session state, order/payment, expiry; empty; safe error                                      | checkout read                | V1                      |
+| Payments / Refunds                 | Finance create/inspect                         | refundable amount/status/reason; no eligible; provider error                                 | payments refund              | V1                      |
+| Payments / Invoices                | Finance bill/collect                           | invoices/aging                                                                               | invoices manage              | V1.1                    |
+| Payments / Subscriptions           | Finance operate recurring                      | MRR/status/retry                                                                             | subscriptions manage         | V1.2                    |
+| Payments / Payouts                 | Finance view provider reports                  | payout evidence/status                                                                       | payouts read                 | V1.1                    |
+| Operations / Locations             | Admin configure locations                      | status/timezone/summary; default setup; validation                                           | locations write              | minimal V1, full V1.1   |
+| Operations / Team                  | Admin invite/scope staff                       | members/roles/scopes; invite CTA/errors                                                      | members manage               | V1                      |
+| Operations / Terminals             | Ops map provider devices                       | terminal status                                                                              | terminals manage             | Planned                 |
+| Operations / Marketplace           | Manager list products/moderate                 | eligibility/listings                                                                         | marketplace manage           | V1.3 optional           |
+| Intelligence / Analytics           | Owner/analyst query metrics                    | definition/currency/window/freshness; no-data; stale/error                                   | analytics read               | core V1                 |
+| Intelligence / Capital             | Owner/finance inspect explanation              | score inputs/reasons/disclaimer                                                              | capital read                 | V1.3 optional           |
+| Developer / API keys               | Developer create/revoke                        | prefix/scopes/last use; secret-once warning                                                  | api_keys manage              | V1                      |
+| Developer / Webhook endpoints      | Developer configure/rotate                     | URL/subscriptions/status; test/retry errors                                                  | webhooks manage              | V1                      |
+| Developer / Events                 | Developer inspect facts                        | event envelope/filter; empty/retention state                                                 | events read                  | V1                      |
+| Developer / Deliveries             | Developer diagnose/replay                      | attempts/status/response digest; no failures; endpoint paused                                | webhooks replay/log read     | V1                      |
+| Developer / Audit logs             | Owner/admin investigate                        | actor/action/target/request/time; immutable/error                                            | audit read                   | V1                      |
+| Settings / Organization            | Owner/admin configure                          | name/timezone/currency/modules; validation                                                   | org write                    | V1                      |
+| Settings / Merchants & channels    | Admin manage brands                            | profiles/slugs/publishing                                                                    | merchants write              | V1                      |
+| Settings / Providers               | Finance/developer configure/test               | account/capability/env; no-account CTA; verification errors                                  | providers write              | mock V1                 |
+| Settings / Appearance/domains      | Admin brand UI                                 | theme/domain state                                                                           | org write                    | theme V1, domains later |
+
+Every page has loading skeleton, permission-aware absence (not disabled controls that leak capability), empty-state next action, retryable transport error, request ID, and non-retryable explanation. Destructive/financial actions use confirmation and show resulting resource.
+
+## App relationships
+
+Dashboard, Storefront, Hosted Checkout, Marketplace, and Docs are separately deployable apps using contracts/SDK; only Dashboard may use a thin same-origin BFF for session/CSRF. Marketplace is not deployed in V1. Docs includes API reference, guides, provider authoring, self-hosting, security, and changelog.

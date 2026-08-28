@@ -1,0 +1,27 @@
+{
+  "name": "@yinne/organizations",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./identity": "./src/identity.ts",
+    "./services": "./src/services.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yinne/application": "workspace:*",
+    "@yinne/auth": "workspace:*",
+    "@yinne/contracts": "workspace:*",
+    "@yinne/config": "workspace:*",
+    "@yinne/core": "workspace:*",
+    "@yinne/database": "workspace:*",
+    "@yinne/events": "workspace:*",
+    "drizzle-orm": "0.44.5",
+    "postgres": "3.4.7"
+  }
+}

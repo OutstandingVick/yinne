@@ -1,0 +1,27 @@
+{
+  "name": "@yinne/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../tooling/scripts/with-root-env.mjs tsx watch src/index.ts",
+    "build": "tsup",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "start": "node ../../tooling/scripts/with-root-env.mjs node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yinne/config": "workspace:*",
+    "@yinne/database": "workspace:*",
+    "dotenv": "16.6.1",
+    "drizzle-orm": "0.44.5",
+    "graphile-worker": "0.16.6",
+    "pino": "9.9.0",
+    "postgres": "3.4.7",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "tsup": "8.5.0"
+  }
+}

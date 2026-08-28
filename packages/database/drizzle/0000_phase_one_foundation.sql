@@ -1,0 +1,1 @@
+-- Reserved planning baseline. The generated Phase 1 schema is migration 0001.

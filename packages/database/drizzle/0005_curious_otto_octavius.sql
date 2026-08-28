@@ -1,0 +1,2 @@
+DROP INDEX "customers_org_external_ref_uidx";--> statement-breakpoint
+CREATE UNIQUE INDEX "customers_org_external_ref_uidx" ON "customers" USING btree ("organization_id","external_ref") WHERE "customers"."external_ref" is not null;
