@@ -627,6 +627,609 @@ export const inventoryMovements = pgTable(
   ],
 );
 
+export const providerAccounts = pgTable(
+  "provider_accounts",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    provider: text("provider").notNull(),
+    label: text("label").notNull(),
+    environment: text("environment").notNull(),
+    capabilities: jsonb("capabilities").$type<string[]>().notNull(),
+    supportedCurrencies: jsonb("supported_currencies").$type<string[]>().notNull(),
+    configuration: jsonb("configuration").$type<Record<string, unknown>>().notNull().default({}),
+    status: text("status").notNull().default("enabled"),
+    isDefault: boolean("is_default").notNull().default(false),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    uniqueIndex("provider_accounts_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("provider_accounts_org_provider_env_label_uidx").on(
+      table.organizationId,
+      table.provider,
+      table.environment,
+      table.label,
+    ),
+    uniqueIndex("provider_accounts_default_uidx")
+      .on(table.organizationId, table.environment)
+      .where(sql`${table.isDefault} and ${table.status} = 'enabled'`),
+    index("provider_accounts_org_env_status_idx").on(
+      table.organizationId,
+      table.environment,
+      table.status,
+    ),
+    check("provider_accounts_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("provider_accounts_status_check", sql`${table.status} in ('enabled', 'disabled')`),
+    check(
+      "provider_accounts_mock_test_check",
+      sql`${table.provider} <> 'mock' or ${table.environment} = 'test'`,
+    ),
+  ],
+);
+
+export const paymentLinks = pgTable(
+  "payment_links",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    merchantId: uuid("merchant_id").notNull(),
+    locationId: uuid("location_id").notNull(),
+    publicTokenDigest: text("public_token_digest").notNull(),
+    publicTokenPrefix: text("public_token_prefix").notNull(),
+    name: text("name").notNull(),
+    description: text("description"),
+    kind: text("kind").notNull(),
+    status: text("status").notNull().default("active"),
+    variantId: uuid("variant_id"),
+    quantity: integer("quantity"),
+    fixedAmount: bigint("fixed_amount", { mode: "bigint" }),
+    minimumAmount: bigint("minimum_amount", { mode: "bigint" }),
+    maximumAmount: bigint("maximum_amount", { mode: "bigint" }),
+    currency: text("currency").notNull(),
+    usageLimit: integer("usage_limit"),
+    completedUsageCount: integer("completed_usage_count").notNull().default(0),
+    customerCapture: jsonb("customer_capture")
+      .$type<{ name: boolean; email: boolean; phone: boolean }>()
+      .notNull()
+      .default({ name: true, email: true, phone: false }),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "payment_links_merchant_org_fk",
+      columns: [table.organizationId, table.merchantId],
+      foreignColumns: [merchants.organizationId, merchants.id],
+    }),
+    foreignKey({
+      name: "payment_links_location_org_fk",
+      columns: [table.organizationId, table.locationId],
+      foreignColumns: [locations.organizationId, locations.id],
+    }),
+    foreignKey({
+      name: "payment_links_variant_org_fk",
+      columns: [table.organizationId, table.variantId],
+      foreignColumns: [variants.organizationId, variants.id],
+    }),
+    uniqueIndex("payment_links_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("payment_links_token_uidx").on(table.publicTokenDigest),
+    index("payment_links_org_env_created_idx").on(
+      table.organizationId,
+      table.environment,
+      table.createdAt,
+      table.id,
+    ),
+    check("payment_links_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("payment_links_kind_check", sql`${table.kind} in ('product', 'fixed', 'flexible')`),
+    check("payment_links_status_check", sql`${table.status} in ('active', 'inactive')`),
+    check("payment_links_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check(
+      "payment_links_usage_check",
+      sql`${table.completedUsageCount} >= 0 and (${table.usageLimit} is null or (${table.usageLimit} > 0 and ${table.completedUsageCount} <= ${table.usageLimit}))`,
+    ),
+    check(
+      "payment_links_amount_check",
+      sql`(${table.kind} = 'product' and ${table.variantId} is not null and ${table.quantity} > 0 and ${table.fixedAmount} is null and ${table.minimumAmount} is null) or (${table.kind} = 'fixed' and ${table.variantId} is null and ${table.fixedAmount} > 0 and ${table.minimumAmount} is null) or (${table.kind} = 'flexible' and ${table.variantId} is null and ${table.fixedAmount} is null and ${table.minimumAmount} > 0 and (${table.maximumAmount} is null or ${table.maximumAmount} >= ${table.minimumAmount}))`,
+    ),
+  ],
+);
+
+export const checkoutSessions = pgTable(
+  "checkout_sessions",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    merchantId: uuid("merchant_id").notNull(),
+    locationId: uuid("location_id").notNull(),
+    paymentLinkId: uuid("payment_link_id"),
+    customerId: uuid("customer_id"),
+    orderId: uuid("order_id"),
+    paymentId: uuid("payment_id"),
+    publicTokenDigest: text("public_token_digest").notNull(),
+    publicTokenPrefix: text("public_token_prefix").notNull(),
+    status: text("status").notNull().default("open"),
+    amount: bigint("amount", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    customerCapture: jsonb("customer_capture")
+      .$type<{ name: boolean; email: boolean; phone: boolean }>()
+      .notNull()
+      .default({ name: true, email: true, phone: false }),
+    customerDetails: jsonb("customer_details").$type<{
+      name?: string;
+      email?: string;
+      phone?: string;
+    }>(),
+    successUrl: text("success_url"),
+    cancelUrl: text("cancel_url"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    lateCompletion: boolean("late_completion").notNull().default(false),
+    linkUsageCounted: boolean("link_usage_counted").notNull().default(false),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "checkout_sessions_merchant_org_fk",
+      columns: [table.organizationId, table.merchantId],
+      foreignColumns: [merchants.organizationId, merchants.id],
+    }),
+    foreignKey({
+      name: "checkout_sessions_location_org_fk",
+      columns: [table.organizationId, table.locationId],
+      foreignColumns: [locations.organizationId, locations.id],
+    }),
+    foreignKey({
+      name: "checkout_sessions_link_org_fk",
+      columns: [table.organizationId, table.paymentLinkId],
+      foreignColumns: [paymentLinks.organizationId, paymentLinks.id],
+    }),
+    foreignKey({
+      name: "checkout_sessions_customer_org_fk",
+      columns: [table.organizationId, table.customerId],
+      foreignColumns: [customers.organizationId, customers.id],
+    }),
+    foreignKey({
+      name: "checkout_sessions_order_org_fk",
+      columns: [table.organizationId, table.orderId],
+      foreignColumns: [orders.organizationId, orders.id],
+    }),
+    uniqueIndex("checkout_sessions_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("checkout_sessions_token_uidx").on(table.publicTokenDigest),
+    uniqueIndex("checkout_sessions_order_uidx")
+      .on(table.organizationId, table.environment, table.orderId)
+      .where(sql`${table.orderId} is not null`),
+    uniqueIndex("checkout_sessions_payment_uidx")
+      .on(table.organizationId, table.environment, table.paymentId)
+      .where(sql`${table.paymentId} is not null`),
+    index("checkout_sessions_org_env_created_idx").on(
+      table.organizationId,
+      table.environment,
+      table.createdAt,
+      table.id,
+    ),
+    check("checkout_sessions_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check(
+      "checkout_sessions_status_check",
+      sql`${table.status} in ('open', 'processing', 'completed', 'expired', 'cancelled')`,
+    ),
+    check("checkout_sessions_amount_check", sql`${table.amount} > 0`),
+    check("checkout_sessions_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
+export const checkoutLineItems = pgTable(
+  "checkout_line_items",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    checkoutSessionId: uuid("checkout_session_id").notNull(),
+    variantId: uuid("variant_id"),
+    description: text("description").notNull(),
+    variantTitle: text("variant_title"),
+    sku: text("sku"),
+    unitAmount: bigint("unit_amount", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    quantity: integer("quantity").notNull(),
+    totalAmount: bigint("total_amount", { mode: "bigint" }).notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "checkout_items_session_org_fk",
+      columns: [table.organizationId, table.checkoutSessionId],
+      foreignColumns: [checkoutSessions.organizationId, checkoutSessions.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "checkout_items_variant_org_fk",
+      columns: [table.organizationId, table.variantId],
+      foreignColumns: [variants.organizationId, variants.id],
+    }),
+    uniqueIndex("checkout_items_org_id_uidx").on(table.organizationId, table.id),
+    index("checkout_items_session_idx").on(table.organizationId, table.checkoutSessionId),
+    check(
+      "checkout_items_amount_check",
+      sql`${table.unitAmount} > 0 and ${table.quantity} > 0 and ${table.totalAmount} = ${table.unitAmount} * ${table.quantity}`,
+    ),
+    check("checkout_items_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
+export const payments = pgTable(
+  "payments",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    orderId: uuid("order_id").notNull(),
+    customerId: uuid("customer_id"),
+    amount: bigint("amount", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    status: text("status").notNull().default("created"),
+    providerAccountId: uuid("provider_account_id").notNull(),
+    latestAttemptId: uuid("latest_attempt_id"),
+    refundedAmount: bigint("refunded_amount", { mode: "bigint" })
+      .notNull()
+      .default(sql`0`),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    succeededAt: timestamp("succeeded_at", { withTimezone: true }),
+  },
+  (table) => [
+    foreignKey({
+      name: "payments_order_org_fk",
+      columns: [table.organizationId, table.orderId],
+      foreignColumns: [orders.organizationId, orders.id],
+    }),
+    foreignKey({
+      name: "payments_customer_org_fk",
+      columns: [table.organizationId, table.customerId],
+      foreignColumns: [customers.organizationId, customers.id],
+    }),
+    foreignKey({
+      name: "payments_provider_account_org_fk",
+      columns: [table.organizationId, table.providerAccountId],
+      foreignColumns: [providerAccounts.organizationId, providerAccounts.id],
+    }),
+    uniqueIndex("payments_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("payments_order_succeeded_uidx")
+      .on(table.organizationId, table.environment, table.orderId)
+      .where(sql`${table.status} in ('succeeded', 'partially_refunded', 'refunded')`),
+    index("payments_org_env_created_idx").on(
+      table.organizationId,
+      table.environment,
+      table.createdAt,
+      table.id,
+    ),
+    index("payments_org_order_idx").on(table.organizationId, table.orderId),
+    check("payments_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check(
+      "payments_status_check",
+      sql`${table.status} in ('created', 'pending', 'succeeded', 'failed', 'cancelled', 'partially_refunded', 'refunded')`,
+    ),
+    check("payments_amount_check", sql`${table.amount} > 0`),
+    check(
+      "payments_refunded_amount_check",
+      sql`${table.refundedAmount} >= 0 and ${table.refundedAmount} <= ${table.amount}`,
+    ),
+    check("payments_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
+export const paymentAttempts = pgTable(
+  "payment_attempts",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    paymentId: uuid("payment_id").notNull(),
+    providerAccountId: uuid("provider_account_id").notNull(),
+    provider: text("provider").notNull(),
+    status: text("status").notNull().default("created"),
+    providerReference: text("provider_reference"),
+    failureCode: text("failure_code"),
+    failureMessage: text("failure_message"),
+    requestMetadata: jsonb("request_metadata")
+      .$type<Record<string, unknown>>()
+      .notNull()
+      .default({}),
+    responseMetadata: jsonb("response_metadata")
+      .$type<Record<string, unknown>>()
+      .notNull()
+      .default({}),
+    version: integer("version").notNull().default(1),
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "payment_attempts_payment_org_fk",
+      columns: [table.organizationId, table.paymentId],
+      foreignColumns: [payments.organizationId, payments.id],
+    }),
+    foreignKey({
+      name: "payment_attempts_provider_account_org_fk",
+      columns: [table.organizationId, table.providerAccountId],
+      foreignColumns: [providerAccounts.organizationId, providerAccounts.id],
+    }),
+    uniqueIndex("payment_attempts_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("payment_attempts_provider_ref_uidx")
+      .on(table.providerAccountId, table.environment, table.providerReference)
+      .where(sql`${table.providerReference} is not null`),
+    uniqueIndex("payment_attempts_active_uidx")
+      .on(table.organizationId, table.paymentId)
+      .where(sql`${table.status} in ('created', 'submitted', 'pending', 'unknown')`),
+    index("payment_attempts_org_payment_created_idx").on(
+      table.organizationId,
+      table.paymentId,
+      table.createdAt,
+    ),
+    check("payment_attempts_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check(
+      "payment_attempts_status_check",
+      sql`${table.status} in ('created', 'submitted', 'pending', 'succeeded', 'failed', 'unknown')`,
+    ),
+  ],
+);
+
+export const refunds = pgTable(
+  "refunds",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    paymentId: uuid("payment_id").notNull(),
+    amount: bigint("amount", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    status: text("status").notNull().default("created"),
+    reason: text("reason").notNull(),
+    providerReference: text("provider_reference"),
+    failureCode: text("failure_code"),
+    failureMessage: text("failure_message"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table) => [
+    foreignKey({
+      name: "refunds_payment_org_fk",
+      columns: [table.organizationId, table.paymentId],
+      foreignColumns: [payments.organizationId, payments.id],
+    }),
+    uniqueIndex("refunds_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("refunds_provider_ref_uidx")
+      .on(table.organizationId, table.environment, table.providerReference)
+      .where(sql`${table.providerReference} is not null`),
+    index("refunds_org_payment_created_idx").on(
+      table.organizationId,
+      table.paymentId,
+      table.createdAt,
+    ),
+    check("refunds_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check(
+      "refunds_status_check",
+      sql`${table.status} in ('created', 'pending', 'succeeded', 'failed')`,
+    ),
+    check("refunds_amount_check", sql`${table.amount} > 0`),
+    check("refunds_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
+export const transactions = pgTable(
+  "transactions",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    paymentId: uuid("payment_id").notNull(),
+    refundId: uuid("refund_id"),
+    kind: text("kind").notNull(),
+    amount: bigint("amount", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    providerReference: text("provider_reference").notNull(),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "transactions_payment_org_fk",
+      columns: [table.organizationId, table.paymentId],
+      foreignColumns: [payments.organizationId, payments.id],
+    }),
+    foreignKey({
+      name: "transactions_refund_org_fk",
+      columns: [table.organizationId, table.refundId],
+      foreignColumns: [refunds.organizationId, refunds.id],
+    }),
+    uniqueIndex("transactions_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("transactions_provider_evidence_uidx").on(
+      table.organizationId,
+      table.environment,
+      table.kind,
+      table.providerReference,
+    ),
+    index("transactions_org_payment_created_idx").on(
+      table.organizationId,
+      table.paymentId,
+      table.createdAt,
+    ),
+    check("transactions_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("transactions_kind_check", sql`${table.kind} in ('charge', 'refund')`),
+    check("transactions_amount_check", sql`${table.amount} > 0`),
+    check("transactions_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
+export const providerEvents = pgTable(
+  "provider_events",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    providerAccountId: uuid("provider_account_id").notNull(),
+    externalId: text("external_id").notNull(),
+    type: text("type").notNull(),
+    objectReference: text("object_reference").notNull(),
+    payloadDigest: text("payload_digest").notNull(),
+    normalizedData: jsonb("normalized_data").$type<Record<string, unknown>>().notNull(),
+    status: text("status").notNull().default("received"),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "provider_events_account_org_fk",
+      columns: [table.organizationId, table.providerAccountId],
+      foreignColumns: [providerAccounts.organizationId, providerAccounts.id],
+    }),
+    uniqueIndex("provider_events_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("provider_events_account_external_uidx").on(
+      table.providerAccountId,
+      table.environment,
+      table.externalId,
+    ),
+    index("provider_events_org_received_idx").on(table.organizationId, table.receivedAt, table.id),
+    check("provider_events_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check(
+      "provider_events_status_check",
+      sql`${table.status} in ('received', 'processed', 'ignored', 'failed')`,
+    ),
+  ],
+);
+
+export const webhookEndpoints = pgTable(
+  "webhook_endpoints",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    url: text("url").notNull(),
+    secretCiphertext: text("secret_ciphertext").notNull(),
+    status: text("status").notNull().default("enabled"),
+    failureCount: integer("failure_count").notNull().default(0),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    uniqueIndex("webhook_endpoints_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("webhook_endpoints_org_env_url_uidx").on(
+      table.organizationId,
+      table.environment,
+      table.url,
+    ),
+    check("webhook_endpoints_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("webhook_endpoints_status_check", sql`${table.status} in ('enabled', 'disabled')`),
+  ],
+);
+
+export const webhookSubscriptions = pgTable(
+  "webhook_subscriptions",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    endpointId: uuid("endpoint_id").notNull(),
+    eventPattern: text("event_pattern").notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "webhook_subscriptions_endpoint_org_fk",
+      columns: [table.organizationId, table.endpointId],
+      foreignColumns: [webhookEndpoints.organizationId, webhookEndpoints.id],
+    }).onDelete("cascade"),
+    uniqueIndex("webhook_subscriptions_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("webhook_subscriptions_endpoint_pattern_uidx").on(
+      table.endpointId,
+      table.eventPattern,
+    ),
+  ],
+);
+
+export const webhookDeliveries = pgTable(
+  "webhook_deliveries",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    eventId: uuid("event_id").notNull(),
+    endpointId: uuid("endpoint_id").notNull(),
+    generation: integer("generation").notNull().default(1),
+    status: text("status").notNull().default("queued"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: timestamp("next_attempt_at", { withTimezone: true }).notNull().defaultNow(),
+    lastStatusCode: integer("last_status_code"),
+    lastError: text("last_error"),
+    createdAt: createdAt(),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+  },
+  (table) => [
+    foreignKey({
+      name: "webhook_deliveries_event_org_fk",
+      columns: [table.organizationId, table.eventId],
+      foreignColumns: [events.organizationId, events.id],
+    }),
+    foreignKey({
+      name: "webhook_deliveries_endpoint_org_fk",
+      columns: [table.organizationId, table.endpointId],
+      foreignColumns: [webhookEndpoints.organizationId, webhookEndpoints.id],
+    }),
+    uniqueIndex("webhook_deliveries_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("webhook_deliveries_event_endpoint_generation_uidx").on(
+      table.eventId,
+      table.endpointId,
+      table.generation,
+    ),
+    index("webhook_deliveries_status_next_idx").on(table.status, table.nextAttemptAt),
+    check("webhook_deliveries_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check(
+      "webhook_deliveries_status_check",
+      sql`${table.status} in ('queued', 'delivering', 'retry_scheduled', 'succeeded', 'failed', 'disabled')`,
+    ),
+  ],
+);
+
 export const seedVersions = pgTable("seed_versions", {
   key: text("key").primaryKey(),
   version: integer("version").notNull(),

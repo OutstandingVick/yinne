@@ -43,6 +43,27 @@
       "when": 1787916985311,
       "tag": "0005_curious_otto_octavius",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787928945269,
+      "tag": "0006_brainy_silver_fox",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787943279596,
+      "tag": "0007_colossal_the_enforcers",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1787946704624,
+      "tag": "0008_mixed_gunslinger",
+      "breakpoints": true
     }
   ]
 }

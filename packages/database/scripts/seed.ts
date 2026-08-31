@@ -1,4 +1,5 @@
 import { config as loadDotEnv } from "dotenv";
+import { createHash } from "node:crypto";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
 import postgres from "postgres";
@@ -6,6 +7,8 @@ import { hashPassword, permissionKeys, predefinedRolePermissions, roleKeys } fro
 import {
   auditLogs,
   customers,
+  checkoutLineItems,
+  checkoutSessions,
   events,
   inventoryLevels,
   inventoryMovements,
@@ -16,12 +19,18 @@ import {
   orderItems,
   orders,
   outboxMessages,
+  paymentAttempts,
+  paymentLinks,
+  payments,
   permissions,
   products,
+  providerAccounts,
+  refunds,
   roleAssignments,
   rolePermissions,
   roles,
   seedVersions,
+  transactions,
   users,
   variants,
 } from "../src/schema";
@@ -115,6 +124,25 @@ try {
       .onConflictDoUpdate({ target: organizations.slug, set: { name: "Acme Coffee" } });
 
     await tx
+      .insert(providerAccounts)
+      .values({
+        id: fixtureId(1800),
+        organizationId,
+        provider: "mock",
+        label: "Acme deterministic mock",
+        environment: "test",
+        capabilities: ["payment.create", "payment.retrieve", "payment.refund", "webhook.verify"],
+        supportedCurrencies: ["NGN", "USD", "EUR", "GBP"],
+        configuration: { default_scenario: "success", simulated: true },
+        status: "enabled",
+        isDefault: true,
+      })
+      .onConflictDoUpdate({
+        target: providerAccounts.id,
+        set: { status: "enabled", isDefault: true, updatedAt: new Date() },
+      });
+
+    await tx
       .insert(merchants)
       .values({
         id: merchantId,
@@ -141,6 +169,119 @@ try {
           name,
           type,
           timezone: "Africa/Lagos",
+        })
+        .onConflictDoNothing();
+    }
+
+    const checkoutFixtures = [
+      {
+        id: fixtureId(1900),
+        token: Buffer.alloc(32, 11).toString("base64url"),
+        status: "open",
+        expiresAt: new Date(Date.now() + 1_800_000),
+      },
+      {
+        id: fixtureId(1901),
+        token: Buffer.alloc(32, 12).toString("base64url"),
+        status: "processing",
+        expiresAt: new Date(Date.now() + 1_800_000),
+      },
+      {
+        id: fixtureId(1902),
+        token: Buffer.alloc(32, 13).toString("base64url"),
+        status: "completed",
+        expiresAt: new Date(Date.now() - 86_400_000),
+        completedAt: new Date(),
+      },
+      {
+        id: fixtureId(1903),
+        token: Buffer.alloc(32, 14).toString("base64url"),
+        status: "expired",
+        expiresAt: new Date(Date.now() - 86_400_000),
+      },
+    ] as const;
+    const linkFixtures = [
+      {
+        id: fixtureId(1950),
+        token: Buffer.alloc(32, 21).toString("base64url"),
+        name: "Acme tasting event",
+        status: "active",
+        usageLimit: null,
+        used: 0,
+      },
+      {
+        id: fixtureId(1951),
+        token: Buffer.alloc(32, 22).toString("base64url"),
+        name: "Paused collection",
+        status: "inactive",
+        usageLimit: null,
+        used: 0,
+      },
+      {
+        id: fixtureId(1952),
+        token: Buffer.alloc(32, 23).toString("base64url"),
+        name: "Sold-out workshop",
+        status: "active",
+        usageLimit: 1,
+        used: 1,
+      },
+    ] as const;
+    for (const link of linkFixtures)
+      await tx
+        .insert(paymentLinks)
+        .values({
+          id: link.id,
+          organizationId,
+          environment: "test",
+          merchantId,
+          locationId: fixtureId(10),
+          publicTokenDigest: createHash("sha256").update(link.token).digest("hex"),
+          publicTokenPrefix: link.token.slice(0, 8),
+          name: link.name,
+          description: "Seeded fixed-amount Payment Link",
+          kind: "fixed",
+          status: link.status,
+          fixedAmount: 250000n,
+          currency: "NGN",
+          usageLimit: link.usageLimit,
+          completedUsageCount: link.used,
+          customerCapture: { name: true, email: true, phone: false },
+          metadata: { seeded: true },
+        })
+        .onConflictDoNothing();
+    for (const session of checkoutFixtures) {
+      await tx
+        .insert(checkoutSessions)
+        .values({
+          id: session.id,
+          organizationId,
+          environment: "test",
+          merchantId,
+          locationId: fixtureId(10),
+          publicTokenDigest: createHash("sha256").update(session.token).digest("hex"),
+          publicTokenPrefix: session.token.slice(0, 8),
+          status: session.status,
+          amount: 250000n,
+          currency: "NGN",
+          customerCapture: { name: true, email: true, phone: false },
+          expiresAt: session.expiresAt,
+          completedAt: "completedAt" in session ? session.completedAt : null,
+          metadata: { seeded: true },
+        })
+        .onConflictDoNothing();
+      await tx
+        .insert(checkoutLineItems)
+        .values({
+          id: fixtureId(1960 + checkoutFixtures.indexOf(session)),
+          organizationId,
+          checkoutSessionId: session.id,
+          description: "Acme tasting event",
+          variantTitle: "Collection",
+          sku: `SEED-CHECKOUT-${checkoutFixtures.indexOf(session)}`,
+          unitAmount: 250000n,
+          currency: "NGN",
+          quantity: 1,
+          totalAmount: 250000n,
         })
         .onConflictDoNothing();
     }
@@ -408,10 +549,171 @@ try {
         .onConflictDoNothing();
     }
 
+    const paymentFixtures = [
+      { orderIndex: 0, status: "succeeded", refund: "none" },
+      { orderIndex: 1, status: "failed", refund: "none" },
+      { orderIndex: 2, status: "pending", refund: "none" },
+      { orderIndex: 4, status: "refunded", refund: "full" },
+      { orderIndex: 5, status: "partially_refunded", refund: "partial" },
+    ] as const;
+    for (const [fixtureIndex, fixture] of paymentFixtures.entries()) {
+      const orderIndex = fixture.orderIndex;
+      const paymentId = fixtureId(1801 + fixtureIndex);
+      const attemptId = fixtureId(1901 + fixtureIndex);
+      const orderId = fixtureId(1600 + orderIndex);
+      const variantIndex = orderIndex % 10;
+      const quantity = (orderIndex % 3) + 1;
+      const amount = catalogue[variantIndex]![4] * BigInt(quantity);
+      const providerReference = `mock_pay_${attemptId.replaceAll("-", "")}`;
+      const financiallyFinal = ["succeeded", "refunded", "partially_refunded"].includes(
+        fixture.status,
+      );
+      const refundAmount =
+        fixture.refund === "full" ? amount : fixture.refund === "partial" ? 10000n : 0n;
+      await tx
+        .insert(payments)
+        .values({
+          id: paymentId,
+          organizationId,
+          environment: "test",
+          orderId,
+          customerId: fixtureId(1000 + orderIndex),
+          amount,
+          currency: "NGN",
+          status: fixture.status,
+          providerAccountId: fixtureId(1800),
+          latestAttemptId: attemptId,
+          refundedAmount: refundAmount,
+          metadata: { seeded: true, scenario: fixture.status },
+          succeededAt: financiallyFinal ? new Date(Date.UTC(2026, 7, 20 + fixtureIndex, 12)) : null,
+        })
+        .onConflictDoUpdate({
+          target: payments.id,
+          set: { status: fixture.status, refundedAmount: refundAmount, latestAttemptId: attemptId },
+        });
+      await tx
+        .insert(paymentAttempts)
+        .values({
+          id: attemptId,
+          organizationId,
+          environment: "test",
+          paymentId,
+          providerAccountId: fixtureId(1800),
+          provider: "mock",
+          status:
+            fixture.status === "partially_refunded" || fixture.status === "refunded"
+              ? "succeeded"
+              : fixture.status,
+          providerReference,
+          failureCode: fixture.status === "failed" ? "declined" : null,
+          failureMessage: fixture.status === "failed" ? "Seeded deterministic decline." : null,
+          requestMetadata: {
+            mock_scenario:
+              fixture.status === "failed"
+                ? "failure:declined"
+                : fixture.status === "pending"
+                  ? "pending:then_success"
+                  : "success",
+          },
+          responseMetadata: { simulated: true },
+          startedAt: new Date(Date.UTC(2026, 7, 20 + fixtureIndex, 12)),
+          completedAt:
+            fixture.status === "pending"
+              ? null
+              : new Date(Date.UTC(2026, 7, 20 + fixtureIndex, 12, 0, 1)),
+        })
+        .onConflictDoUpdate({
+          target: paymentAttempts.id,
+          set: {
+            status:
+              fixture.status === "partially_refunded" || fixture.status === "refunded"
+                ? "succeeded"
+                : fixture.status,
+          },
+        });
+      if (financiallyFinal) {
+        await tx
+          .insert(transactions)
+          .values({
+            id: fixtureId(2001 + fixtureIndex),
+            organizationId,
+            environment: "test",
+            paymentId,
+            kind: "charge",
+            amount,
+            currency: "NGN",
+            providerReference,
+            occurredAt: new Date(Date.UTC(2026, 7, 20 + fixtureIndex, 12)),
+          })
+          .onConflictDoNothing();
+        await tx
+          .update(orders)
+          .set({ financialStatus: fixture.status === "succeeded" ? "paid" : fixture.status })
+          .where(eq(orders.id, orderId));
+        const levelIndex = variantIndex * 4 + (orderIndex % 4);
+        const opening = BigInt(20 + ((variantIndex * 7 + (orderIndex % 4) * 11) % 81));
+        const resulting = opening - BigInt(quantity);
+        await tx
+          .update(inventoryLevels)
+          .set({ onHand: resulting })
+          .where(eq(inventoryLevels.id, fixtureId(1300 + levelIndex)));
+        await tx
+          .insert(inventoryMovements)
+          .values({
+            id: fixtureId(2201 + fixtureIndex),
+            organizationId,
+            inventoryLevelId: fixtureId(1300 + levelIndex),
+            delta: -BigInt(quantity),
+            resultingOnHand: resulting,
+            reason: "order_paid",
+            orderId,
+            actorType: "system",
+            actorId: "seed",
+            createdAt: new Date(Date.UTC(2026, 7, 20 + fixtureIndex, 12)),
+          })
+          .onConflictDoNothing();
+      }
+      if (fixture.refund !== "none") {
+        const refundId = fixtureId(2101 + fixtureIndex);
+        const refundReference = `mock_refund_${refundId.replaceAll("-", "")}`;
+        await tx
+          .insert(refunds)
+          .values({
+            id: refundId,
+            organizationId,
+            environment: "test",
+            paymentId,
+            amount: refundAmount,
+            currency: "NGN",
+            status: "succeeded",
+            reason: fixture.refund === "full" ? "customer_request" : "partial_adjustment",
+            providerReference: refundReference,
+            metadata: { seeded: true },
+            completedAt: new Date(Date.UTC(2026, 7, 21 + fixtureIndex, 12)),
+          })
+          .onConflictDoUpdate({ target: refunds.id, set: { status: "succeeded" } });
+        await tx
+          .insert(transactions)
+          .values({
+            id: fixtureId(2051 + fixtureIndex),
+            organizationId,
+            environment: "test",
+            paymentId,
+            refundId,
+            kind: "refund",
+            amount: refundAmount,
+            currency: "NGN",
+            providerReference: refundReference,
+            occurredAt: new Date(Date.UTC(2026, 7, 21 + fixtureIndex, 12)),
+          })
+          .onConflictDoNothing();
+      }
+    }
+
     await tx
       .insert(seedVersions)
-      .values({ key: "acme-foundation", version: 2 })
-      .onConflictDoUpdate({ target: seedVersions.key, set: { version: 2, appliedAt: new Date() } });
+      .values({ key: "acme-foundation", version: 3 })
+      .onConflictDoUpdate({ target: seedVersions.key, set: { version: 3, appliedAt: new Date() } });
   });
 
   const [seed] = await db
@@ -419,7 +721,9 @@ try {
     .from(seedVersions)
     .where(eq(seedVersions.key, "acme-foundation"));
   if (!seed) throw new Error("Seed verification failed.");
-  console.log("Seeded Acme Coffee Phase 2 core commerce dataset.");
+  console.log(
+    "Seeded Acme Coffee Phase 4 checkout, commerce, and deterministic Mock Provider dataset.",
+  );
   console.log("Login: owner@acme.test (password from YINNE_SEED_PASSWORD)");
 } finally {
   await client.end();

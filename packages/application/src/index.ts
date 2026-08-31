@@ -1,4 +1,4 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, or, sql } from "drizzle-orm";
 import {
   can,
   principalId,
@@ -16,6 +16,9 @@ import {
   outboxMessages,
   roleAssignments,
   roles,
+  webhookDeliveries,
+  webhookEndpoints,
+  webhookSubscriptions,
   type TenantContext,
   type TenantTransaction,
 } from "@yinne/database";
@@ -200,4 +203,40 @@ export async function recordDomainChange(
     ${event.environment}::text,
     ${outboxMessage.id}::uuid
   )`);
+  const wildcard = input.action.includes(".") ? `${input.action.split(".")[0]}.*` : input.action;
+  const endpointRows = await tx
+    .select({ endpointId: webhookEndpoints.id })
+    .from(webhookSubscriptions)
+    .innerJoin(
+      webhookEndpoints,
+      and(
+        eq(webhookEndpoints.organizationId, webhookSubscriptions.organizationId),
+        eq(webhookEndpoints.id, webhookSubscriptions.endpointId),
+      ),
+    )
+    .where(
+      and(
+        eq(webhookSubscriptions.organizationId, context.tenant.organizationId),
+        eq(webhookEndpoints.environment, context.tenant.environment),
+        eq(webhookEndpoints.status, "enabled"),
+        or(
+          eq(webhookSubscriptions.eventPattern, input.action),
+          eq(webhookSubscriptions.eventPattern, wildcard),
+          eq(webhookSubscriptions.eventPattern, "*"),
+        ),
+      ),
+    );
+  if (endpointRows.length)
+    await tx
+      .insert(webhookDeliveries)
+      .values(
+        endpointRows.map(({ endpointId }) => ({
+          organizationId: context.tenant.organizationId,
+          environment: context.tenant.environment,
+          eventId: event.id,
+          endpointId,
+          status: "queued",
+        })),
+      )
+      .onConflictDoNothing();
 }

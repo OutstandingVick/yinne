@@ -53,6 +53,9 @@ importers:
       '@yinne/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@yinne/checkout':
+        specifier: workspace:*
+        version: link:../../modules/checkout
       '@yinne/commerce':
         specifier: workspace:*
         version: link:../../modules/commerce
@@ -71,6 +74,9 @@ importers:
       '@yinne/organizations':
         specifier: workspace:*
         version: link:../../modules/organizations
+      '@yinne/payments':
+        specifier: workspace:*
+        version: link:../../modules/payments
       '@yinne/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
@@ -146,6 +152,33 @@ importers:
         specifier: 8.5.0
         version: 8.5.0(jiti@1.21.7)(postcss@8.5.26)(supports-color@7.2.0)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.9.0)
 
+  modules/checkout:
+    dependencies:
+      '@yinne/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@yinne/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@yinne/commerce':
+        specifier: workspace:*
+        version: link:../commerce
+      '@yinne/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@yinne/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@yinne/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@yinne/payments':
+        specifier: workspace:*
+        version: link:../payments
+      drizzle-orm:
+        specifier: 0.44.5
+        version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
+
   modules/commerce:
     dependencies:
       '@yinne/application':
@@ -193,6 +226,33 @@ importers:
       '@yinne/events':
         specifier: workspace:*
         version: link:../../packages/events
+      drizzle-orm:
+        specifier: 0.44.5
+        version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
+      postgres:
+        specifier: 3.4.7
+        version: 3.4.7
+
+  modules/payments:
+    dependencies:
+      '@yinne/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@yinne/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@yinne/commerce':
+        specifier: workspace:*
+        version: link:../commerce
+      '@yinne/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@yinne/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@yinne/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       drizzle-orm:
         specifier: 0.44.5
         version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)

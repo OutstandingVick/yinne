@@ -1,0 +1,1 @@
+ALTER TABLE "webhook_endpoints" RENAME COLUMN "secret" TO "secret_ciphertext";

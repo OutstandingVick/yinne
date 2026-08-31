@@ -3,7 +3,7 @@
   "info": {
     "title": "Yinne API",
     "version": "2026-08-28",
-    "description": "Phase 2 Core Commerce. Monetary amounts are integer minor-unit strings. Orders are commercial records and are not proof of payment."
+    "description": "Phase 4 Checkout and Payment Links over the canonical Commerce and Payments cores. Money uses integer minor-unit strings; only the deterministic test-mode Mock Provider is implemented."
   },
   "servers": [{ "url": "http://localhost:3000" }],
   "security": [{ "bearerAuth": [] }],
@@ -280,6 +280,397 @@
           "default": { "$ref": "#/components/responses/Error" }
         }
       }
+    },
+    "/v1/payments": {
+      "get": {
+        "operationId": "listPayments",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" }
+        ],
+        "responses": {
+          "200": { "description": "Environment-scoped payment page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createPayment",
+        "description": "Creates and executes a full-order payment. Amount, currency, and customer are derived from the order. Same idempotency key and body replays; changed input returns 409.",
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PaymentInput" },
+              "example": {
+                "order_id": "0198f000-0000-7000-8000-000000001600",
+                "confirmation": { "mock_scenario": "success" }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Payment executed or safely replayed" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/payments/{payment_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/PaymentId" }],
+      "get": {
+        "operationId": "retrievePayment",
+        "responses": {
+          "200": { "description": "Payment with attempts, transactions, and refunds" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/refunds": {
+      "get": {
+        "operationId": "listRefunds",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" }
+        ],
+        "responses": {
+          "200": { "description": "Environment-scoped refund page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createRefund",
+        "description": "Creates an idempotent full or partial refund. Omitting amount refunds the remaining refundable amount.",
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/RefundInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Refund executed or safely replayed" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/refunds/{refund_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/RefundId" }],
+      "get": {
+        "operationId": "retrieveRefund",
+        "responses": {
+          "200": { "description": "Refund" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/transactions": {
+      "get": {
+        "operationId": "listTransactions",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" }
+        ],
+        "responses": {
+          "200": { "description": "Append-only transaction evidence page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/transactions/{transaction_id}": {
+      "parameters": [{ "$ref": "#/components/parameters/TransactionId" }],
+      "get": {
+        "operationId": "retrieveTransaction",
+        "responses": {
+          "200": { "description": "Immutable transaction evidence" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/provider-accounts": {
+      "get": {
+        "operationId": "listProviderAccounts",
+        "parameters": [{ "$ref": "#/components/parameters/Limit" }],
+        "responses": {
+          "200": { "description": "Provider accounts with declared capabilities; no credentials" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/checkout/sessions": {
+      "get": {
+        "operationId": "listCheckoutSessions",
+        "description": "Lists environment-scoped Checkout Sessions. Requires checkout:read.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" }
+        ],
+        "responses": {
+          "200": { "description": "Checkout Session page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createCheckoutSession",
+        "description": "Creates an expiring server-priced Checkout Session. Requires checkout:write.",
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CheckoutSessionInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Checkout Session and one-time hosted URL" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/checkout/sessions/{checkout_session_id}": {
+      "parameters": [
+        {
+          "name": "checkout_session_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "retrieveCheckoutSession",
+        "responses": {
+          "200": { "description": "Checkout Session with immutable quote" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/checkout/sessions/{checkout_session_id}/confirm": {
+      "parameters": [
+        {
+          "name": "checkout_session_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        },
+        { "$ref": "#/components/parameters/IdempotencyKey" }
+      ],
+      "post": {
+        "operationId": "confirmCheckoutSession",
+        "description": "Creates/replays the canonical Customer, Order, and Payment and returns success, failure, or pending state.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "200": { "description": "Resolved Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/checkout/sessions/{checkout_session_id}/cancel": {
+      "parameters": [
+        {
+          "name": "checkout_session_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "cancelCheckoutSession",
+        "responses": {
+          "200": { "description": "Cancelled open Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/payment-links": {
+      "get": {
+        "operationId": "listPaymentLinks",
+        "description": "Requires payment_links:read.",
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" }
+        ],
+        "responses": {
+          "200": { "description": "Payment Link page" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createPaymentLink",
+        "description": "Creates a product, fixed, or flexible reusable link. Requires payment_links:write.",
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PaymentLinkInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Payment Link and one-time public URL" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/payment-links/{payment_link_id}": {
+      "parameters": [
+        {
+          "name": "payment_link_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "retrievePaymentLink",
+        "responses": {
+          "200": { "description": "Payment Link" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "updatePaymentLink",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "200": { "description": "Updated Payment Link" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/payment-links/{payment_link_id}/activate": {
+      "parameters": [
+        {
+          "name": "payment_link_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "activatePaymentLink",
+        "responses": {
+          "200": { "description": "Activated Payment Link" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/payment-links/{payment_link_id}/deactivate": {
+      "parameters": [
+        {
+          "name": "payment_link_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "deactivatePaymentLink",
+        "responses": {
+          "200": { "description": "Deactivated Payment Link" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/checkout/{token}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "minLength": 43, "maxLength": 43 }
+        }
+      ],
+      "get": {
+        "operationId": "retrievePublicCheckout",
+        "security": [],
+        "responses": {
+          "200": { "description": "Sanitized hosted Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "confirmPublicCheckout",
+        "security": [],
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "200": { "description": "Resolved hosted Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/payment-links/{token}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "minLength": 43, "maxLength": 43 }
+        }
+      ],
+      "get": {
+        "operationId": "retrievePublicPaymentLink",
+        "security": [],
+        "responses": {
+          "200": { "description": "Sanitized public Payment Link" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "openPublicPaymentLink",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["idempotency_key"],
+                "properties": {
+                  "amount": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+                  "idempotency_key": { "type": "string", "minLength": 16, "maxLength": 255 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Fresh Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
+      "parameters": [
+        {
+          "name": "organization_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        },
+        {
+          "name": "provider_account_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "ingestMockProviderWebhook",
+        "security": [],
+        "description": "Test-only raw-body ingress. Requires Yinne-Mock-Timestamp and Yinne-Mock-Signature; enforces a five-minute replay window and provider-event deduplication.",
+        "responses": {
+          "200": { "description": "Durably accepted; duplicate events are acknowledged" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
     }
   },
   "components": {
@@ -318,6 +709,24 @@
       },
       "OrderId": {
         "name": "order_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "PaymentId": {
+        "name": "payment_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "RefundId": {
+        "name": "refund_id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "TransactionId": {
+        "name": "transaction_id",
         "in": "path",
         "required": true,
         "schema": { "type": "string", "format": "uuid" }
@@ -431,6 +840,97 @@
               }
             }
           },
+          "metadata": { "type": "object" }
+        }
+      },
+      "PaymentInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["order_id"],
+        "properties": {
+          "order_id": { "type": "string", "format": "uuid" },
+          "provider_account_id": { "type": "string", "format": "uuid" },
+          "confirmation": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mock_scenario": {
+                "type": "string",
+                "enum": [
+                  "success",
+                  "failure:declined",
+                  "pending:then_success",
+                  "pending:then_failure",
+                  "timeout:then_success"
+                ]
+              }
+            }
+          },
+          "metadata": { "type": "object" }
+        }
+      },
+      "RefundInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["payment_id", "reason"],
+        "properties": {
+          "payment_id": { "type": "string", "format": "uuid" },
+          "amount": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+          "reason": { "type": "string", "minLength": 2, "maxLength": 240 },
+          "confirmation": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mock_scenario": { "type": "string", "enum": ["refund_success", "refund_failure"] }
+            }
+          },
+          "metadata": { "type": "object" }
+        }
+      },
+      "CheckoutSessionInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["merchant_id", "location_id", "currency", "items"],
+        "properties": {
+          "merchant_id": { "type": "string", "format": "uuid" },
+          "location_id": { "type": "string", "format": "uuid" },
+          "customer_id": { "type": ["string", "null"], "format": "uuid" },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "required": ["variant_id", "quantity"],
+              "properties": {
+                "variant_id": { "type": "string", "format": "uuid" },
+                "quantity": { "type": "integer", "minimum": 1, "maximum": 10000 }
+              }
+            }
+          },
+          "success_url": { "type": "string", "format": "uri" },
+          "cancel_url": { "type": "string", "format": "uri" },
+          "expires_in_seconds": { "type": "integer", "minimum": 300, "maximum": 86400 },
+          "metadata": { "type": "object" }
+        }
+      },
+      "PaymentLinkInput": {
+        "type": "object",
+        "description": "Discriminated product, fixed, or flexible link. Amounts are positive integer minor-unit strings.",
+        "required": ["kind", "merchant_id", "location_id", "name", "currency"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["product", "fixed", "flexible"] },
+          "merchant_id": { "type": "string", "format": "uuid" },
+          "location_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "maxLength": 160 },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "variant_id": { "type": "string", "format": "uuid" },
+          "quantity": { "type": "integer", "minimum": 1 },
+          "amount": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+          "minimum_amount": { "type": "string", "pattern": "^[1-9][0-9]{0,18}$" },
+          "maximum_amount": { "type": ["string", "null"], "pattern": "^[1-9][0-9]{0,18}$" },
+          "usage_limit": { "type": ["integer", "null"], "minimum": 1 },
           "metadata": { "type": "object" }
         }
       },

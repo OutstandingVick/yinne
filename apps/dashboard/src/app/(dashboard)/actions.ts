@@ -29,12 +29,46 @@ import {
   createProduct,
   updateProduct,
 } from "@yinne/commerce";
+import { createPayment, createRefund } from "@yinne/payments";
+import { createPaymentSchema, createRefundSchema } from "@yinne/contracts";
 
 export type ActionState = { ok: boolean; message?: string; secret?: string };
 
 function formString(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
+}
+
+export async function createPaymentAction(formData: FormData): Promise<void> {
+  const context = await activeUserContext(createRequestId());
+  const payment = (await createPayment(
+    context,
+    createPaymentSchema.parse({
+      order_id: formString(formData, "order_id"),
+      confirmation: { mock_scenario: formString(formData, "mock_scenario") || "success" },
+    }),
+    crypto.randomUUID(),
+  )) as { id: string };
+  revalidatePath("/commerce/orders");
+  revalidatePath("/payments");
+  redirect(`/payments/${payment.id}`);
+}
+
+export async function createRefundAction(formData: FormData): Promise<void> {
+  const context = await activeUserContext(createRequestId());
+  const paymentId = formString(formData, "payment_id");
+  await createRefund(
+    context,
+    createRefundSchema.parse({
+      payment_id: paymentId,
+      ...(formString(formData, "amount") ? { amount: formString(formData, "amount") } : {}),
+      reason: formString(formData, "reason") || "customer_request",
+      confirmation: { mock_scenario: formString(formData, "mock_scenario") || "refund_success" },
+    }),
+    crypto.randomUUID(),
+  );
+  revalidatePath(`/payments/${paymentId}`);
+  revalidatePath("/payments");
 }
 
 export async function switchOrganizationAction(formData: FormData): Promise<void> {

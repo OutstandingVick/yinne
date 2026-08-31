@@ -13,6 +13,7 @@ import {
   customers,
   idempotencyRecords,
   inventoryLevels,
+  inventoryMovements,
   locations,
   merchants,
   orderItems,
@@ -423,6 +424,185 @@ export async function createOrder(
   });
 }
 
+/** Checkout-only Commerce command for a trusted fixed/flexible collection quote. */
+export async function createCollectionOrder(
+  context: RequestContext,
+  input: {
+    merchant_id: string;
+    location_id: string;
+    customer_id?: string | null;
+    currency: string;
+    amount: string;
+    description: string;
+    metadata?: Record<string, unknown>;
+  },
+  idempotencyKey: string,
+) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "orders:write", {
+      organizationId: context.tenant.organizationId,
+      merchantId: input.merchant_id,
+      locationId: input.location_id,
+    });
+    const keyDigest = digest(idempotencyKey);
+    const requestDigest = digest(JSON.stringify(input));
+    const actorId = principalId(context.principal);
+    const operation = "orders.create_collection";
+    const lockScope = `${context.tenant.organizationId}:${context.tenant.environment}:${actorId}:${operation}:${keyDigest}`;
+    await tx.execute(sql`select pg_advisory_xact_lock(hashtextextended(${lockScope}, 0))`);
+    const [existing] = await tx
+      .select()
+      .from(idempotencyRecords)
+      .where(
+        and(
+          eq(idempotencyRecords.organizationId, context.tenant.organizationId),
+          eq(idempotencyRecords.principalId, actorId),
+          eq(idempotencyRecords.operation, operation),
+          eq(idempotencyRecords.environment, context.tenant.environment),
+          eq(idempotencyRecords.keyDigest, keyDigest),
+        ),
+      )
+      .limit(1);
+    if (existing) {
+      if (existing.requestDigest !== requestDigest)
+        throw new ApiError(
+          409,
+          "conflict",
+          "idempotency_key_reused",
+          "The idempotency key was already used with different input.",
+        );
+      if (existing.responseBody) return existing.responseBody as unknown as OrderView;
+      throw new ApiError(
+        409,
+        "conflict",
+        "idempotency_request_in_progress",
+        "A request with this idempotency key is still in progress.",
+      );
+    }
+    const amount = BigInt(input.amount);
+    if (amount <= 0n || !/^[A-Z]{3}$/.test(input.currency))
+      throw new ApiError(
+        400,
+        "invalid_request",
+        "invalid_collection_amount",
+        "Collection amount and currency are invalid.",
+      );
+    const [location] = await tx
+      .select({ id: locations.id })
+      .from(locations)
+      .innerJoin(
+        merchants,
+        and(
+          eq(merchants.organizationId, locations.organizationId),
+          eq(merchants.id, locations.merchantId),
+        ),
+      )
+      .where(
+        and(
+          eq(locations.organizationId, context.tenant.organizationId),
+          eq(locations.id, input.location_id),
+          eq(locations.merchantId, input.merchant_id),
+          eq(locations.status, "active"),
+          eq(merchants.status, "active"),
+        ),
+      )
+      .limit(1);
+    if (!location) notFound();
+    if (input.customer_id) {
+      const [customer] = await tx
+        .select({ id: customers.id })
+        .from(customers)
+        .where(
+          and(
+            eq(customers.organizationId, context.tenant.organizationId),
+            eq(customers.id, input.customer_id),
+          ),
+        )
+        .limit(1);
+      if (!customer) notFound();
+    }
+    const [record] = await tx
+      .insert(idempotencyRecords)
+      .values({
+        organizationId: context.tenant.organizationId,
+        principalId: actorId,
+        operation,
+        environment: context.tenant.environment,
+        keyDigest,
+        requestDigest,
+        lockedUntil: new Date(Date.now() + 60_000),
+        expiresAt: new Date(Date.now() + 7 * 86_400_000),
+      })
+      .returning();
+    const orderId = createId();
+    const [order] = await tx
+      .insert(orders)
+      .values({
+        id: orderId,
+        organizationId: context.tenant.organizationId,
+        merchantId: input.merchant_id,
+        locationId: input.location_id,
+        customerId: input.customer_id ?? null,
+        number: `ORD-${orderId.replaceAll("-", "").slice(0, 12).toUpperCase()}`,
+        currency: input.currency,
+        subtotalAmount: amount,
+        totalAmount: amount,
+        metadata: { ...(input.metadata ?? {}), collection_order: true },
+      })
+      .returning();
+    if (!record || !order)
+      throw new ApiError(
+        500,
+        "internal_error",
+        "order_create_failed",
+        "The order could not be created.",
+      );
+    const [item] = await tx
+      .insert(orderItems)
+      .values({
+        organizationId: context.tenant.organizationId,
+        orderId: order.id,
+        variantId: null,
+        productName: input.description,
+        variantTitle: "Collection",
+        sku: `COL-${order.id.replaceAll("-", "").slice(0, 12).toUpperCase()}`,
+        unitAmount: amount,
+        currency: input.currency,
+        quantity: 1,
+        totalAmount: amount,
+      })
+      .returning();
+    await recordDomainChange(tx, context, {
+      action: "order.created",
+      aggregateType: "order",
+      aggregateId: order.id,
+      aggregateVersion: order.version,
+      data: {
+        order_id: order.id,
+        order_number: order.number,
+        merchant_id: order.merchantId,
+        location_id: order.locationId,
+        customer_id: order.customerId,
+        currency: order.currency,
+        total_amount: order.totalAmount.toString(),
+        item_count: 1,
+        inventory_effect: "not_applicable",
+      },
+    });
+    const response = orderView(order, item ? [item] : []);
+    await tx
+      .update(idempotencyRecords)
+      .set({
+        responseStatus: 201,
+        responseBody: response as unknown as Record<string, unknown>,
+        lockedUntil: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(idempotencyRecords.id, record.id));
+    return response;
+  });
+}
+
 export async function cancelOrder(context: RequestContext, orderId: string) {
   return withTenantTransaction(context.tenant, async (tx) => {
     const [current] = await tx
@@ -558,5 +738,169 @@ export async function getOrderCreationOptions(context: RequestContext) {
         currency: row.currency,
       })),
     };
+  });
+}
+
+/** Payment-module port: callers must already be inside the payment finalization transaction. */
+export async function applySucceededPaymentToOrder(
+  tx: TenantTransaction,
+  context: RequestContext,
+  input: { orderId: string; paymentId: string; amount: bigint; currency: string },
+): Promise<void> {
+  const [order] = await tx
+    .select()
+    .from(orders)
+    .where(
+      and(eq(orders.organizationId, context.tenant.organizationId), eq(orders.id, input.orderId)),
+    )
+    .for("update")
+    .limit(1);
+  if (!order) notFound();
+  if (order.financialStatus === "paid") return;
+  if (order.financialStatus !== "unpaid" || order.fulfilmentStatus !== "unfulfilled")
+    throw new ApiError(
+      409,
+      "conflict",
+      "order_not_payable",
+      "The order cannot be paid in its current state.",
+    );
+  if (order.totalAmount !== input.amount || order.currency !== input.currency)
+    throw new ApiError(
+      409,
+      "conflict",
+      "payment_order_mismatch",
+      "Payment amount or currency does not match the order.",
+    );
+
+  const items = await tx
+    .select({ item: orderItems, tracked: variants.trackInventory })
+    .from(orderItems)
+    .leftJoin(
+      variants,
+      and(
+        eq(variants.organizationId, orderItems.organizationId),
+        eq(variants.id, orderItems.variantId),
+      ),
+    )
+    .where(
+      and(
+        eq(orderItems.organizationId, context.tenant.organizationId),
+        eq(orderItems.orderId, order.id),
+      ),
+    );
+  for (const { item, tracked } of items) {
+    if (!item.variantId || !tracked) continue;
+    const [level] = await tx
+      .select()
+      .from(inventoryLevels)
+      .where(
+        and(
+          eq(inventoryLevels.organizationId, context.tenant.organizationId),
+          eq(inventoryLevels.locationId, order.locationId),
+          eq(inventoryLevels.variantId, item.variantId),
+        ),
+      )
+      .for("update")
+      .limit(1);
+    const quantity = BigInt(item.quantity);
+    if (!level || level.onHand < quantity)
+      throw new ApiError(
+        409,
+        "conflict",
+        "insufficient_stock_at_payment",
+        "Stock became unavailable before payment completed.",
+      );
+    const resulting = level.onHand - quantity;
+    await tx
+      .update(inventoryLevels)
+      .set({
+        onHand: resulting,
+        version: sql`${inventoryLevels.version} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(inventoryLevels.id, level.id));
+    await tx.insert(inventoryMovements).values({
+      organizationId: context.tenant.organizationId,
+      inventoryLevelId: level.id,
+      delta: -quantity,
+      resultingOnHand: resulting,
+      reason: "order_paid",
+      orderId: order.id,
+      actorType: context.principal.type,
+      actorId: principalId(context.principal),
+    });
+  }
+  const [updated] = await tx
+    .update(orders)
+    .set({ financialStatus: "paid", version: sql`${orders.version} + 1`, updatedAt: new Date() })
+    .where(eq(orders.id, order.id))
+    .returning();
+  if (!updated)
+    throw new ApiError(
+      500,
+      "internal_error",
+      "order_payment_apply_failed",
+      "Payment could not be applied to the order.",
+    );
+  await recordDomainChange(tx, context, {
+    action: "order.paid",
+    aggregateType: "order",
+    aggregateId: updated.id,
+    aggregateVersion: updated.version,
+    data: {
+      order_id: updated.id,
+      payment_id: input.paymentId,
+      amount: input.amount.toString(),
+      currency: input.currency,
+    },
+  });
+}
+
+/** Payment-module port for a succeeded refund; inventory is not restocked automatically. */
+export async function applySucceededRefundToOrder(
+  tx: TenantTransaction,
+  context: RequestContext,
+  input: { orderId: string; refundId: string; totalRefunded: bigint; paymentAmount: bigint },
+): Promise<void> {
+  const [order] = await tx
+    .select()
+    .from(orders)
+    .where(
+      and(eq(orders.organizationId, context.tenant.organizationId), eq(orders.id, input.orderId)),
+    )
+    .for("update")
+    .limit(1);
+  if (!order) notFound();
+  const status = input.totalRefunded === input.paymentAmount ? "refunded" : "partially_refunded";
+  if (order.financialStatus === status) return;
+  if (!["paid", "partially_refunded"].includes(order.financialStatus))
+    throw new ApiError(
+      409,
+      "conflict",
+      "order_not_refundable",
+      "The order cannot accept this refund.",
+    );
+  const [updated] = await tx
+    .update(orders)
+    .set({ financialStatus: status, version: sql`${orders.version} + 1`, updatedAt: new Date() })
+    .where(eq(orders.id, order.id))
+    .returning();
+  if (!updated)
+    throw new ApiError(
+      500,
+      "internal_error",
+      "order_refund_apply_failed",
+      "Refund could not be applied to the order.",
+    );
+  await recordDomainChange(tx, context, {
+    action: status === "refunded" ? "order.refunded" : "order.partially_refunded",
+    aggregateType: "order",
+    aggregateId: updated.id,
+    aggregateVersion: updated.version,
+    data: {
+      order_id: updated.id,
+      refund_id: input.refundId,
+      total_refunded: input.totalRefunded.toString(),
+    },
   });
 }

@@ -100,3 +100,110 @@ test("HTTP API enforces request IDs and order idempotency", async ({ page }) => 
   expect(result.conflictStatus).toBe(409);
   expect(result.conflictBody.error.code).toBe("idempotency_key_reused");
 });
+
+test("owner executes the deterministic payment golden path", async ({ page }) => {
+  await signIn(page);
+  const suffix = Date.now().toString();
+  const result = await page.evaluate(async (suffix) => {
+    const json = { "Content-Type": "application/json" };
+    const orderResponse = await fetch("/v1/orders", {
+      method: "POST",
+      headers: { ...json, "Idempotency-Key": `e2e-payment-order-${suffix}` },
+      body: JSON.stringify({
+        merchant_id: "0198f000-0000-7000-8000-000000000002",
+        location_id: "0198f000-0000-7000-8000-000000000010",
+        customer_id: "0198f000-0000-7000-8000-000000001000",
+        currency: "NGN",
+        items: [{ variant_id: "0198f000-0000-7000-8000-000000001200", quantity: 1 }],
+      }),
+    });
+    const orderBody = (await orderResponse.json()) as {
+      order: { id: string; total_amount: string };
+    };
+    const key = `e2e-payment-${suffix}`;
+    const paymentInput = {
+      order_id: orderBody.order.id,
+      confirmation: { mock_scenario: "success" },
+    };
+    const paymentResponse = await fetch("/v1/payments", {
+      method: "POST",
+      headers: { ...json, "Idempotency-Key": key },
+      body: JSON.stringify(paymentInput),
+    });
+    const paymentBody = (await paymentResponse.json()) as {
+      payment: {
+        id: string;
+        status: string;
+        amount: string;
+        transactions: unknown[];
+        attempts: unknown[];
+      };
+    };
+    const replayResponse = await fetch("/v1/payments", {
+      method: "POST",
+      headers: { ...json, "Idempotency-Key": key },
+      body: JSON.stringify(paymentInput),
+    });
+    const replayBody = (await replayResponse.json()) as { payment: { id: string } };
+    const refundResponse = await fetch("/v1/refunds", {
+      method: "POST",
+      headers: { ...json, "Idempotency-Key": `e2e-refund-${suffix}` },
+      body: JSON.stringify({
+        payment_id: paymentBody.payment.id,
+        amount: "1",
+        reason: "e2e_partial",
+        confirmation: { mock_scenario: "refund_success" },
+      }),
+    });
+    const refundBody = (await refundResponse.json()) as {
+      refund: { id: string; status: string; amount: string };
+    };
+    return {
+      orderStatus: orderResponse.status,
+      paymentStatus: paymentResponse.status,
+      payment: paymentBody.payment,
+      replayStatus: replayResponse.status,
+      replayId: replayBody.payment.id,
+      refundStatus: refundResponse.status,
+      refund: refundBody.refund,
+    };
+  }, suffix);
+  expect(result.orderStatus).toBe(201);
+  expect(result.paymentStatus).toBe(201);
+  expect(result.payment.status).toBe("succeeded");
+  expect(result.payment.transactions).toHaveLength(1);
+  expect(result.payment.attempts).toHaveLength(1);
+  expect(result.replayStatus).toBe(201);
+  expect(result.replayId).toBe(result.payment.id);
+  expect(result.refundStatus).toBe(201);
+  expect(result.refund).toMatchObject({ status: "succeeded", amount: "1" });
+  await page.goto(`/payments/${result.payment.id}`);
+  await expect(page.getByRole("heading", { name: /Payment/ })).toBeVisible();
+  await expect(page.getByRole("table", { name: "Payment attempts" })).toContainText("succeeded");
+  await expect(page.getByRole("table", { name: "Transactions" })).toContainText("charge");
+});
+
+test("customer completes the public Payment Link and Hosted Checkout flow", async ({ page }) => {
+  const seededToken = Buffer.alloc(32, 21).toString("base64url");
+  await page.goto(`/pay/${seededToken}`);
+  await expect(page.getByRole("heading", { name: "Acme tasting event" })).toBeVisible();
+  await expect(page.getByText("NGN 2,500.00")).toBeVisible();
+  await page.getByRole("button", { name: "Continue to checkout" }).click();
+  await expect(page).toHaveURL(/\/checkout\/[A-Za-z0-9_-]{43}$/);
+  await expect(page.getByRole("heading", { name: "Complete your payment" })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await page.getByLabel("Full name").fill("Hosted Checkout Buyer");
+  await page.getByLabel("Email").fill(`hosted-${Date.now()}@example.test`);
+  const [confirmation] = await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        response.url().includes("/v1/public/checkout/") && response.request().method() === "POST",
+    ),
+    page.getByRole("button", { name: "Pay securely" }).click(),
+  ]);
+  expect(confirmation.status(), await confirmation.text()).toBe(200);
+  await expect(page.getByRole("heading", { name: "Payment completed" })).toBeVisible({
+    timeout: 15_000,
+  });
+  await expect(page.getByText("Your payment was successful.")).toBeVisible();
+});

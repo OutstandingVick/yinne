@@ -83,6 +83,131 @@ export interface Order {
   created_at: string;
   updated_at: string;
 }
+export interface PaymentAttempt {
+  id: string;
+  payment_id: string;
+  provider_account_id: string;
+  provider: string;
+  status: "created" | "submitted" | "pending" | "succeeded" | "failed" | "unknown";
+  provider_reference: string | null;
+  failure_code: string | null;
+  failure_message: string | null;
+  created_at: string;
+}
+export interface Transaction {
+  id: string;
+  payment_id: string;
+  refund_id: string | null;
+  kind: "charge" | "refund";
+  amount: string;
+  currency: string;
+  provider_reference: string;
+  environment: "test" | "live";
+  occurred_at: string;
+  created_at: string;
+}
+export interface Refund {
+  id: string;
+  payment_id: string;
+  amount: string;
+  currency: string;
+  status: "created" | "pending" | "succeeded" | "failed";
+  reason: string;
+  provider_reference: string | null;
+  failure_code: string | null;
+  environment: "test" | "live";
+  created_at: string;
+}
+export interface Payment {
+  id: string;
+  order_id: string;
+  customer_id: string | null;
+  amount: string;
+  currency: string;
+  status:
+    | "created"
+    | "pending"
+    | "succeeded"
+    | "failed"
+    | "cancelled"
+    | "partially_refunded"
+    | "refunded";
+  provider_account_id: string;
+  latest_attempt_id: string | null;
+  refunded_amount: string;
+  metadata: Record<string, unknown>;
+  environment: "test" | "live";
+  version: number;
+  created_at: string;
+  updated_at: string;
+  attempts?: PaymentAttempt[];
+  transactions?: Transaction[];
+  refunds?: Refund[];
+}
+export interface ProviderAccount {
+  id: string;
+  provider: string;
+  label: string;
+  environment: "test" | "live";
+  capabilities: string[];
+  supported_currencies: string[];
+  status: "enabled" | "disabled";
+  is_default: boolean;
+}
+export interface CheckoutLineItem {
+  id: string;
+  variant_id: string | null;
+  description: string;
+  variant_title: string | null;
+  sku: string | null;
+  unit_amount: string;
+  currency: string;
+  quantity: number;
+  total_amount: string;
+}
+export interface CheckoutSession {
+  id: string;
+  merchant_id: string;
+  location_id: string;
+  payment_link_id: string | null;
+  customer_id: string | null;
+  order_id: string | null;
+  payment_id: string | null;
+  status: "open" | "processing" | "completed" | "expired" | "cancelled";
+  amount: string;
+  currency: string;
+  customer_capture: { name: boolean; email: boolean; phone: boolean };
+  success_url: string | null;
+  cancel_url: string | null;
+  expires_at: string;
+  completed_at: string | null;
+  late_completion: boolean;
+  environment: "test" | "live";
+  version: number;
+  items: CheckoutLineItem[];
+  checkout_url?: string;
+}
+export interface PaymentLink {
+  id: string;
+  merchant_id: string;
+  location_id: string;
+  name: string;
+  description: string | null;
+  kind: "product" | "fixed" | "flexible";
+  status: "active" | "inactive";
+  variant_id: string | null;
+  quantity: number | null;
+  amount: string | null;
+  minimum_amount: string | null;
+  maximum_amount: string | null;
+  currency: string;
+  usage_limit: number | null;
+  completed_usage_count: number;
+  customer_capture: { name: boolean; email: boolean; phone: boolean };
+  environment: "test" | "live";
+  version: number;
+  payment_url?: string;
+}
 export interface VariantInput {
   sku: string;
   title: string;
@@ -272,5 +397,158 @@ export class YinneClient {
       this.request<{ order: Order }>(`/v1/orders/${id}/cancel`, { method: "POST" }).then(
         (value) => value.order,
       ),
+  };
+  readonly payments = {
+    list: (
+      params: ListParams & {
+        status?: Payment["status"];
+        order_id?: string;
+        customer_id?: string;
+        provider_account_id?: string;
+      } = {},
+    ) => this.request<Page<Payment>>(`/v1/payments${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ payment: Payment }>(`/v1/payments/${id}`).then((value) => value.payment),
+    create: (
+      input: {
+        order_id: string;
+        provider_account_id?: string;
+        confirmation?: {
+          mock_scenario:
+            | "success"
+            | "failure:declined"
+            | "pending:then_success"
+            | "pending:then_failure"
+            | "timeout:then_success";
+        };
+        metadata?: Record<string, unknown>;
+      },
+      options: { idempotencyKey?: string } = {},
+    ) =>
+      this.request<{ payment: Payment }>("/v1/payments", {
+        method: "POST",
+        headers: { "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() },
+        body: JSON.stringify(input),
+      }).then((value) => value.payment),
+  };
+  readonly refunds = {
+    list: (params: ListParams & { payment_id?: string; status?: Refund["status"] } = {}) =>
+      this.request<Page<Refund>>(`/v1/refunds${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ refund: Refund }>(`/v1/refunds/${id}`).then((value) => value.refund),
+    create: (
+      input: {
+        payment_id: string;
+        amount?: string;
+        reason: string;
+        confirmation?: { mock_scenario: "refund_success" | "refund_failure" };
+        metadata?: Record<string, unknown>;
+      },
+      options: { idempotencyKey?: string } = {},
+    ) =>
+      this.request<{ refund: Refund }>("/v1/refunds", {
+        method: "POST",
+        headers: { "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() },
+        body: JSON.stringify(input),
+      }).then((value) => value.refund),
+  };
+  readonly transactions = {
+    list: (params: ListParams & { payment_id?: string; kind?: Transaction["kind"] } = {}) =>
+      this.request<Page<Transaction>>(`/v1/transactions${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ transaction: Transaction }>(`/v1/transactions/${id}`).then(
+        (value) => value.transaction,
+      ),
+  };
+  readonly providerAccounts = {
+    list: (params: { limit?: number; status?: ProviderAccount["status"] } = {}) =>
+      this.request<Page<ProviderAccount>>(`/v1/provider-accounts${query(params)}`),
+  };
+  readonly checkoutSessions = {
+    list: (
+      params: ListParams & { status?: CheckoutSession["status"]; payment_link_id?: string } = {},
+    ) => this.request<Page<CheckoutSession>>(`/v1/checkout/sessions${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/checkout/sessions/${id}`).then(
+        (value) => value.checkout_session,
+      ),
+    create: (
+      input: {
+        merchant_id: string;
+        location_id: string;
+        customer_id?: string | null;
+        currency: string;
+        items: { variant_id: string; quantity: number }[];
+        customer_capture?: { name: boolean; email: boolean; phone: boolean };
+        success_url?: string;
+        cancel_url?: string;
+        expires_in_seconds?: number;
+        metadata?: Record<string, unknown>;
+      },
+      options: { idempotencyKey?: string } = {},
+    ) =>
+      this.request<{ checkout_session: CheckoutSession }>("/v1/checkout/sessions", {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID(),
+        },
+        body: JSON.stringify(input),
+      }).then((value) => value.checkout_session),
+    confirm: (
+      id: string,
+      input: {
+        customer?: { name?: string; email?: string; phone?: string };
+        confirmation?: {
+          mock_scenario:
+            | "success"
+            | "failure:declined"
+            | "pending:then_success"
+            | "pending:then_failure"
+            | "timeout:then_success";
+        };
+      },
+      options: { idempotencyKey?: string } = {},
+    ) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/checkout/sessions/${id}/confirm`, {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID(),
+        },
+        body: JSON.stringify(input),
+      }).then((value) => value.checkout_session),
+    cancel: (id: string) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/checkout/sessions/${id}/cancel`, {
+        method: "POST",
+      }).then((value) => value.checkout_session),
+  };
+  readonly paymentLinks = {
+    list: (
+      params: ListParams & { status?: PaymentLink["status"]; kind?: PaymentLink["kind"] } = {},
+    ) => this.request<Page<PaymentLink>>(`/v1/payment-links${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ payment_link: PaymentLink }>(`/v1/payment-links/${id}`).then(
+        (value) => value.payment_link,
+      ),
+    create: (input: Record<string, unknown>, options: { idempotencyKey?: string } = {}) =>
+      this.request<{ payment_link: PaymentLink }>("/v1/payment-links", {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID(),
+        },
+        body: JSON.stringify(input),
+      }).then((value) => value.payment_link),
+    update: (id: string, input: Record<string, unknown>) =>
+      this.request<{ payment_link: PaymentLink }>(`/v1/payment-links/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }).then((value) => value.payment_link),
+    activate: (id: string) =>
+      this.request<{ payment_link: PaymentLink }>(`/v1/payment-links/${id}/activate`, {
+        method: "POST",
+      }).then((value) => value.payment_link),
+    deactivate: (id: string) =>
+      this.request<{ payment_link: PaymentLink }>(`/v1/payment-links/${id}/deactivate`, {
+        method: "POST",
+      }).then((value) => value.payment_link),
   };
 }
