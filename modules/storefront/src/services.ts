@@ -209,6 +209,156 @@ export async function transitionStore(context: RequestContext, status: StoreStat
   });
 }
 
+export async function publishStoreProduct(
+  context: RequestContext,
+  productId: string,
+  input: PublishStoreProductInput,
+) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "storefront:publish", {
+      organizationId: context.tenant.organizationId,
+    });
+    const [store] = await tx
+      .select()
+      .from(stores)
+      .where(
+        and(
+          eq(stores.organizationId, context.tenant.organizationId),
+          eq(stores.environment, context.tenant.environment),
+        ),
+      )
+      .for("update")
+      .limit(1);
+    if (!store || store.status === "archived") notFound();
+    const activeVariants = await tx
+      .select({ currency: variants.currency })
+      .from(variants)
+      .innerJoin(
+        products,
+        and(
+          eq(products.organizationId, variants.organizationId),
+          eq(products.id, variants.productId),
+        ),
+      )
+      .where(
+        and(
+          eq(products.id, productId),
+          eq(products.status, "active"),
+          eq(variants.status, "active"),
+        ),
+      );
+    if (!activeVariants.length)
+      throw new ApiError(
+        409,
+        "conflict",
+        "product_not_publishable",
+        "The product needs an active variant before publication.",
+      );
+    if (activeVariants.some((variant) => variant.currency !== store.currency)) {
+      throw new ApiError(
+        409,
+        "conflict",
+        "currency_mismatch",
+        "Every published variant must use the Store currency.",
+      );
+    }
+    const [listing] = await tx
+      .insert(storeListings)
+      .values({
+        organizationId: context.tenant.organizationId,
+        storeId: store.id,
+        productId,
+        status: "published",
+        featured: input.featured,
+        displayOrder: input.display_order,
+        imageUrl: input.image_url ?? null,
+        imageAlt: input.image_alt ?? null,
+      })
+      .onConflictDoUpdate({
+        target: [storeListings.storeId, storeListings.productId],
+        set: {
+          status: "published",
+          featured: input.featured,
+          displayOrder: input.display_order,
+          imageUrl: input.image_url ?? null,
+          imageAlt: input.image_alt ?? null,
+          version: sql`${storeListings.version} + 1`,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    if (!listing) notFound();
+    await tx
+      .update(stores)
+      .set({ catalogueVersion: sql`${stores.catalogueVersion} + 1`, updatedAt: new Date() })
+      .where(eq(stores.id, store.id));
+    await recordDomainChange(tx, context, {
+      action: "product.published",
+      aggregateType: "store_listing",
+      aggregateId: listing.id,
+      aggregateVersion: listing.version,
+      data: { store_id: store.id, product_id: productId },
+    });
+    return {
+      id: listing.id,
+      product_id: listing.productId,
+      status: listing.status,
+      featured: listing.featured,
+      display_order: listing.displayOrder,
+      image_url: listing.imageUrl,
+      image_alt: listing.imageAlt,
+    };
+  });
+}
+
+export async function unpublishStoreProduct(context: RequestContext, productId: string) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "storefront:publish", {
+      organizationId: context.tenant.organizationId,
+    });
+    const [store] = await tx
+      .select()
+      .from(stores)
+      .where(
+        and(
+          eq(stores.organizationId, context.tenant.organizationId),
+          eq(stores.environment, context.tenant.environment),
+        ),
+      )
+      .for("update")
+      .limit(1);
+    if (!store) notFound();
+    const [listing] = await tx
+      .update(storeListings)
+      .set({
+        status: "unpublished",
+        version: sql`${storeListings.version} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(storeListings.storeId, store.id),
+          eq(storeListings.productId, productId),
+          eq(storeListings.status, "published"),
+        ),
+      )
+      .returning();
+    if (!listing) notFound();
+    await tx
+      .update(stores)
+      .set({ catalogueVersion: sql`${stores.catalogueVersion} + 1`, updatedAt: new Date() })
+      .where(eq(stores.id, store.id));
+    await recordDomainChange(tx, context, {
+      action: "product.unpublished",
+      aggregateType: "store_listing",
+      aggregateId: listing.id,
+      aggregateVersion: listing.version,
+      data: { store_id: store.id, product_id: productId },
+    });
+    return { id: listing.id, product_id: listing.productId, status: listing.status };
+  });
+}
+
 export async function resolvePublicStore(slug: string, environment: "test" | "live" = "test") {
   const rows = (await database.execute(
     sql`select * from yinne_resolve_store_slug(${slug}, ${environment})`,
