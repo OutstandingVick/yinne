@@ -43,6 +43,13 @@ export const domainEventTypes = [
   "payment_link.created",
   "payment_link.activated",
   "payment_link.deactivated",
+  "store.created",
+  "store.updated",
+  "store.activated",
+  "store.paused",
+  "store.archived",
+  "product.published",
+  "product.unpublished",
 ] as const;
 
 export type DomainEventType = (typeof domainEventTypes)[number];
