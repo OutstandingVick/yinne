@@ -359,6 +359,47 @@ export async function unpublishStoreProduct(context: RequestContext, productId: 
   });
 }
 
+export async function listStoreListings(context: RequestContext) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "storefront:read", {
+      organizationId: context.tenant.organizationId,
+    });
+    const [store] = await tx
+      .select()
+      .from(stores)
+      .where(
+        and(
+          eq(stores.organizationId, context.tenant.organizationId),
+          eq(stores.environment, context.tenant.environment),
+        ),
+      )
+      .limit(1);
+    if (!store) notFound();
+    const rows = await tx
+      .select({ product: products, listing: storeListings })
+      .from(products)
+      .leftJoin(
+        storeListings,
+        and(
+          eq(storeListings.organizationId, products.organizationId),
+          eq(storeListings.productId, products.id),
+          eq(storeListings.storeId, store.id),
+        ),
+      )
+      .where(eq(products.organizationId, context.tenant.organizationId))
+      .orderBy(asc(products.name))
+      .limit(100);
+    return rows.map(({ product, listing }) => ({
+      product_id: product.id,
+      name: product.name,
+      slug: product.slug,
+      product_status: product.status,
+      publication_status: listing?.status ?? "unpublished",
+      featured: listing?.featured ?? false,
+    }));
+  });
+}
+
 export async function resolvePublicStore(slug: string, environment: "test" | "live" = "test") {
   const rows = (await database.execute(
     sql`select * from yinne_resolve_store_slug(${slug}, ${environment})`,
