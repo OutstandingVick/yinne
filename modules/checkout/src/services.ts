@@ -414,6 +414,34 @@ async function createSessionFromLines(
   });
 }
 
+export async function createCollectionCheckoutSession(
+  context: RequestContext,
+  input: {
+    merchant_id: string;
+    location_id: string;
+    currency: string;
+    description: string;
+    amount: string;
+    success_url?: string;
+    cancel_url?: string;
+    metadata?: Record<string, unknown>;
+  },
+  idempotencyKey: string,
+) {
+  return createSessionFromLines(context, {
+    merchantId: input.merchant_id,
+    locationId: input.location_id,
+    currency: input.currency,
+    lines: [{ description: input.description, unitAmount: BigInt(input.amount), quantity: 1 }],
+    capture: { name: false, email: false, phone: false },
+    successUrl: input.success_url,
+    cancelUrl: input.cancel_url,
+    metadata: input.metadata,
+    idempotencyKey,
+    idempotencyOperation: "checkout.collection.create",
+  });
+}
+
 export async function createCheckoutSession(
   context: RequestContext,
   input: CreateCheckoutSessionInput,

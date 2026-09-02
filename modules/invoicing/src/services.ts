@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { recordDomainChange, requirePermission, type RequestContext } from "@yinne/application";
 import { principalId } from "@yinne/auth";
-import { createCheckoutSession } from "@yinne/checkout";
+import { createCollectionCheckoutSession } from "@yinne/checkout";
 import type { CreateInvoiceInput, UpdateInvoiceInput } from "@yinne/contracts";
 import { ApiError } from "@yinne/contracts";
 import { createId } from "@yinne/core";
@@ -214,19 +214,17 @@ export async function createInvoice(
       data: { invoice_id: row.id, amount: total.toString(), currency: row.currency },
     });
     const response = invoiceView(row, lines);
-    await tx
-      .insert(idempotencyRecords)
-      .values({
-        organizationId: context.tenant.organizationId,
-        principalId: actor,
-        operation: "invoice.create",
-        environment: context.tenant.environment,
-        keyDigest,
-        requestDigest,
-        responseStatus: 201,
-        responseBody: { invoice: response },
-        expiresAt: new Date(Date.now() + 86_400_000),
-      });
+    await tx.insert(idempotencyRecords).values({
+      organizationId: context.tenant.organizationId,
+      principalId: actor,
+      operation: "invoice.create",
+      environment: context.tenant.environment,
+      keyDigest,
+      requestDigest,
+      responseStatus: 201,
+      responseBody: { invoice: response },
+      expiresAt: new Date(Date.now() + 86_400_000),
+    });
     return response;
   });
 }
@@ -378,4 +376,126 @@ export async function voidInvoice(context: RequestContext, id: string) {
     });
     return invoiceView(row, await itemsFor(tx, context.tenant.organizationId, id));
   });
+}
+
+function systemContext(organizationId: string, environment: "test" | "live"): RequestContext {
+  return {
+    tenant: { organizationId, environment },
+    principal: {
+      type: "system",
+      id: "00000000-0000-7000-8000-000000000006",
+      organizationId,
+      environment,
+    },
+    requestId: createId(),
+  };
+}
+async function resolvePublicInvoice(token: string) {
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) notFound();
+  const rows = (await database.execute(
+    sql`select * from yinne_resolve_invoice_token(${digest(token)})`,
+  )) as unknown as { organization_id: string; environment: "test" | "live"; resource_id: string }[];
+  const resolved = rows[0];
+  if (!resolved) notFound();
+  return {
+    context: systemContext(resolved.organization_id, resolved.environment),
+    id: resolved.resource_id,
+  };
+}
+export async function getPublicInvoice(token: string) {
+  const resolved = await resolvePublicInvoice(token);
+  return withTenantTransaction(resolved.context.tenant, async (tx) => {
+    const [row] = await tx.select().from(invoices).where(eq(invoices.id, resolved.id)).limit(1);
+    if (!row || !["open", "paid"].includes(row.status)) notFound();
+    const [merchant] = await tx
+      .select({ name: merchants.displayName })
+      .from(merchants)
+      .where(eq(merchants.id, row.merchantId))
+      .limit(1);
+    return {
+      merchant_name: merchant?.name ?? "Merchant",
+      invoice_number: row.number,
+      status: displayInvoiceStatus(row.status as InvoiceStatus, row.dueAt),
+      currency: row.currency,
+      total_amount: row.totalAmount.toString(),
+      due_at: row.dueAt?.toISOString() ?? null,
+      issued_at: row.issuedAt?.toISOString() ?? null,
+      paid_at: row.paidAt?.toISOString() ?? null,
+      items: (await itemsFor(tx, resolved.context.tenant.organizationId, row.id)).map(itemView),
+      payable: row.status === "open",
+    };
+  });
+}
+export async function payPublicInvoice(token: string, idempotencyKey: string, origin?: string) {
+  const resolved = await resolvePublicInvoice(token);
+  const row = await withTenantTransaction(resolved.context.tenant, async (tx) => {
+    const [invoice] = await tx
+      .select()
+      .from(invoices)
+      .where(eq(invoices.id, resolved.id))
+      .for("update")
+      .limit(1);
+    if (!invoice || invoice.status !== "open")
+      throw new ApiError(409, "conflict", "invoice_not_payable", "Invoice is not payable.");
+    if (!invoice.locationId)
+      throw new ApiError(
+        409,
+        "conflict",
+        "invoice_location_required",
+        "Invoice needs an active Location before payment.",
+      );
+    if (invoice.checkoutSessionId) {
+      const [session] = await tx
+        .select()
+        .from(checkoutSessions)
+        .where(eq(checkoutSessions.id, invoice.checkoutSessionId))
+        .limit(1);
+      if (
+        session &&
+        ["open", "processing", "completed"].includes(session.status) &&
+        session.expiresAt > new Date()
+      )
+        return { invoice, existing: true };
+    }
+    return { invoice, existing: false };
+  });
+  if (row.existing && row.invoice.checkoutSessionId)
+    return withTenantTransaction(resolved.context.tenant, async (tx) => {
+      const [session] = await tx
+        .select()
+        .from(checkoutSessions)
+        .where(eq(checkoutSessions.id, row.invoice.checkoutSessionId!))
+        .limit(1);
+      return session ? { id: session.id, status: session.status, checkout_url: null } : notFound();
+    });
+  const checkout = await createCollectionCheckoutSession(
+    resolved.context,
+    {
+      merchant_id: row.invoice.merchantId,
+      location_id: row.invoice.locationId!,
+      currency: row.invoice.currency,
+      description: `Invoice ${row.invoice.number}`,
+      amount: row.invoice.totalAmount.toString(),
+      ...(origin
+        ? { success_url: `${origin}/invoice/${token}`, cancel_url: `${origin}/invoice/${token}` }
+        : {}),
+      metadata: {
+        channel: "invoice",
+        invoice_id: row.invoice.id,
+        invoice_number: row.invoice.number,
+      },
+    },
+    idempotencyKey,
+  );
+  await withTenantTransaction(resolved.context.tenant, (tx) =>
+    tx
+      .update(invoices)
+      .set({
+        checkoutSessionId: checkout.id,
+        version: sql`${invoices.version} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(invoices.id, row.invoice.id), eq(invoices.status, "open"))),
+  );
+  return checkout;
 }
