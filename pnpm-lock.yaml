@@ -206,6 +206,27 @@ importers:
         specifier: 3.4.7
         version: 3.4.7
 
+  modules/operations:
+    dependencies:
+      '@yinne/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@yinne/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@yinne/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@yinne/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@yinne/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      drizzle-orm:
+        specifier: 0.44.5
+        version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
+
   modules/organizations:
     dependencies:
       '@yinne/application':
