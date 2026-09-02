@@ -18,6 +18,8 @@ Verified commands:
 - `pnpm format:check` — pass.
 - `pnpm build` — pass; all 15 workspaces, worker bundle, dashboard production build, 43 static-generation entries.
 - `pnpm test:e2e` — pass; 5 Chromium tests including the public Payment Link and Hosted Checkout golden path.
+- `pnpm --filter @yinne/worker start` — pass; worker connected, processed Checkout/Payment/Order/Transaction jobs, and logged graceful SIGINT shutdown.
+- `pnpm test:e2e` — pass; 5 Chromium tests including the public Payment Link and Hosted Checkout golden path.
 - `pnpm --filter @yinne/worker start` — pass; worker connected, processed Checkout/Payment/Order/Transaction outbox jobs, and logged graceful SIGINT shutdown.
 
 Runtime smoke test on port 3010:

@@ -60,11 +60,11 @@ Implemented list/create/retrieve/confirm/cancel Checkout operations; list/create
 
 ## 15. SDK changes
 
-`@yinne/sdk` adds typed CheckoutSession, CheckoutLineItem, and PaymentLink resources with list/retrieve/create/confirm/cancel/update/activation methods and automatic idempotency keys.
+`@yinne/sdk` adds typed Checkout Session, line-item, and Payment Link resources with list/retrieve/create/confirm/cancel/update/activation methods and automatic idempotency keys.
 
 ## 16. OpenAPI changes
 
-OpenAPI 3.1 describes 42 operations, Phase 4 routes, public security overrides, capability parameters, idempotency, positive minor-unit money, and create schemas.
+OpenAPI 3.1 now describes 42 operations, Phase 4 routes, public security overrides, capability parameters, idempotency, positive minor-unit money, and create schemas.
 
 ## 17. Dashboard pages
 
@@ -80,7 +80,7 @@ Added checkout created/processing/completed/expired/cancelled and link created/a
 
 ## 20. Seed/demo changes
 
-Repeatable seed includes active, inactive, exhausted links and open, processing, completed, expired sessions with immutable quote items. The public golden path is usable with the seeded active fixed link.
+Repeatable seed includes active, inactive, exhausted links and open, processing, completed, expired sessions with immutable quote items. The public golden path uses the seeded active fixed link.
 
 ## 21. Tests
 
@@ -88,7 +88,7 @@ State/contract unit tests, PostgreSQL regression suites, API/runtime smoke tests
 
 ## 22. Security findings
 
-PASS. Capability entropy/digest storage, narrow resolvers, forced RLS on 29 tables, composite ownership, RBAC, strict public schemas, rate limiting, no-store, CSP/frame controls, redirect validation, and PII/token omission were verified.
+PASS. Capability entropy/digest storage, narrow resolvers, forced RLS on 29 tables, composite ownership, RBAC, strict public schemas, rate limiting, no-store, CSP/frame controls, redirect validation, and PII/token omission were verified. Forwarded bearer URLs remain an accepted V1 risk controlled by deactivation, expiry, and limits.
 
 ## 23. Financial-correctness findings
 
@@ -96,11 +96,11 @@ PASS. Money is bigint minor units; product/flexible bounds are server-derived; O
 
 ## 24. UX/accessibility findings
 
-PASS for scoped surfaces. Hosted UI is mobile-first with real quote/state/expiry, labels, native controls, autocomplete, focus rings, alert/status regions, busy states, and explicit Test Mode.
+PASS for scoped surfaces. Hosted UI is mobile-first with real quote/state/expiry, labels, native controls, autocomplete, focus rings, alert/status regions, busy states, and explicit Test Mode. No unsupported payment method is implied.
 
 ## 25. Known limitations
 
-Capability URLs cannot be recovered after creation. Only Mock Provider/test execution exists. Flexible amounts are entered as minor units. Dashboard detail does not recover public tokens.
+Capability URLs cannot be recovered after creation. Only Mock Provider/test execution exists. Flexible amounts are entered as minor units. Dashboard detail does not expose customer PII or recover public tokens.
 
 ## 26. Deferred work
 
