@@ -150,6 +150,65 @@ export async function updateStore(context: RequestContext, input: UpdateStoreInp
   });
 }
 
+export async function transitionStore(context: RequestContext, status: StoreStatus) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "storefront:publish", {
+      organizationId: context.tenant.organizationId,
+    });
+    const [current] = await tx
+      .select()
+      .from(stores)
+      .where(
+        and(
+          eq(stores.organizationId, context.tenant.organizationId),
+          eq(stores.environment, context.tenant.environment),
+        ),
+      )
+      .for("update")
+      .limit(1);
+    if (!current) notFound();
+    assertStoreTransition(current.status as StoreStatus, status);
+    if (status === "active") {
+      const [listing] = await tx
+        .select({ id: storeListings.id })
+        .from(storeListings)
+        .where(and(eq(storeListings.storeId, current.id), eq(storeListings.status, "published")))
+        .limit(1);
+      if (!listing)
+        throw new ApiError(
+          409,
+          "conflict",
+          "store_has_no_products",
+          "Publish at least one product before activating the Store.",
+        );
+    }
+    const [row] = await tx
+      .update(stores)
+      .set({
+        status,
+        version: sql`${stores.version} + 1`,
+        updatedAt: new Date(),
+        ...(status === "archived" ? { archivedAt: new Date() } : {}),
+      })
+      .where(eq(stores.id, current.id))
+      .returning();
+    if (!row) notFound();
+    await recordDomainChange(tx, context, {
+      action:
+        status === "active"
+          ? "store.activated"
+          : status === "paused"
+            ? "store.paused"
+            : "store.archived",
+      aggregateType: "store",
+      aggregateId: row.id,
+      aggregateVersion: row.version,
+      data: { store_id: row.id, status },
+    });
+    return storeView(row);
+  });
+}
+
 export async function resolvePublicStore(slug: string, environment: "test" | "live" = "test") {
   const rows = (await database.execute(
     sql`select * from yinne_resolve_store_slug(${slug}, ${environment})`,
