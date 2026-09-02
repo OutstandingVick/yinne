@@ -80,6 +80,9 @@ importers:
       '@yinne/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
+      '@yinne/storefront':
+        specifier: workspace:*
+        version: link:../../modules/storefront
       '@yinne/ui':
         specifier: workspace:*
         version: link:../../packages/ui
