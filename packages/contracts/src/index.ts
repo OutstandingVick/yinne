@@ -4,3 +4,4 @@ export * from "./organization";
 export * from "./commerce";
 export * from "./payments";
 export * from "./checkout";
+export * from "./storefront";
