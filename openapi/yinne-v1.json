@@ -816,6 +816,202 @@
         }
       }
     },
+    "/v1/locations": {
+      "get": {
+        "operationId": "listLocations",
+        "responses": {
+          "200": { "description": "Locations" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createLocation",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "201": { "description": "Location created" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/locations/{location_id}": {
+      "parameters": [
+        {
+          "name": "location_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "retrieveLocation",
+        "responses": {
+          "200": { "description": "Location" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "updateLocation",
+        "responses": {
+          "200": { "description": "Updated Location" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/employees": {
+      "get": {
+        "operationId": "listEmployees",
+        "responses": {
+          "200": { "description": "Safe employee projections" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/employees/{employee_id}": {
+      "parameters": [
+        {
+          "name": "employee_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "retrieveEmployee",
+        "responses": {
+          "200": { "description": "Employee projection" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/employees/{employee_id}/locations": {
+      "parameters": [
+        {
+          "name": "employee_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "assignEmployeeLocation",
+        "responses": {
+          "201": { "description": "Location role assigned" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "operationId": "unassignEmployeeLocation",
+        "responses": {
+          "200": { "description": "Location roles removed" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/invoices": {
+      "get": {
+        "operationId": "listInvoices",
+        "responses": {
+          "200": { "description": "Invoices" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createInvoice",
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "responses": {
+          "201": { "description": "Draft Invoice" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/invoices/{invoice_id}": {
+      "parameters": [
+        {
+          "name": "invoice_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "get": {
+        "operationId": "retrieveInvoice",
+        "responses": {
+          "200": { "description": "Invoice" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "updateInvoice",
+        "responses": {
+          "200": { "description": "Updated draft Invoice" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/invoices/{invoice_id}/issue": {
+      "parameters": [
+        {
+          "name": "invoice_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        },
+        { "$ref": "#/components/parameters/IdempotencyKey" }
+      ],
+      "post": {
+        "operationId": "issueInvoice",
+        "responses": {
+          "200": { "description": "Issued Invoice with one-time capability URL" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/invoices/{invoice_id}/void": {
+      "parameters": [
+        {
+          "name": "invoice_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "voidInvoice",
+        "responses": {
+          "200": { "description": "Voided Invoice" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/invoices/{token}": {
+      "parameters": [
+        {
+          "name": "token",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "minLength": 43, "maxLength": 43 }
+        }
+      ],
+      "get": {
+        "operationId": "retrievePublicInvoice",
+        "security": [],
+        "responses": {
+          "200": { "description": "Safe issued Invoice projection" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "payPublicInvoice",
+        "security": [],
+        "responses": {
+          "201": { "description": "Canonical Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
       "parameters": [
         {
