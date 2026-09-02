@@ -3,9 +3,11 @@ import { useState } from "react";
 export function CheckoutForm({
   token,
   capture,
+  successUrl,
 }: {
   token: string;
   capture: { name: boolean; email: boolean; phone: boolean };
+  successUrl?: string | null;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -37,6 +39,10 @@ export function CheckoutForm({
       };
       if (!response.ok) throw new Error(body.error?.message || "Checkout could not be confirmed.");
       if (!body.checkout_session?.status) throw new Error("Checkout returned an invalid response.");
+      if (body.checkout_session.status === "completed" && successUrl) {
+        window.location.assign(successUrl);
+        return;
+      }
       setDone(body.checkout_session.status);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Checkout could not be confirmed.");

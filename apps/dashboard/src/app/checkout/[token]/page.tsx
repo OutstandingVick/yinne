@@ -33,7 +33,11 @@ export default async function HostedCheckout({ params }: { params: Promise<{ tok
           {new Date(checkout.expires_at).toLocaleString("en-NG")}
         </p>
         {checkout.status === "open" ? (
-          <CheckoutForm token={token} capture={checkout.customer_capture} />
+          <CheckoutForm
+            token={token}
+            capture={checkout.customer_capture}
+            successUrl={checkout.success_url}
+          />
         ) : (
           <div role="status" className="public-result">
             <h2>{checkout.status}</h2>
