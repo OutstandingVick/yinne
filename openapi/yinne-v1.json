@@ -647,6 +647,175 @@
         }
       }
     },
+    "/v1/store": {
+      "get": {
+        "operationId": "retrieveStore",
+        "responses": {
+          "200": { "description": "Merchant Store configuration" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "updateStore",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object", "additionalProperties": false } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Updated Store" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/store/activate": {
+      "post": {
+        "operationId": "activateStore",
+        "responses": {
+          "200": { "description": "Active Store" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/store/pause": {
+      "post": {
+        "operationId": "pauseStore",
+        "responses": {
+          "200": { "description": "Paused Store" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/store/products/{product_id}/publish": {
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "publishStoreProduct",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object", "additionalProperties": false } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Published Store listing" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/store/products/{product_id}/unpublish": {
+      "parameters": [
+        {
+          "name": "product_id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "format": "uuid" }
+        }
+      ],
+      "post": {
+        "operationId": "unpublishStoreProduct",
+        "responses": {
+          "200": { "description": "Unpublished Store listing" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/stores/{slug}": {
+      "parameters": [
+        {
+          "name": "slug",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
+        }
+      ],
+      "get": {
+        "operationId": "retrievePublicStore",
+        "security": [],
+        "responses": {
+          "200": { "description": "Safe active Store projection" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/stores/{slug}/products": {
+      "parameters": [
+        { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "get": {
+        "operationId": "listPublicStoreProducts",
+        "security": [],
+        "parameters": [
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/After" }
+        ],
+        "responses": {
+          "200": { "description": "Published Product projections with availability" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/stores/{slug}/products/{product_slug}": {
+      "parameters": [
+        { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "product_slug", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "get": {
+        "operationId": "retrievePublicStoreProduct",
+        "security": [],
+        "responses": {
+          "200": { "description": "Published Product detail projection" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/stores/{slug}/checkout": {
+      "parameters": [
+        { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "operationId": "createPublicStoreCheckout",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["items", "idempotency_key"],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "items": {
+                      "type": "object",
+                      "required": ["variant_id", "quantity"],
+                      "properties": {
+                        "variant_id": { "type": "string", "format": "uuid" },
+                        "quantity": { "type": "integer", "minimum": 1, "maximum": 100 }
+                      }
+                    }
+                  },
+                  "idempotency_key": { "type": "string", "minLength": 16, "maxLength": 255 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Canonical Checkout Session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
       "parameters": [
         {
