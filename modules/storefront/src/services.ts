@@ -95,6 +95,61 @@ export async function getStore(context: RequestContext) {
   });
 }
 
+export async function updateStore(context: RequestContext, input: UpdateStoreInput) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "storefront:write", {
+      organizationId: context.tenant.organizationId,
+      locationId: input.default_location_id,
+    });
+    if (input.default_location_id) {
+      const [location] = await tx
+        .select({ id: locations.id })
+        .from(locations)
+        .where(
+          and(
+            eq(locations.organizationId, context.tenant.organizationId),
+            eq(locations.id, input.default_location_id),
+            eq(locations.status, "active"),
+          ),
+        )
+        .limit(1);
+      if (!location) notFound();
+    }
+    const [row] = await tx
+      .update(stores)
+      .set({
+        ...(input.public_name !== undefined ? { publicName: input.public_name } : {}),
+        ...(input.slug !== undefined ? { slug: input.slug } : {}),
+        ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.logo_url !== undefined ? { logoUrl: input.logo_url } : {}),
+        ...(input.default_location_id !== undefined
+          ? { defaultLocationId: input.default_location_id }
+          : {}),
+        ...(input.contact_email !== undefined ? { contactEmail: input.contact_email } : {}),
+        ...(input.contact_phone !== undefined ? { contactPhone: input.contact_phone } : {}),
+        ...(input.appearance !== undefined ? { appearance: input.appearance } : {}),
+        version: sql`${stores.version} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(stores.organizationId, context.tenant.organizationId),
+          eq(stores.environment, context.tenant.environment),
+        ),
+      )
+      .returning();
+    if (!row) notFound();
+    await recordDomainChange(tx, context, {
+      action: "store.updated",
+      aggregateType: "store",
+      aggregateId: row.id,
+      aggregateVersion: row.version,
+      data: { store_id: row.id, changed_fields: Object.keys(input) },
+    });
+    return storeView(row);
+  });
+}
+
 export async function resolvePublicStore(slug: string, environment: "test" | "live" = "test") {
   const rows = (await database.execute(
     sql`select * from yinne_resolve_store_slug(${slug}, ${environment})`,
