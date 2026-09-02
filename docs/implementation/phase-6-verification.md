@@ -13,6 +13,7 @@
 | Production build                               | Passed: 18/18 packages and 57 dashboard pages |
 | Clean database migrate, seed, and policy check | Passed: forced RLS on 31 tables               |
 | Phase 6 Playwright scenarios                   | Passed: 5/5                                   |
+| Worker startup, processing, graceful shutdown  | Passed: Invoice outbox dispatched             |
 
 ## Scenario coverage
 
