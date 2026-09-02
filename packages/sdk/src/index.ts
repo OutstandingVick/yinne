@@ -233,6 +233,53 @@ export interface StorefrontProduct {
     availability: "in_stock" | "low_stock" | "out_of_stock";
   }>;
 }
+export interface Location {
+  id: string;
+  merchant_id: string;
+  name: string;
+  code: string | null;
+  type: string;
+  status: "active" | "inactive" | "archived";
+  timezone: string;
+  address: Record<string, string>;
+  version: number;
+}
+export interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  status: string;
+  staff_profile: Record<string, unknown>;
+  assignments: Array<{
+    role: string;
+    scope_type: string;
+    scope_id: string;
+    location_name: string | null;
+  }>;
+}
+export interface InvoiceItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit_amount: string;
+  total_amount: string;
+  currency: string;
+}
+export interface Invoice {
+  id: string;
+  invoice_number: string | null;
+  status: "draft" | "open" | "paid" | "void";
+  display_status: string;
+  customer_id: string;
+  location_id: string | null;
+  currency: string;
+  subtotal_amount: string;
+  total_amount: string;
+  due_at: string | null;
+  payment_id: string | null;
+  items: InvoiceItem[];
+  invoice_url?: string;
+}
 export interface VariantInput {
   sku: string;
   title: string;
@@ -614,5 +661,76 @@ export class YinneClient {
         method: "POST",
         body: JSON.stringify({ items, idempotency_key: idempotencyKey }),
       }).then((value) => value.checkout_session),
+  };
+  readonly locations = {
+    list: (params: { limit?: number; status?: Location["status"]; type?: string } = {}) =>
+      this.request<Page<Location>>(`/v1/locations${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ location: Location }>(`/v1/locations/${id}`).then((value) => value.location),
+    create: (input: Record<string, unknown>) =>
+      this.request<{ location: Location }>("/v1/locations", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((value) => value.location),
+    update: (id: string, input: Record<string, unknown>) =>
+      this.request<{ location: Location }>(`/v1/locations/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }).then((value) => value.location),
+    activate: (id: string) =>
+      this.request<{ location: Location }>(`/v1/locations/${id}/activate`, { method: "POST" }).then(
+        (value) => value.location,
+      ),
+    deactivate: (id: string) =>
+      this.request<{ location: Location }>(`/v1/locations/${id}/deactivate`, {
+        method: "POST",
+      }).then((value) => value.location),
+  };
+  readonly employees = {
+    list: (params: { location_id?: string } = {}) =>
+      this.request<{ data: Employee[] }>(`/v1/employees${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ employee: Employee }>(`/v1/employees/${id}`).then((value) => value.employee),
+    assignLocation: (id: string, input: { location_id: string; role: string }) =>
+      this.request<{ assignment: Record<string, unknown> }>(`/v1/employees/${id}/locations`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((value) => value.assignment),
+  };
+  readonly invoices = {
+    list: (
+      params: {
+        limit?: number;
+        status?: Invoice["status"];
+        customer_id?: string;
+        location_id?: string;
+      } = {},
+    ) => this.request<Page<Invoice>>(`/v1/invoices${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ invoice: Invoice }>(`/v1/invoices/${id}`).then((value) => value.invoice),
+    create: (input: Record<string, unknown>, options: { idempotencyKey?: string } = {}) =>
+      this.request<{ invoice: Invoice }>("/v1/invoices", {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID(),
+        },
+        body: JSON.stringify(input),
+      }).then((value) => value.invoice),
+    update: (id: string, input: Record<string, unknown>) =>
+      this.request<{ invoice: Invoice }>(`/v1/invoices/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }).then((value) => value.invoice),
+    issue: (id: string, options: { idempotencyKey?: string } = {}) =>
+      this.request<{ invoice: Invoice }>(`/v1/invoices/${id}/issue`, {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID(),
+        },
+      }).then((value) => value.invoice),
+    void: (id: string) =>
+      this.request<{ invoice: Invoice }>(`/v1/invoices/${id}/void`, { method: "POST" }).then(
+        (value) => value.invoice,
+      ),
   };
 }
