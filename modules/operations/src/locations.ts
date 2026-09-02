@@ -29,7 +29,11 @@ const view = (row: typeof locations.$inferSelect) => ({
 
 export async function listLocations(
   context: RequestContext,
-  filters: { limit?: number; status?: string; type?: string } = {},
+  filters: {
+    limit?: number | undefined;
+    status?: string | undefined;
+    type?: string | undefined;
+  } = {},
 ) {
   return withTenantTransaction(context.tenant, async (tx) => {
     await requirePermission(tx, context.principal, "locations:read", {
@@ -89,7 +93,11 @@ export async function createLocation(context: RequestContext, input: CreateLocat
         code: input.code,
         type: input.type,
         timezone: input.timezone,
-        address: input.address,
+        address: Object.fromEntries(
+          Object.entries(input.address).filter(
+            (entry): entry is [string, string] => entry[1] !== undefined,
+          ),
+        ),
       })
       .returning();
     if (!row)
@@ -126,7 +134,15 @@ export async function updateLocation(
         ...(input.code !== undefined ? { code: input.code } : {}),
         ...(input.type !== undefined ? { type: input.type } : {}),
         ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
-        ...(input.address !== undefined ? { address: input.address } : {}),
+        ...(input.address !== undefined
+          ? {
+              address: Object.fromEntries(
+                Object.entries(input.address).filter(
+                  (entry): entry is [string, string] => entry[1] !== undefined,
+                ),
+              ),
+            }
+          : {}),
         version: sql`${locations.version} + 1`,
         updatedAt: new Date(),
       })

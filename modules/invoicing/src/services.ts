@@ -16,7 +16,6 @@ import {
   invoices,
   locations,
   merchants,
-  payments,
   withTenantTransaction,
   type TenantTransaction,
 } from "@yinne/database";
@@ -85,7 +84,11 @@ function invoiceView(
 async function validateRefs(
   tx: TenantTransaction,
   context: RequestContext,
-  input: { merchant_id: string; customer_id: string; location_id?: string | null },
+  input: {
+    merchant_id: string;
+    customer_id: string;
+    location_id?: string | null | undefined;
+  },
 ) {
   const [merchant] = await tx
     .select()
@@ -230,7 +233,12 @@ export async function createInvoice(
 }
 export async function listInvoices(
   context: RequestContext,
-  filters: { limit?: number; status?: string; customer_id?: string; location_id?: string } = {},
+  filters: {
+    limit?: number | undefined;
+    status?: string | undefined;
+    customer_id?: string | undefined;
+    location_id?: string | undefined;
+  } = {},
 ) {
   return withTenantTransaction(context.tenant, async (tx) => {
     await requirePermission(tx, context.principal, "invoices:read", {
@@ -318,21 +326,19 @@ export async function updateInvoice(
     if (input.items) {
       total = invoiceTotal(input.items);
       await tx.delete(invoiceItems).where(eq(invoiceItems.invoiceId, id));
-      await tx
-        .insert(invoiceItems)
-        .values(
-          input.items.map((item) => ({
-            organizationId: context.tenant.organizationId,
-            invoiceId: id,
-            description: item.description,
-            quantity: item.quantity,
-            unitAmount: BigInt(item.unit_amount),
-            totalAmount: BigInt(item.unit_amount) * BigInt(item.quantity),
-            currency: current.currency,
-            productId: item.product_id ?? null,
-            variantId: item.variant_id ?? null,
-          })),
-        );
+      await tx.insert(invoiceItems).values(
+        input.items.map((item) => ({
+          organizationId: context.tenant.organizationId,
+          invoiceId: id,
+          description: item.description,
+          quantity: item.quantity,
+          unitAmount: BigInt(item.unit_amount),
+          totalAmount: BigInt(item.unit_amount) * BigInt(item.quantity),
+          currency: current.currency,
+          productId: item.product_id ?? null,
+          variantId: item.variant_id ?? null,
+        })),
+      );
     }
     const [row] = await tx
       .update(invoices)

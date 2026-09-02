@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 const openInvoiceToken = Buffer.alloc(32, 31).toString("base64url");
 
-async function signIn(page: import("@playwright/test").Page) {
+async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
   if (!password) throw new Error("YINNE_SEED_PASSWORD is required for seeded E2E flows.");
   await page.goto("/sign-in");
@@ -14,9 +15,9 @@ async function signIn(page: import("@playwright/test").Page) {
 
 test("owner can inspect canonical locations and employee scopes", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "Locations" }).click();
+  await page.getByRole("link", { name: "Locations", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Locations" })).toBeVisible();
-  await expect(page.getByRole("table", { name: "Locations" })).toContainText("HQ");
+  await expect(page.getByRole("table", { name: "Locations" })).toContainText("Ikeja Flagship");
 
   await page.getByRole("link", { name: "Employees" }).click();
   await expect(page.getByRole("heading", { name: "Employees" })).toBeVisible();

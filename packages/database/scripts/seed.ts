@@ -345,7 +345,10 @@ try {
           userId,
           status: "active",
           joinedAt: new Date(),
-          staffProfile: { employee_code: `ACME-${String(index + 1).padStart(3, "0")}`, title: roleKey },
+          staffProfile: {
+            employee_code: `ACME-${String(index + 1).padStart(3, "0")}`,
+            title: roleKey,
+          },
         })
         .onConflictDoUpdate({
           target: [organizationMembers.organizationId, organizationMembers.userId],
@@ -789,30 +792,126 @@ try {
       }
     }
 
-    await tx.insert(invoiceCounters).values({ id: fixtureId(2500), organizationId, environment: "test", year: 2026, nextValue: 5 })
-      .onConflictDoUpdate({ target: [invoiceCounters.organizationId, invoiceCounters.environment, invoiceCounters.year], set: { nextValue: 5 } });
+    await tx
+      .insert(invoiceCounters)
+      .values({
+        id: fixtureId(2500),
+        organizationId,
+        environment: "test",
+        year: 2026,
+        nextValue: 5,
+      })
+      .onConflictDoUpdate({
+        target: [invoiceCounters.organizationId, invoiceCounters.environment, invoiceCounters.year],
+        set: { nextValue: 5 },
+      });
     const invoiceFixtures = [
-      { id: 2510, number: null, status: "draft", amount: 450000n, dueAt: null, paymentId: null, orderId: null },
-      { id: 2511, number: "INV-2026-000001", status: "open", amount: 1250000n, dueAt: new Date("2026-09-15T00:00:00Z"), paymentId: null, orderId: null },
-      { id: 2512, number: "INV-2026-000002", status: "open", amount: 780000n, dueAt: new Date("2026-08-20T00:00:00Z"), paymentId: null, orderId: null },
-      { id: 2513, number: "INV-2026-000003", status: "void", amount: 300000n, dueAt: null, paymentId: null, orderId: null },
-      { id: 2514, number: "INV-2026-000004", status: "paid", amount: 650000n, dueAt: new Date("2026-08-25T00:00:00Z"), paymentId: fixtureId(1801), orderId: fixtureId(1600) },
+      {
+        id: 2510,
+        number: null,
+        status: "draft",
+        amount: 450000n,
+        dueAt: null,
+        paymentId: null,
+        orderId: null,
+      },
+      {
+        id: 2511,
+        number: "INV-2026-000001",
+        status: "open",
+        amount: 1250000n,
+        dueAt: new Date("2026-09-15T00:00:00Z"),
+        paymentId: null,
+        orderId: null,
+      },
+      {
+        id: 2512,
+        number: "INV-2026-000002",
+        status: "open",
+        amount: 780000n,
+        dueAt: new Date("2026-08-20T00:00:00Z"),
+        paymentId: null,
+        orderId: null,
+      },
+      {
+        id: 2513,
+        number: "INV-2026-000003",
+        status: "void",
+        amount: 300000n,
+        dueAt: null,
+        paymentId: null,
+        orderId: null,
+      },
+      {
+        id: 2514,
+        number: "INV-2026-000004",
+        status: "paid",
+        amount: 650000n,
+        dueAt: new Date("2026-08-25T00:00:00Z"),
+        paymentId: fixtureId(1801),
+        orderId: fixtureId(1600),
+      },
     ] as const;
     for (const [index, fixture] of invoiceFixtures.entries()) {
       const rawToken = Buffer.alloc(32, 30 + index).toString("base64url");
-      await tx.insert(invoices).values({ id: fixtureId(fixture.id), organizationId, environment: "test", merchantId,
-        locationId: fixtureId(10 + (index % 4)), customerId: fixtureId(1000 + index), number: fixture.number, status: fixture.status,
-        currency: "NGN", subtotalAmount: fixture.amount, totalAmount: fixture.amount,
-        publicTokenDigest: ["open", "paid"].includes(fixture.status) ? createHash("sha256").update(rawToken).digest("hex") : null,
-        publicTokenPrefix: ["open", "paid"].includes(fixture.status) ? rawToken.slice(0, 8) : null,
-        paymentId: fixture.paymentId, orderId: fixture.orderId, dueAt: fixture.dueAt,
-        issuedAt: fixture.status === "draft" ? null : new Date("2026-08-15T00:00:00Z"),
-        paidAt: fixture.status === "paid" ? new Date("2026-08-20T12:00:00Z") : null,
-        voidedAt: fixture.status === "void" ? new Date("2026-08-18T00:00:00Z") : null,
-        metadata: { seeded: true } }).onConflictDoUpdate({ target: invoices.id, set: { status: fixture.status, updatedAt: new Date() } });
-      await tx.insert(invoiceItems).values({ id: fixtureId(2530 + index), organizationId, invoiceId: fixtureId(fixture.id),
-        description: index === 0 ? "Coffee service consultation" : "Acme Coffee business order", quantity: 1,
-        unitAmount: fixture.amount, totalAmount: fixture.amount, currency: "NGN" }).onConflictDoNothing();
+      await tx
+        .insert(invoices)
+        .values({
+          id: fixtureId(fixture.id),
+          organizationId,
+          environment: "test",
+          merchantId,
+          locationId: fixtureId(10 + (index % 4)),
+          customerId: fixtureId(1000 + index),
+          number: fixture.number,
+          status: fixture.status,
+          currency: "NGN",
+          subtotalAmount: fixture.amount,
+          totalAmount: fixture.amount,
+          publicTokenDigest: ["open", "paid"].includes(fixture.status)
+            ? createHash("sha256").update(rawToken).digest("hex")
+            : null,
+          publicTokenPrefix: ["open", "paid"].includes(fixture.status)
+            ? rawToken.slice(0, 8)
+            : null,
+          paymentId: fixture.paymentId,
+          orderId: fixture.orderId,
+          dueAt: fixture.dueAt,
+          issuedAt: fixture.status === "draft" ? null : new Date("2026-08-15T00:00:00Z"),
+          paidAt: fixture.status === "paid" ? new Date("2026-08-20T12:00:00Z") : null,
+          voidedAt: fixture.status === "void" ? new Date("2026-08-18T00:00:00Z") : null,
+          metadata: { seeded: true },
+        })
+        .onConflictDoUpdate({
+          target: invoices.id,
+          set: {
+            status: fixture.status,
+            publicTokenDigest: ["open", "paid"].includes(fixture.status)
+              ? createHash("sha256").update(rawToken).digest("hex")
+              : null,
+            publicTokenPrefix: ["open", "paid"].includes(fixture.status)
+              ? rawToken.slice(0, 8)
+              : null,
+            checkoutSessionId: null,
+            orderId: fixture.orderId,
+            paymentId: fixture.paymentId,
+            paidAt: fixture.status === "paid" ? new Date("2026-08-20T12:00:00Z") : null,
+            updatedAt: new Date(),
+          },
+        });
+      await tx
+        .insert(invoiceItems)
+        .values({
+          id: fixtureId(2530 + index),
+          organizationId,
+          invoiceId: fixtureId(fixture.id),
+          description: index === 0 ? "Coffee service consultation" : "Acme Coffee business order",
+          quantity: 1,
+          unitAmount: fixture.amount,
+          totalAmount: fixture.amount,
+          currency: "NGN",
+        })
+        .onConflictDoNothing();
     }
 
     await tx
@@ -827,7 +926,7 @@ try {
     .where(eq(seedVersions.key, "acme-foundation"));
   if (!seed) throw new Error("Seed verification failed.");
   console.log(
-    "Seeded Acme Coffee Phase 5 Storefront, checkout, commerce, and deterministic Mock Provider dataset.",
+    "Seeded Acme Coffee Phase 6 operations, invoices, Storefront, checkout, and deterministic Mock Provider dataset.",
   );
   console.log("Login: owner@acme.test (password from YINNE_SEED_PASSWORD)");
 } finally {

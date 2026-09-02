@@ -16,8 +16,6 @@ describe("location lifecycle", () => {
     ["archived", "inactive"],
     ["active", "active"],
   ] as const)("rejects %s to %s", (from, to) => {
-    expect(() => assertLocationTransition(from, to)).toThrowError(
-      expect.objectContaining({ code: "invalid_location_transition" }),
-    );
+    expect(() => assertLocationTransition(from, to)).toThrow("Location cannot transition");
   });
 });

@@ -80,8 +80,6 @@ CREATE UNIQUE INDEX "invoices_org_env_number_uidx" ON "invoices" USING btree ("o
 CREATE UNIQUE INDEX "invoices_public_token_uidx" ON "invoices" USING btree ("public_token_digest") WHERE "invoices"."public_token_digest" is not null;--> statement-breakpoint
 CREATE INDEX "invoices_org_env_created_idx" ON "invoices" USING btree ("organization_id","environment","created_at","id");--> statement-breakpoint
 CREATE UNIQUE INDEX "locations_org_merchant_code_uidx" ON "locations" USING btree ("organization_id","merchant_id","code") WHERE "locations"."code" is not null;--> statement-breakpoint
-ALTER TABLE "locations" ADD CONSTRAINT "locations_type_check" CHECK ("locations"."type" in ('branch', 'store', 'restaurant', 'office', 'warehouse', 'pop_up', 'agent'));--> statement-breakpoint
-ALTER TABLE "locations" ADD CONSTRAINT "locations_status_check" CHECK ("locations"."status" in ('active', 'inactive', 'archived'));
 --> statement-breakpoint
 GRANT SELECT, INSERT, UPDATE ON invoice_counters, invoices TO yinne_app;
 GRANT SELECT, INSERT, DELETE ON invoice_items TO yinne_app;
