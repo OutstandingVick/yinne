@@ -54,3 +54,36 @@ CREATE UNIQUE INDEX "stores_org_id_uidx" ON "stores" USING btree ("organization_
 CREATE UNIQUE INDEX "stores_org_merchant_env_uidx" ON "stores" USING btree ("organization_id","merchant_id","environment");--> statement-breakpoint
 CREATE UNIQUE INDEX "stores_environment_slug_uidx" ON "stores" USING btree ("environment","slug");--> statement-breakpoint
 CREATE INDEX "stores_org_status_idx" ON "stores" USING btree ("organization_id","environment","status");
+--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON stores, store_listings TO yinne_app;
+--> statement-breakpoint
+ALTER TABLE stores ENABLE ROW LEVEL SECURITY;
+ALTER TABLE stores FORCE ROW LEVEL SECURITY;
+CREATE POLICY stores_tenant_policy ON stores USING (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+  AND environment = nullif(current_setting('app.environment', true), '')
+) WITH CHECK (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+  AND environment = nullif(current_setting('app.environment', true), '')
+);
+--> statement-breakpoint
+ALTER TABLE store_listings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE store_listings FORCE ROW LEVEL SECURITY;
+CREATE POLICY store_listings_tenant_policy ON store_listings USING (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+) WITH CHECK (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+);
+--> statement-breakpoint
+CREATE FUNCTION yinne_resolve_store_slug(p_slug text, p_environment text)
+RETURNS TABLE(organization_id uuid, environment text, resource_id uuid)
+LANGUAGE sql SECURITY DEFINER STABLE
+SET search_path = public, pg_temp
+AS $$
+  SELECT organization_id, environment, id
+  FROM stores
+  WHERE slug = p_slug AND environment = p_environment AND status = 'active'
+  LIMIT 1
+$$;
+REVOKE ALL ON FUNCTION yinne_resolve_store_slug(text, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION yinne_resolve_store_slug(text, text) TO yinne_app;
