@@ -479,3 +479,73 @@ export async function listPublicProducts(
     store: resolved.store,
   };
 }
+
+export async function getPublicProduct(
+  storeSlug: string,
+  productSlug: string,
+  environment: "test" | "live" = "test",
+) {
+  const resolved = await resolvePublicStore(storeSlug, environment);
+  const rows = await withTenantTransaction(resolved.context.tenant, (tx) =>
+    tx
+      .select({
+        listing: storeListings,
+        product: products,
+        variant: variants,
+        onHand: inventoryLevels.onHand,
+      })
+      .from(storeListings)
+      .innerJoin(
+        products,
+        and(
+          eq(products.organizationId, storeListings.organizationId),
+          eq(products.id, storeListings.productId),
+        ),
+      )
+      .innerJoin(
+        variants,
+        and(
+          eq(variants.organizationId, products.organizationId),
+          eq(variants.productId, products.id),
+        ),
+      )
+      .leftJoin(
+        inventoryLevels,
+        and(
+          eq(inventoryLevels.organizationId, variants.organizationId),
+          eq(inventoryLevels.variantId, variants.id),
+          eq(inventoryLevels.locationId, resolved.row.defaultLocationId),
+        ),
+      )
+      .where(
+        and(
+          eq(storeListings.storeId, resolved.row.id),
+          eq(storeListings.status, "published"),
+          eq(products.status, "active"),
+          eq(products.slug, productSlug),
+          eq(variants.status, "active"),
+        ),
+      )
+      .orderBy(asc(variants.createdAt))
+      .limit(100),
+  );
+  const first = rows[0];
+  if (!first) notFound();
+  return {
+    store: resolved.store,
+    product: {
+      slug: first.product.slug,
+      name: first.product.name,
+      description: first.product.description,
+      image_url: first.listing.imageUrl,
+      image_alt: first.listing.imageAlt,
+      variants: rows.map(({ variant, onHand }) => ({
+        id: variant.id,
+        title: variant.title,
+        unit_amount: variant.unitAmount.toString(),
+        currency: variant.currency,
+        availability: availability(variant.trackInventory, onHand),
+      })),
+    },
+  };
+}
