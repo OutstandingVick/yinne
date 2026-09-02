@@ -42,6 +42,12 @@ export const permissionKeys = [
   "storefront:read",
   "storefront:write",
   "storefront:publish",
+  "employees:read",
+  "employees:write",
+  "invoices:read",
+  "invoices:write",
+  "invoices:issue",
+  "invoices:void",
 ] as const;
 
 export type PermissionKey = (typeof permissionKeys)[number];
@@ -80,6 +86,11 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "subscriptions:write",
     "analytics:read",
     "capital:read",
+    "employees:read",
+    "invoices:read",
+    "invoices:write",
+    "invoices:issue",
+    "invoices:void",
   ],
   manager: [
     "organization:read",
@@ -108,6 +119,11 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "storefront:read",
     "storefront:write",
     "storefront:publish",
+    "employees:read",
+    "employees:write",
+    "invoices:read",
+    "invoices:write",
+    "invoices:issue",
   ],
   staff: [
     "organization:read",
@@ -126,6 +142,8 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "customers:write",
     "locations:read",
     "storefront:read",
+    "employees:read",
+    "invoices:read",
   ],
   analyst: [
     "organization:read",
@@ -138,6 +156,8 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "capital:read",
     "developer_logs:read",
     "storefront:read",
+    "employees:read",
+    "invoices:read",
   ],
   developer: [
     "organization:read",
@@ -158,6 +178,8 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "events:read",
     "developer_logs:read",
     "storefront:read",
+    "employees:read",
+    "invoices:read",
   ],
 };
 

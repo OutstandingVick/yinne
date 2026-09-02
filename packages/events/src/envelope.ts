@@ -50,6 +50,18 @@ export const domainEventTypes = [
   "store.archived",
   "product.published",
   "product.unpublished",
+  "location.created",
+  "location.updated",
+  "location.activated",
+  "location.deactivated",
+  "location.archived",
+  "employee.location_assigned",
+  "employee.location_unassigned",
+  "invoice.created",
+  "invoice.updated",
+  "invoice.issued",
+  "invoice.paid",
+  "invoice.voided",
 ] as const;
 
 export type DomainEventType = (typeof domainEventTypes)[number];
