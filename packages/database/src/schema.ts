@@ -186,9 +186,12 @@ export const locations = pgTable(
       .references(() => organizations.id),
     merchantId: uuid("merchant_id").notNull(),
     name: text("name").notNull(),
+    code: text("code"),
     type: text("type").notNull(),
     timezone: text("timezone").notNull(),
     status: text("status").notNull().default("active"),
+    address: jsonb("address").$type<Record<string, string>>().notNull().default({}),
+    version: integer("version").notNull().default(1),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
@@ -205,7 +208,15 @@ export const locations = pgTable(
       table.name,
     ),
     uniqueIndex("locations_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("locations_org_merchant_code_uidx")
+      .on(table.organizationId, table.merchantId, table.code)
+      .where(sql`${table.code} is not null`),
     index("locations_org_status_idx").on(table.organizationId, table.status),
+    check(
+      "locations_type_check",
+      sql`${table.type} in ('branch', 'store', 'restaurant', 'office', 'warehouse', 'pop_up', 'agent')`,
+    ),
+    check("locations_status_check", sql`${table.status} in ('active', 'inactive', 'archived')`),
   ],
 );
 
