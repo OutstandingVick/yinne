@@ -8,6 +8,7 @@ import { createId } from "@yinne/core";
 import {
   idempotencyRecords,
   checkoutSessions,
+  invoices,
   paymentLinks,
   orders,
   paymentAttempts,
@@ -335,6 +336,36 @@ async function finalizePayment(
     );
   let chargeTransaction: typeof transactions.$inferSelect | undefined;
   if (paymentStatus === "succeeded") {
+    const invoiceCheckoutId =
+      typeof payment.metadata.checkout_session_id === "string"
+        ? payment.metadata.checkout_session_id
+        : null;
+    const [invoice] = invoiceCheckoutId
+      ? await tx
+          .select()
+          .from(invoices)
+          .where(
+            and(
+              eq(invoices.organizationId, context.tenant.organizationId),
+              eq(invoices.environment, context.tenant.environment),
+              eq(invoices.checkoutSessionId, invoiceCheckoutId),
+            ),
+          )
+          .for("update")
+          .limit(1)
+      : [];
+    if (
+      invoice &&
+      (invoice.status !== "open" ||
+        invoice.totalAmount !== payment.amount ||
+        invoice.currency !== payment.currency)
+    )
+      throw new ApiError(
+        409,
+        "conflict",
+        "invoice_not_payable",
+        "Invoice is no longer payable for this amount.",
+      );
     await applySucceededPaymentToOrder(tx, context, {
       orderId: payment.orderId,
       paymentId: payment.id,
@@ -354,6 +385,41 @@ async function finalizePayment(
         occurredAt: now,
       })
       .returning();
+    if (invoice) {
+      const [paidInvoice] = await tx
+        .update(invoices)
+        .set({
+          status: "paid",
+          orderId: payment.orderId,
+          paymentId: payment.id,
+          paidAt: now,
+          version: sql`${invoices.version} + 1`,
+          updatedAt: now,
+        })
+        .where(and(eq(invoices.id, invoice.id), eq(invoices.status, "open")))
+        .returning();
+      if (!paidInvoice)
+        throw new ApiError(
+          409,
+          "conflict",
+          "invoice_reconciliation_conflict",
+          "Invoice payment was already reconciled.",
+        );
+      await recordDomainChange(tx, context, {
+        action: "invoice.paid",
+        aggregateType: "invoice",
+        aggregateId: paidInvoice.id,
+        aggregateVersion: paidInvoice.version,
+        data: {
+          invoice_id: paidInvoice.id,
+          invoice_number: paidInvoice.number,
+          payment_id: payment.id,
+          order_id: payment.orderId,
+          amount: payment.amount.toString(),
+          currency: payment.currency,
+        },
+      });
+    }
   }
   const [updatedPayment] = await tx
     .update(payments)
