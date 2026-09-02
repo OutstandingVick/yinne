@@ -381,3 +381,101 @@ export async function resolvePublicStore(slug: string, environment: "test" | "li
   if (!row || row.status !== "active") notFound();
   return { context, row, store: publicStoreView(row) };
 }
+
+function availability(trackInventory: boolean, onHand: bigint | null) {
+  if (!trackInventory) return "in_stock" as const;
+  if (!onHand || onHand <= 0n) return "out_of_stock" as const;
+  return onHand <= 5n ? ("low_stock" as const) : ("in_stock" as const);
+}
+
+export async function listPublicProducts(
+  slug: string,
+  limit = 20,
+  environment: "test" | "live" = "test",
+) {
+  const resolved = await resolvePublicStore(slug, environment);
+  const rows = await withTenantTransaction(resolved.context.tenant, (tx) =>
+    tx
+      .select({
+        listing: storeListings,
+        product: products,
+        variant: variants,
+        onHand: inventoryLevels.onHand,
+      })
+      .from(storeListings)
+      .innerJoin(
+        products,
+        and(
+          eq(products.organizationId, storeListings.organizationId),
+          eq(products.id, storeListings.productId),
+        ),
+      )
+      .innerJoin(
+        variants,
+        and(
+          eq(variants.organizationId, products.organizationId),
+          eq(variants.productId, products.id),
+        ),
+      )
+      .leftJoin(
+        inventoryLevels,
+        and(
+          eq(inventoryLevels.organizationId, variants.organizationId),
+          eq(inventoryLevels.variantId, variants.id),
+          eq(inventoryLevels.locationId, resolved.row.defaultLocationId),
+        ),
+      )
+      .where(
+        and(
+          eq(storeListings.storeId, resolved.row.id),
+          eq(storeListings.status, "published"),
+          eq(products.status, "active"),
+          eq(variants.status, "active"),
+        ),
+      )
+      .orderBy(asc(storeListings.displayOrder), asc(storeListings.id), asc(variants.createdAt))
+      .limit(Math.min(limit, 50) * 100),
+  );
+  const map = new Map<
+    string,
+    {
+      slug: string;
+      name: string;
+      description: string | null;
+      featured: boolean;
+      image_url: string | null;
+      image_alt: string | null;
+      variants: {
+        id: string;
+        title: string;
+        unit_amount: string;
+        currency: string;
+        availability: string;
+      }[];
+    }
+  >();
+  for (const row of rows) {
+    const product = map.get(row.product.id) ?? {
+      slug: row.product.slug,
+      name: row.product.name,
+      description: row.product.description,
+      featured: row.listing.featured,
+      image_url: row.listing.imageUrl,
+      image_alt: row.listing.imageAlt,
+      variants: [],
+    };
+    product.variants.push({
+      id: row.variant.id,
+      title: row.variant.title,
+      unit_amount: row.variant.unitAmount.toString(),
+      currency: row.variant.currency,
+      availability: availability(row.variant.trackInventory, row.onHand),
+    });
+    map.set(row.product.id, product);
+  }
+  return {
+    data: [...map.values()].slice(0, limit),
+    has_more: map.size > limit,
+    store: resolved.store,
+  };
+}
