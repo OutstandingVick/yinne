@@ -283,6 +283,82 @@ export async function getInvoice(context: RequestContext, id: string) {
     return invoiceView(row, await itemsFor(tx, context.tenant.organizationId, id));
   });
 }
+export async function updateInvoice(
+  context: RequestContext,
+  id: string,
+  input: UpdateInvoiceInput,
+) {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    const [current] = await tx
+      .select()
+      .from(invoices)
+      .where(
+        and(
+          eq(invoices.organizationId, context.tenant.organizationId),
+          eq(invoices.environment, context.tenant.environment),
+          eq(invoices.id, id),
+        ),
+      )
+      .for("update")
+      .limit(1);
+    if (!current) notFound();
+    await requirePermission(tx, context.principal, "invoices:write", {
+      organizationId: context.tenant.organizationId,
+      merchantId: current.merchantId,
+      ...(input.location_id ? { locationId: input.location_id } : {}),
+    });
+    if (current.status !== "draft")
+      throw new ApiError(409, "conflict", "invoice_frozen", "Only a draft Invoice may be edited.");
+    await validateRefs(tx, context, {
+      merchant_id: current.merchantId,
+      customer_id: input.customer_id ?? current.customerId,
+      location_id: input.location_id === undefined ? current.locationId : input.location_id,
+    });
+    let total = current.totalAmount;
+    if (input.items) {
+      total = invoiceTotal(input.items);
+      await tx.delete(invoiceItems).where(eq(invoiceItems.invoiceId, id));
+      await tx
+        .insert(invoiceItems)
+        .values(
+          input.items.map((item) => ({
+            organizationId: context.tenant.organizationId,
+            invoiceId: id,
+            description: item.description,
+            quantity: item.quantity,
+            unitAmount: BigInt(item.unit_amount),
+            totalAmount: BigInt(item.unit_amount) * BigInt(item.quantity),
+            currency: current.currency,
+            productId: item.product_id ?? null,
+            variantId: item.variant_id ?? null,
+          })),
+        );
+    }
+    const [row] = await tx
+      .update(invoices)
+      .set({
+        ...(input.customer_id !== undefined ? { customerId: input.customer_id } : {}),
+        ...(input.location_id !== undefined ? { locationId: input.location_id } : {}),
+        ...(input.due_at !== undefined ? { dueAt: input.due_at } : {}),
+        ...(input.metadata !== undefined ? { metadata: input.metadata } : {}),
+        subtotalAmount: total,
+        totalAmount: total,
+        version: sql`${invoices.version} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(invoices.id, id))
+      .returning();
+    if (!row) notFound();
+    await recordDomainChange(tx, context, {
+      action: "invoice.updated",
+      aggregateType: "invoice",
+      aggregateId: row.id,
+      aggregateVersion: row.version,
+      data: { invoice_id: row.id, changed_fields: Object.keys(input) },
+    });
+    return invoiceView(row, await itemsFor(tx, context.tenant.organizationId, id));
+  });
+}
 export async function issueInvoice(context: RequestContext, id: string) {
   return withTenantTransaction(context.tenant, async (tx) => {
     await requirePermission(tx, context.principal, "invoices:issue", {
