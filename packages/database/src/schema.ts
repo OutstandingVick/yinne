@@ -209,6 +209,57 @@ export const locations = pgTable(
   ],
 );
 
+export const stores = pgTable(
+  "stores",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    merchantId: uuid("merchant_id").notNull(),
+    environment: text("environment").notNull(),
+    publicName: text("public_name").notNull(),
+    slug: text("slug").notNull(),
+    description: text("description"),
+    logoUrl: text("logo_url"),
+    status: text("status").notNull().default("draft"),
+    currency: text("currency").notNull(),
+    defaultLocationId: uuid("default_location_id").notNull(),
+    contactEmail: text("contact_email"),
+    contactPhone: text("contact_phone"),
+    appearance: jsonb("appearance").$type<Record<string, string>>().notNull().default({}),
+    catalogueVersion: integer("catalogue_version").notNull().default(1),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+  },
+  (table) => [
+    foreignKey({
+      name: "stores_merchant_org_fk",
+      columns: [table.organizationId, table.merchantId],
+      foreignColumns: [merchants.organizationId, merchants.id],
+    }),
+    foreignKey({
+      name: "stores_location_org_fk",
+      columns: [table.organizationId, table.defaultLocationId],
+      foreignColumns: [locations.organizationId, locations.id],
+    }),
+    uniqueIndex("stores_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("stores_org_merchant_env_uidx").on(
+      table.organizationId,
+      table.merchantId,
+      table.environment,
+    ),
+    uniqueIndex("stores_environment_slug_uidx").on(table.environment, table.slug),
+    index("stores_org_status_idx").on(table.organizationId, table.environment, table.status),
+    check("stores_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("stores_status_check", sql`${table.status} in ('draft', 'active', 'paused', 'archived')`),
+    check("stores_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check("stores_catalogue_version_check", sql`${table.catalogueVersion} > 0`),
+  ],
+);
+
 export const apiKeys = pgTable(
   "api_keys",
   {
