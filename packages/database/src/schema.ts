@@ -499,6 +499,48 @@ export const variants = pgTable(
   ],
 );
 
+export const storeListings = pgTable(
+  "store_listings",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    storeId: uuid("store_id").notNull(),
+    productId: uuid("product_id").notNull(),
+    status: text("status").notNull().default("published"),
+    featured: boolean("featured").notNull().default(false),
+    displayOrder: integer("display_order").notNull().default(0),
+    imageUrl: text("image_url"),
+    imageAlt: text("image_alt"),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "store_listings_store_org_fk",
+      columns: [table.organizationId, table.storeId],
+      foreignColumns: [stores.organizationId, stores.id],
+    }),
+    foreignKey({
+      name: "store_listings_product_org_fk",
+      columns: [table.organizationId, table.productId],
+      foreignColumns: [products.organizationId, products.id],
+    }),
+    uniqueIndex("store_listings_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("store_listings_store_product_uidx").on(table.storeId, table.productId),
+    index("store_listings_store_status_order_idx").on(
+      table.storeId,
+      table.status,
+      table.displayOrder,
+      table.id,
+    ),
+    check("store_listings_status_check", sql`${table.status} in ('published', 'unpublished')`),
+    check("store_listings_display_order_check", sql`${table.displayOrder} >= 0`),
+  ],
+);
+
 export const orders = pgTable(
   "orders",
   {
