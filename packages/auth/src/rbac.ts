@@ -72,8 +72,6 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "payment_links:read",
     "payment_links:write",
     "storefront:read",
-    "storefront:write",
-    "storefront:publish",
     "payouts:read",
     "orders:read",
     "customers:read",
