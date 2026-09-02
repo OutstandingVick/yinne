@@ -39,6 +39,9 @@ export const permissionKeys = [
   "checkout:write",
   "payment_links:read",
   "payment_links:write",
+  "storefront:read",
+  "storefront:write",
+  "storefront:publish",
 ] as const;
 
 export type PermissionKey = (typeof permissionKeys)[number];
@@ -68,6 +71,9 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "checkout:write",
     "payment_links:read",
     "payment_links:write",
+    "storefront:read",
+    "storefront:write",
+    "storefront:publish",
     "payouts:read",
     "orders:read",
     "customers:read",
@@ -101,6 +107,9 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "analytics:read",
     "locations:read",
     "locations:write",
+    "storefront:read",
+    "storefront:write",
+    "storefront:publish",
   ],
   staff: [
     "organization:read",
@@ -118,6 +127,7 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "customers:read",
     "customers:write",
     "locations:read",
+    "storefront:read",
   ],
   analyst: [
     "organization:read",
@@ -129,6 +139,7 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "analytics:read",
     "capital:read",
     "developer_logs:read",
+    "storefront:read",
   ],
   developer: [
     "organization:read",
@@ -148,6 +159,7 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "webhooks:replay",
     "events:read",
     "developer_logs:read",
+    "storefront:read",
   ],
 };
 
