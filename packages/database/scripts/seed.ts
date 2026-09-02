@@ -30,6 +30,8 @@ import {
   rolePermissions,
   roles,
   seedVersions,
+  storeListings,
+  stores,
   transactions,
   users,
   variants,
@@ -172,6 +174,33 @@ try {
         })
         .onConflictDoNothing();
     }
+
+    await tx
+      .insert(stores)
+      .values({
+        id: fixtureId(2300),
+        organizationId,
+        merchantId,
+        environment: "test",
+        publicName: "Acme Coffee",
+        slug: "acme-coffee",
+        description: "Freshly roasted coffee and café favourites from Lagos.",
+        status: "active",
+        currency: "NGN",
+        defaultLocationId: fixtureId(10),
+        contactEmail: "hello@acme.test",
+        appearance: {
+          primary_color: "#1f6f50",
+          background_color: "#fffdf7",
+          text_color: "#17211d",
+          type_scale: "comfortable",
+          radius: "medium",
+        },
+      })
+      .onConflictDoUpdate({
+        target: [stores.organizationId, stores.merchantId, stores.environment],
+        set: { status: "active", publicName: "Acme Coffee", updatedAt: new Date() },
+      });
 
     const checkoutFixtures = [
       {
@@ -498,6 +527,25 @@ try {
           })
           .onConflictDoNothing();
       }
+    }
+
+    for (let index = 0; index < 9; index += 1) {
+      await tx
+        .insert(storeListings)
+        .values({
+          id: fixtureId(2310 + index),
+          organizationId,
+          storeId: fixtureId(2300),
+          productId: fixtureId(1100 + index),
+          status: "published",
+          featured: index < 3,
+          displayOrder: index,
+          imageAlt: `${catalogue[index]![0]} from Acme Coffee`,
+        })
+        .onConflictDoUpdate({
+          target: [storeListings.storeId, storeListings.productId],
+          set: { status: "published", featured: index < 3, displayOrder: index },
+        });
     }
 
     for (let index = 0; index < 15; index += 1) {
