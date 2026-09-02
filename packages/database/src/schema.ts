@@ -1334,6 +1334,155 @@ export const webhookDeliveries = pgTable(
   ],
 );
 
+export const invoiceCounters = pgTable(
+  "invoice_counters",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    year: integer("year").notNull(),
+    nextValue: integer("next_value").notNull().default(1),
+  },
+  (table) => [
+    uniqueIndex("invoice_counters_org_env_year_uidx").on(
+      table.organizationId,
+      table.environment,
+      table.year,
+    ),
+    check("invoice_counters_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("invoice_counters_next_check", sql`${table.nextValue} > 0`),
+  ],
+);
+
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    merchantId: uuid("merchant_id").notNull(),
+    locationId: uuid("location_id"),
+    customerId: uuid("customer_id").notNull(),
+    number: text("number"),
+    status: text("status").notNull().default("draft"),
+    currency: text("currency").notNull(),
+    subtotalAmount: bigint("subtotal_amount", { mode: "bigint" }).notNull(),
+    totalAmount: bigint("total_amount", { mode: "bigint" }).notNull(),
+    publicTokenDigest: text("public_token_digest"),
+    publicTokenPrefix: text("public_token_prefix"),
+    checkoutSessionId: uuid("checkout_session_id"),
+    orderId: uuid("order_id"),
+    paymentId: uuid("payment_id"),
+    dueAt: timestamp("due_at", { withTimezone: true }),
+    issuedAt: timestamp("issued_at", { withTimezone: true }),
+    paidAt: timestamp("paid_at", { withTimezone: true }),
+    voidedAt: timestamp("voided_at", { withTimezone: true }),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "invoices_merchant_org_fk",
+      columns: [table.organizationId, table.merchantId],
+      foreignColumns: [merchants.organizationId, merchants.id],
+    }),
+    foreignKey({
+      name: "invoices_location_org_fk",
+      columns: [table.organizationId, table.locationId],
+      foreignColumns: [locations.organizationId, locations.id],
+    }),
+    foreignKey({
+      name: "invoices_customer_org_fk",
+      columns: [table.organizationId, table.customerId],
+      foreignColumns: [customers.organizationId, customers.id],
+    }),
+    foreignKey({
+      name: "invoices_checkout_org_fk",
+      columns: [table.organizationId, table.checkoutSessionId],
+      foreignColumns: [checkoutSessions.organizationId, checkoutSessions.id],
+    }),
+    foreignKey({
+      name: "invoices_order_org_fk",
+      columns: [table.organizationId, table.orderId],
+      foreignColumns: [orders.organizationId, orders.id],
+    }),
+    foreignKey({
+      name: "invoices_payment_org_fk",
+      columns: [table.organizationId, table.paymentId],
+      foreignColumns: [payments.organizationId, payments.id],
+    }),
+    uniqueIndex("invoices_org_id_uidx").on(table.organizationId, table.id),
+    uniqueIndex("invoices_org_env_number_uidx")
+      .on(table.organizationId, table.environment, table.number)
+      .where(sql`${table.number} is not null`),
+    uniqueIndex("invoices_public_token_uidx")
+      .on(table.publicTokenDigest)
+      .where(sql`${table.publicTokenDigest} is not null`),
+    index("invoices_org_env_created_idx").on(
+      table.organizationId,
+      table.environment,
+      table.createdAt,
+      table.id,
+    ),
+    check("invoices_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("invoices_status_check", sql`${table.status} in ('draft', 'open', 'paid', 'void')`),
+    check("invoices_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check(
+      "invoices_amount_check",
+      sql`${table.subtotalAmount} > 0 and ${table.totalAmount} = ${table.subtotalAmount}`,
+    ),
+  ],
+);
+
+export const invoiceItems = pgTable(
+  "invoice_items",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    invoiceId: uuid("invoice_id").notNull(),
+    productId: uuid("product_id"),
+    variantId: uuid("variant_id"),
+    description: text("description").notNull(),
+    quantity: integer("quantity").notNull(),
+    unitAmount: bigint("unit_amount", { mode: "bigint" }).notNull(),
+    currency: text("currency").notNull(),
+    totalAmount: bigint("total_amount", { mode: "bigint" }).notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    foreignKey({
+      name: "invoice_items_invoice_org_fk",
+      columns: [table.organizationId, table.invoiceId],
+      foreignColumns: [invoices.organizationId, invoices.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      name: "invoice_items_product_org_fk",
+      columns: [table.organizationId, table.productId],
+      foreignColumns: [products.organizationId, products.id],
+    }),
+    foreignKey({
+      name: "invoice_items_variant_org_fk",
+      columns: [table.organizationId, table.variantId],
+      foreignColumns: [variants.organizationId, variants.id],
+    }),
+    uniqueIndex("invoice_items_org_id_uidx").on(table.organizationId, table.id),
+    index("invoice_items_invoice_idx").on(table.organizationId, table.invoiceId),
+    check(
+      "invoice_items_amount_check",
+      sql`${table.quantity} > 0 and ${table.unitAmount} > 0 and ${table.totalAmount} = ${table.unitAmount} * ${table.quantity}`,
+    ),
+    check("invoice_items_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
 export const seedVersions = pgTable("seed_versions", {
   key: text("key").primaryKey(),
   version: integer("version").notNull(),
