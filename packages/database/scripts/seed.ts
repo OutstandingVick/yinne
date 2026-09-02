@@ -792,7 +792,7 @@ try {
     .where(eq(seedVersions.key, "acme-foundation"));
   if (!seed) throw new Error("Seed verification failed.");
   console.log(
-    "Seeded Acme Coffee Phase 4 checkout, commerce, and deterministic Mock Provider dataset.",
+    "Seeded Acme Coffee Phase 5 Storefront, checkout, commerce, and deterministic Mock Provider dataset.",
   );
   console.log("Login: owner@acme.test (password from YINNE_SEED_PASSWORD)");
 } finally {

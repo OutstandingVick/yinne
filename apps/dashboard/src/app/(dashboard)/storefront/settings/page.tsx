@@ -8,7 +8,10 @@ import { activeUserContext } from "../../../../lib/context";
 
 async function saveStore(formData: FormData) {
   "use server";
-  const nullable = (name: string) => String(formData.get(name) ?? "").trim() || null;
+  const nullable = (name: string) => {
+    const value = formData.get(name);
+    return typeof value === "string" ? value.trim() || null : null;
+  };
   await updateStore(
     await activeUserContext(createRequestId()),
     updateStoreSchema.parse({

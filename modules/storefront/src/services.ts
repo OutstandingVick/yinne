@@ -20,14 +20,14 @@ import {
 } from "@yinne/database";
 import { assertStoreTransition, type StoreStatus } from "./state";
 
-const notFound = (): never => {
+function notFound(): never {
   throw new ApiError(
     404,
     "invalid_request",
     "resource_not_found",
     "The requested resource does not exist.",
   );
-};
+}
 
 const storeView = (row: typeof stores.$inferSelect) => ({
   id: row.id,
@@ -99,7 +99,7 @@ export async function updateStore(context: RequestContext, input: UpdateStoreInp
   return withTenantTransaction(context.tenant, async (tx) => {
     await requirePermission(tx, context.principal, "storefront:write", {
       organizationId: context.tenant.organizationId,
-      locationId: input.default_location_id,
+      ...(input.default_location_id ? { locationId: input.default_location_id } : {}),
     });
     if (input.default_location_id) {
       const [location] = await tx

@@ -106,7 +106,12 @@ export function Cart({ storeSlug, variants }: { storeSlug: string; variants: Var
           {error}
         </p>
       ) : null}
-      <button className="store-checkout" type="button" disabled={busy} onClick={checkout}>
+      <button
+        className="store-checkout"
+        type="button"
+        disabled={busy}
+        onClick={() => void checkout()}
+      >
         {busy ? "Starting secure checkout…" : "Continue to secure checkout"}
       </button>
       <p>

@@ -7,7 +7,9 @@ import { activeUserContext } from "../../../../lib/context";
 async function changePublication(formData: FormData) {
   "use server";
   const context = await activeUserContext(createRequestId());
-  const productId = String(formData.get("product_id"));
+  const productIdValue = formData.get("product_id");
+  if (typeof productIdValue !== "string") throw new Error("A product is required.");
+  const productId = productIdValue;
   if (formData.get("action") === "publish") {
     await publishStoreProduct(context, productId, { featured: false, display_order: 0 });
   } else {

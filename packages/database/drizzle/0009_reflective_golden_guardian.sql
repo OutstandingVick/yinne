@@ -38,7 +38,8 @@ CREATE TABLE "stores" (
 	CONSTRAINT "stores_environment_check" CHECK ("stores"."environment" in ('test', 'live')),
 	CONSTRAINT "stores_status_check" CHECK ("stores"."status" in ('draft', 'active', 'paused', 'archived')),
 	CONSTRAINT "stores_currency_check" CHECK ("stores"."currency" ~ '^[A-Z]{3}$'),
-	CONSTRAINT "stores_catalogue_version_check" CHECK ("stores"."catalogue_version" > 0)
+	CONSTRAINT "stores_catalogue_version_check" CHECK ("stores"."catalogue_version" > 0),
+	CONSTRAINT "stores_org_id_key" UNIQUE("organization_id","id")
 );
 --> statement-breakpoint
 ALTER TABLE "store_listings" ADD CONSTRAINT "store_listings_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

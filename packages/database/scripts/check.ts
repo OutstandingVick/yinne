@@ -38,6 +38,8 @@ try {
     "payment_links",
     "checkout_sessions",
     "checkout_line_items",
+    "stores",
+    "store_listings",
   ];
   const [result] = await client<{ current_user: string; protected_count: number }[]>`
     select current_user, count(*)::integer as protected_count
