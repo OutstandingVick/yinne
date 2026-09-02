@@ -208,6 +208,31 @@ export interface PaymentLink {
   version: number;
   payment_url?: string;
 }
+export interface Store {
+  id: string;
+  public_name: string;
+  slug: string;
+  status: "draft" | "active" | "paused" | "archived";
+  currency: string;
+  public_url: string;
+  appearance: Record<string, string>;
+  catalogue_version: number;
+  version: number;
+}
+export interface StorefrontProduct {
+  slug: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  image_alt: string | null;
+  variants: Array<{
+    id: string;
+    title: string;
+    unit_amount: string;
+    currency: string;
+    availability: "in_stock" | "low_stock" | "out_of_stock";
+  }>;
+}
 export interface VariantInput {
   sku: string;
   title: string;
@@ -550,5 +575,44 @@ export class YinneClient {
       this.request<{ payment_link: PaymentLink }>(`/v1/payment-links/${id}/deactivate`, {
         method: "POST",
       }).then((value) => value.payment_link),
+  };
+  readonly storefront = {
+    retrieve: () => this.request<{ store: Store }>("/v1/store").then((value) => value.store),
+    update: (input: Record<string, unknown>) =>
+      this.request<{ store: Store }>("/v1/store", {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }).then((value) => value.store),
+    activate: () =>
+      this.request<{ store: Store }>("/v1/store/activate", { method: "POST" }).then(
+        (value) => value.store,
+      ),
+    pause: () =>
+      this.request<{ store: Store }>("/v1/store/pause", { method: "POST" }).then(
+        (value) => value.store,
+      ),
+    publish: (productId: string, input: Record<string, unknown> = {}) =>
+      this.request<{ listing: Record<string, unknown> }>(
+        `/v1/store/products/${productId}/publish`,
+        { method: "POST", body: JSON.stringify(input) },
+      ).then((value) => value.listing),
+    unpublish: (productId: string) =>
+      this.request<{ listing: Record<string, unknown> }>(
+        `/v1/store/products/${productId}/unpublish`,
+        { method: "POST" },
+      ).then((value) => value.listing),
+    publicProducts: (slug: string, params: { limit?: number; after?: string } = {}) =>
+      this.request<{ data: StorefrontProduct[]; has_more: boolean }>(
+        `/v1/public/stores/${slug}/products${query(params)}`,
+      ),
+    beginCheckout: (
+      slug: string,
+      items: { variant_id: string; quantity: number }[],
+      idempotencyKey = crypto.randomUUID() + crypto.randomUUID(),
+    ) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/public/stores/${slug}/checkout`, {
+        method: "POST",
+        body: JSON.stringify({ items, idempotency_key: idempotencyKey }),
+      }).then((value) => value.checkout_session),
   };
 }
