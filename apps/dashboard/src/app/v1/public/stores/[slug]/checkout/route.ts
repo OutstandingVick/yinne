@@ -10,6 +10,8 @@ export function POST(request: NextRequest, { params }: { params: Promise<{ slug:
       checkout_session: await createPublicStoreCheckout(
         storeSlugSchema.parse((await params).slug),
         storefrontCartSchema.parse(await request.json()),
+        "test",
+        request.nextUrl.origin,
       ),
     }),
     { authenticated: false, rateLimit: 10, successStatus: 201 },

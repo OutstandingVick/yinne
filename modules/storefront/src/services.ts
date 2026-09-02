@@ -595,6 +595,7 @@ export async function createPublicStoreCheckout(
   storeSlug: string,
   input: StorefrontCartInput,
   environment: "test" | "live" = "test",
+  origin?: string,
 ) {
   const resolved = await resolvePublicStore(storeSlug, environment);
   const ids = input.items.map((item) => item.variant_id);
@@ -670,6 +671,12 @@ export async function createPublicStoreCheckout(
       items: input.items,
       customer_capture: { name: true, email: true, phone: false },
       expires_in_seconds: 1_800,
+      ...(origin
+        ? {
+            success_url: `${origin}/store/${resolved.row.slug}/confirmation`,
+            cancel_url: `${origin}/store/${resolved.row.slug}/cart`,
+          }
+        : {}),
       metadata: {
         channel: "storefront",
         store_id: resolved.row.id,
