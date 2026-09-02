@@ -549,3 +549,94 @@ export async function getPublicProduct(
     },
   };
 }
+
+export async function createPublicStoreCheckout(
+  storeSlug: string,
+  input: StorefrontCartInput,
+  environment: "test" | "live" = "test",
+) {
+  const resolved = await resolvePublicStore(storeSlug, environment);
+  const ids = input.items.map((item) => item.variant_id);
+  const catalogue = await withTenantTransaction(resolved.context.tenant, (tx) =>
+    tx
+      .select({ variant: variants, listingId: storeListings.id, onHand: inventoryLevels.onHand })
+      .from(variants)
+      .innerJoin(
+        products,
+        and(
+          eq(products.organizationId, variants.organizationId),
+          eq(products.id, variants.productId),
+        ),
+      )
+      .innerJoin(
+        storeListings,
+        and(
+          eq(storeListings.organizationId, products.organizationId),
+          eq(storeListings.productId, products.id),
+        ),
+      )
+      .leftJoin(
+        inventoryLevels,
+        and(
+          eq(inventoryLevels.organizationId, variants.organizationId),
+          eq(inventoryLevels.variantId, variants.id),
+          eq(inventoryLevels.locationId, resolved.row.defaultLocationId),
+        ),
+      )
+      .where(
+        and(
+          eq(storeListings.storeId, resolved.row.id),
+          eq(storeListings.status, "published"),
+          eq(products.status, "active"),
+          eq(variants.status, "active"),
+          inArray(variants.id, ids),
+        ),
+      ),
+  );
+  if (catalogue.length !== ids.length) {
+    throw new ApiError(
+      409,
+      "conflict",
+      "cart_changed",
+      "One or more cart items are no longer available.",
+    );
+  }
+  for (const item of input.items) {
+    const row = catalogue.find(({ variant }) => variant.id === item.variant_id)!;
+    if (row.variant.currency !== resolved.row.currency) {
+      throw new ApiError(
+        409,
+        "conflict",
+        "currency_mismatch",
+        "A cart item's currency no longer matches the Store.",
+      );
+    }
+    if (row.variant.trackInventory && (row.onHand ?? 0n) < BigInt(item.quantity)) {
+      throw new ApiError(
+        409,
+        "conflict",
+        "insufficient_inventory",
+        "A cart item no longer has enough inventory.",
+      );
+    }
+  }
+  const checkout = await createCheckoutSession(
+    resolved.context,
+    {
+      merchant_id: resolved.row.merchantId,
+      location_id: resolved.row.defaultLocationId,
+      currency: resolved.row.currency,
+      items: input.items,
+      customer_capture: { name: true, email: true, phone: false },
+      expires_in_seconds: 1_800,
+      metadata: {
+        channel: "storefront",
+        store_id: resolved.row.id,
+        store_slug: resolved.row.slug,
+        catalogue_version: resolved.row.catalogueVersion,
+      },
+    },
+    input.idempotency_key,
+  );
+  return checkout;
+}
