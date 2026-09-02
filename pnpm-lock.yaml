@@ -71,6 +71,12 @@ importers:
       '@yinne/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@yinne/invoicing':
+        specifier: workspace:*
+        version: link:../../modules/invoicing
+      '@yinne/operations':
+        specifier: workspace:*
+        version: link:../../modules/operations
       '@yinne/organizations':
         specifier: workspace:*
         version: link:../../modules/organizations

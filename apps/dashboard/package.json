@@ -22,6 +22,8 @@
     "@yinne/organizations": "workspace:*",
     "@yinne/payments": "workspace:*",
     "@yinne/storefront": "workspace:*",
+    "@yinne/operations": "workspace:*",
+    "@yinne/invoicing": "workspace:*",
     "@yinne/sdk": "workspace:*",
     "@yinne/ui": "workspace:*",
     "@next/env": "15.5.24",
