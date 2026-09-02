@@ -499,7 +499,13 @@ try {
       for (let locationIndex = 0; locationIndex < 4; locationIndex += 1) {
         const levelIndex = index * 4 + locationIndex;
         const levelId = fixtureId(1300 + levelIndex);
-        const onHand = BigInt(20 + ((index * 7 + locationIndex * 11) % 81));
+        const openingOnHand = BigInt(20 + ((index * 7 + locationIndex * 11) % 81));
+        const onHand =
+          locationIndex === 0 && index === 7
+            ? 3n
+            : locationIndex === 0 && index === 8
+              ? 0n
+              : openingOnHand;
         await tx
           .insert(inventoryLevels)
           .values({
@@ -518,14 +524,30 @@ try {
             id: fixtureId(1400 + levelIndex),
             organizationId,
             inventoryLevelId: levelId,
-            delta: onHand,
-            resultingOnHand: onHand,
+            delta: openingOnHand,
+            resultingOnHand: openingOnHand,
             reason: "Phase 2 opening stock",
             actorType: "system",
             actorId: "seed",
             createdAt: new Date("2026-08-01T08:00:00Z"),
           })
           .onConflictDoNothing();
+        if (onHand !== openingOnHand) {
+          await tx
+            .insert(inventoryMovements)
+            .values({
+              id: fixtureId(2400 + levelIndex),
+              organizationId,
+              inventoryLevelId: levelId,
+              delta: onHand - openingOnHand,
+              resultingOnHand: onHand,
+              reason: onHand === 0n ? "Phase 5 out-of-stock demo" : "Phase 5 low-stock demo",
+              actorType: "system",
+              actorId: "seed",
+              createdAt: new Date("2026-09-01T08:00:00Z"),
+            })
+            .onConflictDoNothing();
+        }
       }
     }
 
