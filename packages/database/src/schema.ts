@@ -1334,6 +1334,53 @@ export const webhookDeliveries = pgTable(
   ],
 );
 
+export const subscriptionPlans = pgTable(
+  "subscription_plans",
+  {
+    id: id(),
+    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    name: text("name").notNull(),
+    description: text("description"),
+    status: text("status").notNull().default("active"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    version: integer("version").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+  },
+  (table) => [
+    uniqueIndex("subscription_plans_org_id_uidx").on(table.organizationId, table.id),
+    index("subscription_plans_org_status_idx").on(table.organizationId, table.status, table.createdAt),
+    check("subscription_plans_status_check", sql`${table.status} in ('active', 'archived')`),
+  ],
+);
+
+export const recurringPrices = pgTable(
+  "recurring_prices",
+  {
+    id: id(),
+    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    planId: uuid("plan_id").notNull(),
+    currency: text("currency").notNull(),
+    unitAmount: bigint("unit_amount", { mode: "bigint" }).notNull(),
+    interval: text("interval").notNull(),
+    intervalCount: integer("interval_count").notNull().default(1),
+    status: text("status").notNull().default("active"),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: createdAt(),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+  },
+  (table) => [
+    foreignKey({ name: "recurring_prices_plan_org_fk", columns: [table.organizationId, table.planId], foreignColumns: [subscriptionPlans.organizationId, subscriptionPlans.id] }),
+    uniqueIndex("recurring_prices_org_id_uidx").on(table.organizationId, table.id),
+    index("recurring_prices_org_plan_status_idx").on(table.organizationId, table.planId, table.status),
+    check("recurring_prices_amount_check", sql`${table.unitAmount} > 0`),
+    check("recurring_prices_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check("recurring_prices_interval_check", sql`${table.interval} in ('month', 'year') and ${table.intervalCount} = 1`),
+    check("recurring_prices_status_check", sql`${table.status} in ('active', 'archived')`),
+  ],
+);
+
 export const invoiceCounters = pgTable(
   "invoice_counters",
   {
