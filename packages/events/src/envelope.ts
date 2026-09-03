@@ -62,6 +62,23 @@ export const domainEventTypes = [
   "invoice.issued",
   "invoice.paid",
   "invoice.voided",
+  "subscription_plan.created",
+  "subscription_plan.archived",
+  "recurring_price.created",
+  "recurring_price.archived",
+  "subscription.created",
+  "subscription.trial_started",
+  "subscription.activated",
+  "subscription.paused",
+  "subscription.resumed",
+  "subscription.cancel_scheduled",
+  "subscription.cancelled",
+  "subscription.renewal_started",
+  "subscription.renewal_succeeded",
+  "subscription.renewal_failed",
+  "subscription.renewal_pending",
+  "subscription.renewal_retried",
+  "subscription.period_advanced",
 ] as const;
 
 export type DomainEventType = (typeof domainEventTypes)[number];
