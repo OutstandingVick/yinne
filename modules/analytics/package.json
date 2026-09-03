@@ -1,0 +1,20 @@
+{
+  "name": "@yinne/analytics",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yinne/application": "workspace:*",
+    "@yinne/contracts": "workspace:*",
+    "@yinne/database": "workspace:*",
+    "drizzle-orm": "0.44.5"
+  }
+}
