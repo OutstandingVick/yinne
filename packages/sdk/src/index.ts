@@ -280,6 +280,38 @@ export interface Invoice {
   items: InvoiceItem[];
   invoice_url?: string;
 }
+export interface RecurringPrice {
+  id: string;
+  plan_id: string;
+  currency: string;
+  unit_amount: string;
+  interval: "month" | "year";
+  interval_count: 1;
+  status: "active" | "archived";
+}
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  description: string | null;
+  status: "active" | "archived";
+  version: number;
+  prices?: RecurringPrice[];
+}
+export interface Subscription {
+  id: string;
+  customer_id: string;
+  plan_id: string;
+  price_id: string;
+  status: "trialing" | "active" | "past_due" | "paused" | "cancelled" | "ended";
+  currency: string;
+  unit_amount: string;
+  interval: "month" | "year";
+  current_period_start: string;
+  current_period_end: string;
+  next_billing_at: string | null;
+  cancel_at_period_end: boolean;
+  retry_count: number;
+}
 export interface VariantInput {
   sku: string;
   title: string;
@@ -732,5 +764,23 @@ export class YinneClient {
       this.request<{ invoice: Invoice }>(`/v1/invoices/${id}/void`, { method: "POST" }).then(
         (value) => value.invoice,
       ),
+  };
+  readonly subscriptionPlans = {
+    list: (params: { limit?: number; status?: SubscriptionPlan["status"] } = {}) =>
+      this.request<Page<SubscriptionPlan>>(`/v1/subscription-plans${query(params)}`),
+    retrieve: (id: string) => this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}`).then((value) => value.plan),
+    create: (input: Record<string, unknown>) => this.request<{ plan: SubscriptionPlan }>("/v1/subscription-plans", { method: "POST", body: JSON.stringify(input) }).then((value) => value.plan),
+    archive: (id: string) => this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}/archive`, { method: "POST" }).then((value) => value.plan),
+    createPrice: (input: Record<string, unknown>) => this.request<{ price: RecurringPrice }>("/v1/recurring-prices", { method: "POST", body: JSON.stringify(input) }).then((value) => value.price),
+    archivePrice: (id: string) => this.request<{ price: RecurringPrice }>(`/v1/recurring-prices/${id}/archive`, { method: "POST" }).then((value) => value.price),
+  };
+  readonly subscriptions = {
+    list: (params: { limit?: number; status?: Subscription["status"]; customer_id?: string; plan_id?: string } = {}) => this.request<Page<Subscription>>(`/v1/subscriptions${query(params)}`),
+    retrieve: (id: string) => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}`).then((value) => value.subscription),
+    create: (input: Record<string, unknown>, options: { idempotencyKey?: string } = {}) => this.request<{ subscription: Subscription }>("/v1/subscriptions", { method: "POST", headers: { "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID() }, body: JSON.stringify(input) }).then((value) => value.subscription),
+    pause: (id: string) => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/pause`, { method: "POST" }).then((value) => value.subscription),
+    resume: (id: string) => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/resume`, { method: "POST" }).then((value) => value.subscription),
+    cancel: (id: string, mode: "immediate" | "period_end") => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/cancel`, { method: "POST", body: JSON.stringify({ mode }) }).then((value) => value.subscription),
+    retry: (id: string, mockOutcome?: "succeed" | "fail" | "pending") => this.request<{ renewal: Record<string, unknown> }>(`/v1/subscriptions/${id}/retry`, { method: "POST", body: JSON.stringify(mockOutcome ? { mock_outcome: mockOutcome } : {}) }).then((value) => value.renewal),
   };
 }
