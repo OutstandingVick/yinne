@@ -47,6 +47,9 @@ importers:
       '@next/env':
         specifier: 15.5.24
         version: 15.5.24
+      '@yinne/analytics':
+        specifier: workspace:*
+        version: link:../../modules/analytics
       '@yinne/application':
         specifier: workspace:*
         version: link:../../packages/application

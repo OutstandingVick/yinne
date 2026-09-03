@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@yinne/auth": "workspace:*",
+    "@yinne/analytics": "workspace:*",
     "@yinne/application": "workspace:*",
     "@yinne/commerce": "workspace:*",
     "@yinne/checkout": "workspace:*",
