@@ -89,6 +89,9 @@ importers:
       '@yinne/storefront':
         specifier: workspace:*
         version: link:../../modules/storefront
+      '@yinne/subscriptions':
+        specifier: workspace:*
+        version: link:../../modules/subscriptions
       '@yinne/ui':
         specifier: workspace:*
         version: link:../../packages/ui

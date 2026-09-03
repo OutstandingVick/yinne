@@ -22,6 +22,7 @@
     "@yinne/organizations": "workspace:*",
     "@yinne/payments": "workspace:*",
     "@yinne/storefront": "workspace:*",
+    "@yinne/subscriptions": "workspace:*",
     "@yinne/operations": "workspace:*",
     "@yinne/invoicing": "workspace:*",
     "@yinne/sdk": "workspace:*",
