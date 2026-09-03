@@ -141,6 +141,9 @@ importers:
       '@node-rs/argon2':
         specifier: 2.0.2
         version: 2.0.2
+      '@yinne/analytics':
+        specifier: workspace:*
+        version: link:../../modules/analytics
       '@yinne/config':
         specifier: workspace:*
         version: link:../../packages/config

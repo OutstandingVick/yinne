@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { outboxDispatchPayloadSchema, subscriptionBillingPayloadSchema } from "./tasks";
+import {
+  analyticsRefreshPayloadSchema,
+  outboxDispatchPayloadSchema,
+  subscriptionBillingPayloadSchema,
+} from "./tasks";
 
 describe("worker task registration", () => {
   it("validates tenant-aware outbox payloads", () => {
@@ -27,5 +31,16 @@ describe("worker task registration", () => {
     });
     expect(payload.limit).toBe(50);
     expect(payload.dueAt).toEqual(new Date("2026-09-03T00:00:00.000Z"));
+  });
+
+  it("validates replay-safe analytics refresh windows", () => {
+    const payload = analyticsRefreshPayloadSchema.parse({
+      organizationId: "0198f000-0000-7000-8000-000000000001",
+      environment: "test",
+      from: "2026-08-01T00:00:00.000Z",
+      to: "2026-09-01T00:00:00.000Z",
+    });
+    expect(payload.timezone).toBe("Africa/Lagos");
+    expect(payload.from).toBeInstanceOf(Date);
   });
 });
