@@ -135,6 +135,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@node-rs/argon2':
+        specifier: 2.0.2
+        version: 2.0.2
       '@yinne/config':
         specifier: workspace:*
         version: link:../../packages/config

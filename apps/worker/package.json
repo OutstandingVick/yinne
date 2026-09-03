@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@node-rs/argon2": "2.0.2",
     "@yinne/config": "workspace:*",
     "@yinne/database": "workspace:*",
     "@yinne/subscriptions": "workspace:*",

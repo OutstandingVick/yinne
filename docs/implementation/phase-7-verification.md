@@ -4,24 +4,24 @@ Verified on 2026-09-03 against the Phase 7 implementation and deterministic Acme
 
 ## Automated verification
 
-| Check | Result |
-| --- | --- |
-| `pnpm install --frozen-lockfile` | Passed |
-| `pnpm format:check` | Passed |
-| `pnpm lint` | Passed |
-| `pnpm typecheck` | Passed: 19/19 packages |
-| `pnpm test` | Passed: 61/61 tests across 20 files |
-| `pnpm test:integration` | Passed: 9/9 tests across 4 files |
-| `pnpm openapi:validate` | Passed: OpenAPI 3.1, 82 operations |
-| `pnpm verify:clean-db` | Passed: migrations, seed, 35 forced-RLS tables, append-only grants |
-| `pnpm test:e2e` | Passed: 15/15 Chromium scenarios |
-| `pnpm build` | Passed: 19/19 packages and 64 dashboard pages |
+| Check                            | Result                                                             |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `pnpm install --frozen-lockfile` | Passed                                                             |
+| `pnpm format:check`              | Passed                                                             |
+| `pnpm lint`                      | Passed                                                             |
+| `pnpm typecheck`                 | Passed: 19/19 packages                                             |
+| `pnpm test`                      | Passed: 61/61 tests across 20 files                                |
+| `pnpm test:integration`          | Passed: 9/9 tests across 4 files                                   |
+| `pnpm openapi:validate`          | Passed: OpenAPI 3.1, 82 operations                                 |
+| `pnpm verify:clean-db`           | Passed: migrations, seed, 35 forced-RLS tables, append-only grants |
+| `pnpm test:e2e`                  | Passed: 15/15 Chromium scenarios                                   |
+| `pnpm build`                     | Passed: 19/19 packages and 64 dashboard pages                      |
 
 ## Worker verification
 
 The `subscription_billing` task was invoked directly for the seeded test tenant with a fixed `dueAt` timestamp and bounded batch size. It completed with exit code 0. The task intentionally returns no value; subscription, renewal, invoice, checkout, and payment outcomes are persisted transactionally.
 
-The worker production bundle also passed through `tsup`. Native password-hashing bindings remain external to the bundle so the runtime loads the platform-specific package correctly.
+The worker production bundle also passed through `tsup`. Native password-hashing bindings remain external to the bundle and are declared as a direct Worker runtime dependency so pnpm's strict resolver can load the platform-specific package correctly. The production entry point connected, advertised `subscription_billing` and `outbox_dispatch`, processed queued outbox jobs, then handled `SIGINT` with its graceful-stop path.
 
 ## Database verification
 
