@@ -120,3 +120,38 @@ CREATE INDEX "subscriptions_due_idx" ON "subscriptions" USING btree ("environmen
 CREATE INDEX "subscriptions_org_customer_idx" ON "subscriptions" USING btree ("organization_id","customer_id","created_at");--> statement-breakpoint
 ALTER TABLE "invoices" ADD CONSTRAINT "invoices_subscription_org_fk" FOREIGN KEY ("organization_id","subscription_id") REFERENCES "public"."subscriptions"("organization_id","id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "invoices_subscription_period_uidx" ON "invoices" USING btree ("organization_id","environment","subscription_id","billing_period_start") WHERE "invoices"."subscription_id" is not null;
+--> statement-breakpoint
+GRANT SELECT, INSERT, UPDATE ON subscription_plans, recurring_prices, subscriptions, subscription_renewals TO yinne_app;
+--> statement-breakpoint
+ALTER TABLE subscription_plans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscription_plans FORCE ROW LEVEL SECURITY;
+CREATE POLICY subscription_plans_tenant_policy ON subscription_plans USING (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+) WITH CHECK (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+);
+ALTER TABLE recurring_prices ENABLE ROW LEVEL SECURITY;
+ALTER TABLE recurring_prices FORCE ROW LEVEL SECURITY;
+CREATE POLICY recurring_prices_tenant_policy ON recurring_prices USING (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+) WITH CHECK (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+);
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions FORCE ROW LEVEL SECURITY;
+CREATE POLICY subscriptions_tenant_policy ON subscriptions USING (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+  AND environment = nullif(current_setting('app.environment', true), '')
+) WITH CHECK (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+  AND environment = nullif(current_setting('app.environment', true), '')
+);
+ALTER TABLE subscription_renewals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscription_renewals FORCE ROW LEVEL SECURITY;
+CREATE POLICY subscription_renewals_tenant_policy ON subscription_renewals USING (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+  AND environment = nullif(current_setting('app.environment', true), '')
+) WITH CHECK (
+  organization_id = nullif(current_setting('app.organization_id', true), '')::uuid
+  AND environment = nullif(current_setting('app.environment', true), '')
+);

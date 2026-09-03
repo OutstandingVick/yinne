@@ -40,6 +40,10 @@ try {
     "checkout_line_items",
     "stores",
     "store_listings",
+    "subscription_plans",
+    "recurring_prices",
+    "subscriptions",
+    "subscription_renewals",
   ];
   const [result] = await client<{ current_user: string; protected_count: number }[]>`
     select current_user, count(*)::integer as protected_count
