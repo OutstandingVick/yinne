@@ -1381,6 +1381,60 @@ export const recurringPrices = pgTable(
   ],
 );
 
+export const subscriptions = pgTable(
+  "subscriptions",
+  {
+    id: id(),
+    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    environment: text("environment").notNull(),
+    merchantId: uuid("merchant_id").notNull(),
+    locationId: uuid("location_id").notNull(),
+    customerId: uuid("customer_id").notNull(),
+    planId: uuid("plan_id").notNull(),
+    priceId: uuid("price_id").notNull(),
+    status: text("status").notNull(),
+    currency: text("currency").notNull(),
+    unitAmount: bigint("unit_amount", { mode: "bigint" }).notNull(),
+    interval: text("interval").notNull(),
+    intervalCount: integer("interval_count").notNull(),
+    billingTimezone: text("billing_timezone").notNull().default("UTC"),
+    anchorDay: integer("anchor_day").notNull(),
+    currentPeriodStart: timestamp("current_period_start", { withTimezone: true }).notNull(),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }).notNull(),
+    nextBillingAt: timestamp("next_billing_at", { withTimezone: true }),
+    trialStart: timestamp("trial_start", { withTimezone: true }),
+    trialEnd: timestamp("trial_end", { withTimezone: true }),
+    cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    pausedAt: timestamp("paused_at", { withTimezone: true }),
+    paymentMethodReference: text("payment_method_reference"),
+    mockRenewalOutcome: text("mock_renewal_outcome").notNull().default("succeed"),
+    retryCount: integer("retry_count").notNull().default(0),
+    version: integer("version").notNull().default(1),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({ name: "subscriptions_merchant_org_fk", columns: [table.organizationId, table.merchantId], foreignColumns: [merchants.organizationId, merchants.id] }),
+    foreignKey({ name: "subscriptions_location_org_fk", columns: [table.organizationId, table.locationId], foreignColumns: [locations.organizationId, locations.id] }),
+    foreignKey({ name: "subscriptions_customer_org_fk", columns: [table.organizationId, table.customerId], foreignColumns: [customers.organizationId, customers.id] }),
+    foreignKey({ name: "subscriptions_plan_org_fk", columns: [table.organizationId, table.planId], foreignColumns: [subscriptionPlans.organizationId, subscriptionPlans.id] }),
+    foreignKey({ name: "subscriptions_price_org_fk", columns: [table.organizationId, table.priceId], foreignColumns: [recurringPrices.organizationId, recurringPrices.id] }),
+    uniqueIndex("subscriptions_org_id_uidx").on(table.organizationId, table.id),
+    index("subscriptions_due_idx").on(table.environment, table.status, table.nextBillingAt, table.id),
+    index("subscriptions_org_customer_idx").on(table.organizationId, table.customerId, table.createdAt),
+    check("subscriptions_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("subscriptions_status_check", sql`${table.status} in ('trialing', 'active', 'past_due', 'paused', 'cancelled', 'ended')`),
+    check("subscriptions_amount_check", sql`${table.unitAmount} > 0`),
+    check("subscriptions_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check("subscriptions_interval_check", sql`${table.interval} in ('month', 'year') and ${table.intervalCount} = 1`),
+    check("subscriptions_anchor_check", sql`${table.anchorDay} between 1 and 31`),
+    check("subscriptions_period_check", sql`${table.currentPeriodEnd} > ${table.currentPeriodStart}`),
+    check("subscriptions_mock_outcome_check", sql`${table.mockRenewalOutcome} in ('succeed', 'fail', 'pending')`),
+  ],
+);
+
 export const invoiceCounters = pgTable(
   "invoice_counters",
   {
@@ -1414,6 +1468,9 @@ export const invoices = pgTable(
     merchantId: uuid("merchant_id").notNull(),
     locationId: uuid("location_id"),
     customerId: uuid("customer_id").notNull(),
+    subscriptionId: uuid("subscription_id"),
+    billingPeriodStart: timestamp("billing_period_start", { withTimezone: true }),
+    billingPeriodEnd: timestamp("billing_period_end", { withTimezone: true }),
     number: text("number"),
     status: text("status").notNull().default("draft"),
     currency: text("currency").notNull(),
@@ -1450,6 +1507,11 @@ export const invoices = pgTable(
       foreignColumns: [customers.organizationId, customers.id],
     }),
     foreignKey({
+      name: "invoices_subscription_org_fk",
+      columns: [table.organizationId, table.subscriptionId],
+      foreignColumns: [subscriptions.organizationId, subscriptions.id],
+    }),
+    foreignKey({
       name: "invoices_checkout_org_fk",
       columns: [table.organizationId, table.checkoutSessionId],
       foreignColumns: [checkoutSessions.organizationId, checkoutSessions.id],
@@ -1471,6 +1533,9 @@ export const invoices = pgTable(
     uniqueIndex("invoices_public_token_uidx")
       .on(table.publicTokenDigest)
       .where(sql`${table.publicTokenDigest} is not null`),
+    uniqueIndex("invoices_subscription_period_uidx")
+      .on(table.organizationId, table.environment, table.subscriptionId, table.billingPeriodStart)
+      .where(sql`${table.subscriptionId} is not null`),
     index("invoices_org_env_created_idx").on(
       table.organizationId,
       table.environment,
@@ -1527,6 +1592,38 @@ export const invoiceItems = pgTable(
       sql`${table.quantity} > 0 and ${table.unitAmount} > 0 and ${table.totalAmount} = ${table.unitAmount} * ${table.quantity}`,
     ),
     check("invoice_items_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+  ],
+);
+
+export const subscriptionRenewals = pgTable(
+  "subscription_renewals",
+  {
+    id: id(),
+    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    environment: text("environment").notNull(),
+    subscriptionId: uuid("subscription_id").notNull(),
+    invoiceId: uuid("invoice_id"),
+    periodStart: timestamp("period_start", { withTimezone: true }).notNull(),
+    periodEnd: timestamp("period_end", { withTimezone: true }).notNull(),
+    status: text("status").notNull().default("started"),
+    attemptCount: integer("attempt_count").notNull().default(0),
+    nextRetryAt: timestamp("next_retry_at", { withTimezone: true }),
+    lastPaymentId: uuid("last_payment_id"),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    foreignKey({ name: "subscription_renewals_subscription_org_fk", columns: [table.organizationId, table.subscriptionId], foreignColumns: [subscriptions.organizationId, subscriptions.id] }),
+    foreignKey({ name: "subscription_renewals_invoice_org_fk", columns: [table.organizationId, table.invoiceId], foreignColumns: [invoices.organizationId, invoices.id] }),
+    foreignKey({ name: "subscription_renewals_payment_org_fk", columns: [table.organizationId, table.lastPaymentId], foreignColumns: [payments.organizationId, payments.id] }),
+    uniqueIndex("subscription_renewals_period_uidx").on(table.organizationId, table.environment, table.subscriptionId, table.periodStart),
+    uniqueIndex("subscription_renewals_org_id_uidx").on(table.organizationId, table.id),
+    index("subscription_renewals_retry_idx").on(table.environment, table.status, table.nextRetryAt),
+    check("subscription_renewals_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("subscription_renewals_status_check", sql`${table.status} in ('started', 'pending', 'failed', 'succeeded', 'exhausted')`),
+    check("subscription_renewals_period_check", sql`${table.periodEnd} > ${table.periodStart}`),
+    check("subscription_renewals_attempt_check", sql`${table.attemptCount} between 0 and 3`),
   ],
 );
 
