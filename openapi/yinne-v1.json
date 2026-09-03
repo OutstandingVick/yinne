@@ -1140,6 +1140,136 @@
         }
       }
     },
+    "/v1/analytics/overview": {
+      "get": {
+        "operationId": "getAnalyticsOverview",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" },
+          { "$ref": "#/components/parameters/AnalyticsGranularity" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/sales": {
+      "get": {
+        "operationId": "getSalesAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" },
+          { "$ref": "#/components/parameters/AnalyticsGranularity" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/payments": {
+      "get": {
+        "operationId": "getPaymentAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/customers": {
+      "get": {
+        "operationId": "getCustomerAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/subscriptions": {
+      "get": {
+        "operationId": "getSubscriptionAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/invoices": {
+      "get": {
+        "operationId": "getInvoiceAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/locations": {
+      "get": {
+        "operationId": "getLocationAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/analytics/products": {
+      "get": {
+        "operationId": "getProductAnalytics",
+        "parameters": [
+          { "$ref": "#/components/parameters/AnalyticsFrom" },
+          { "$ref": "#/components/parameters/AnalyticsTo" },
+          { "$ref": "#/components/parameters/AnalyticsTimezone" },
+          { "$ref": "#/components/parameters/AnalyticsCurrency" },
+          { "$ref": "#/components/parameters/AnalyticsLocation" },
+          { "$ref": "#/components/parameters/Limit" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/AnalyticsReport" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
       "parameters": [
         {
@@ -1229,6 +1359,38 @@
         "in": "header",
         "required": true,
         "schema": { "type": "string", "minLength": 16, "maxLength": 255 }
+      },
+      "AnalyticsFrom": {
+        "name": "from",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "format": "date-time" }
+      },
+      "AnalyticsTo": {
+        "name": "to",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "format": "date-time" }
+      },
+      "AnalyticsTimezone": {
+        "name": "timezone",
+        "in": "query",
+        "schema": { "type": "string", "default": "Africa/Lagos", "maxLength": 100 }
+      },
+      "AnalyticsCurrency": {
+        "name": "currency",
+        "in": "query",
+        "schema": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      },
+      "AnalyticsLocation": {
+        "name": "location_id",
+        "in": "query",
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "AnalyticsGranularity": {
+        "name": "granularity",
+        "in": "query",
+        "schema": { "type": "string", "enum": ["day", "week", "month"], "default": "day" }
       }
     },
     "schemas": {
@@ -1478,6 +1640,33 @@
                 "next_cursor": { "type": ["string", "null"] },
                 "request_id": { "type": "string" }
               }
+            }
+          }
+        }
+      },
+      "AnalyticsReport": {
+        "description": "Live analytics report. Monetary maps are partitioned by ISO currency and contain integer minor-unit strings.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["meta", "request_id"],
+              "properties": {
+                "meta": {
+                  "type": "object",
+                  "required": ["formula_version", "from", "to", "timezone", "freshness", "filters"],
+                  "properties": {
+                    "formula_version": { "const": "analytics.v1" },
+                    "from": { "type": "string", "format": "date-time" },
+                    "to": { "type": "string", "format": "date-time" },
+                    "timezone": { "type": "string" },
+                    "freshness": { "type": "object" },
+                    "filters": { "type": "object" }
+                  }
+                },
+                "request_id": { "type": "string" }
+              },
+              "additionalProperties": true
             }
           }
         }
