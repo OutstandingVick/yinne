@@ -19,9 +19,15 @@ describe("subscription contracts", () => {
 
   it("rejects zero, floating point, unsupported intervals, and arbitrary states", () => {
     const base = { plan_id: crypto.randomUUID(), currency: "NGN", interval_count: 1 };
-    expect(() => createRecurringPriceSchema.parse({ ...base, unit_amount: "0", interval: "month" })).toThrow();
-    expect(() => createRecurringPriceSchema.parse({ ...base, unit_amount: "1.50", interval: "month" })).toThrow();
-    expect(() => createRecurringPriceSchema.parse({ ...base, unit_amount: "100", interval: "week" })).toThrow();
+    expect(() =>
+      createRecurringPriceSchema.parse({ ...base, unit_amount: "0", interval: "month" }),
+    ).toThrow();
+    expect(() =>
+      createRecurringPriceSchema.parse({ ...base, unit_amount: "1.50", interval: "month" }),
+    ).toThrow();
+    expect(() =>
+      createRecurringPriceSchema.parse({ ...base, unit_amount: "100", interval: "week" }),
+    ).toThrow();
     expect(() => subscriptionStatusSchema.parse("renewing")).toThrow();
   });
 

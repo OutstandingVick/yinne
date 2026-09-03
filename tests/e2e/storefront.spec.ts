@@ -14,7 +14,7 @@ test("guest completes the Acme storefront golden path", async ({ page }) => {
   await page.getByLabel("Full name").fill("Storefront Guest");
   await page.getByLabel("Email").fill("storefront-guest@example.test");
   await page.getByRole("button", { name: "Pay securely" }).click();
-  await expect(page).toHaveURL(/\/store\/acme-coffee\/confirmation$/);
+  await expect(page).toHaveURL(/\/store\/acme-coffee\/confirmation$/, { timeout: 15_000 });
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
 });
 

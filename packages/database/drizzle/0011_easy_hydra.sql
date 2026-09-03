@@ -10,6 +10,7 @@ CREATE TABLE "recurring_prices" (
 	"metadata" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"archived_at" timestamp with time zone,
+	CONSTRAINT "recurring_prices_org_id_key" UNIQUE("organization_id","id"),
 	CONSTRAINT "recurring_prices_amount_check" CHECK ("recurring_prices"."unit_amount" > 0),
 	CONSTRAINT "recurring_prices_currency_check" CHECK ("recurring_prices"."currency" ~ '^[A-Z]{3}$'),
 	CONSTRAINT "recurring_prices_interval_check" CHECK ("recurring_prices"."interval" in ('month', 'year') and "recurring_prices"."interval_count" = 1),
@@ -27,6 +28,7 @@ CREATE TABLE "subscription_plans" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"archived_at" timestamp with time zone,
+	CONSTRAINT "subscription_plans_org_id_key" UNIQUE("organization_id","id"),
 	CONSTRAINT "subscription_plans_status_check" CHECK ("subscription_plans"."status" in ('active', 'archived'))
 );
 --> statement-breakpoint
@@ -45,6 +47,7 @@ CREATE TABLE "subscription_renewals" (
 	"completed_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "subscription_renewals_org_id_key" UNIQUE("organization_id","id"),
 	CONSTRAINT "subscription_renewals_environment_check" CHECK ("subscription_renewals"."environment" in ('test', 'live')),
 	CONSTRAINT "subscription_renewals_status_check" CHECK ("subscription_renewals"."status" in ('started', 'pending', 'failed', 'succeeded', 'exhausted')),
 	CONSTRAINT "subscription_renewals_period_check" CHECK ("subscription_renewals"."period_end" > "subscription_renewals"."period_start"),
@@ -82,6 +85,7 @@ CREATE TABLE "subscriptions" (
 	"metadata" jsonb DEFAULT '{}'::jsonb NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "subscriptions_org_id_key" UNIQUE("organization_id","id"),
 	CONSTRAINT "subscriptions_environment_check" CHECK ("subscriptions"."environment" in ('test', 'live')),
 	CONSTRAINT "subscriptions_status_check" CHECK ("subscriptions"."status" in ('trialing', 'active', 'past_due', 'paused', 'cancelled', 'ended')),
 	CONSTRAINT "subscriptions_amount_check" CHECK ("subscriptions"."unit_amount" > 0),

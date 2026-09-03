@@ -8,7 +8,7 @@ import {
   subscriptions,
   withTenantTransaction,
 } from "@yinne/database";
-import { createInvoice, issueInvoice, payPublicInvoice } from "@yinne/invoicing";
+import { collectInvoice, createInvoice, issueInvoice, payPublicInvoice } from "@yinne/invoicing";
 import { advanceBillingDate, type BillingInterval } from "./calendar";
 
 export async function processSubscriptionRenewal(
@@ -95,53 +95,70 @@ export async function processSubscriptionRenewal(
   });
   if (prepared.skipped) return { status: "skipped", subscription_id: subscriptionId };
   const { subscription, renewal } = prepared;
-  if (renewal.invoiceId)
-    return { status: renewal.status, subscription_id: subscription.id, invoice_id: renewal.invoiceId };
-
-  const created = (await createInvoice(
-    context,
-    {
-      merchant_id: subscription.merchantId,
-      customer_id: subscription.customerId,
-      location_id: subscription.locationId,
-      currency: subscription.currency,
-      due_at: now,
-      metadata: { channel: "subscription", subscription_id: subscription.id, renewal_id: renewal.id },
-      items: [
-        {
-          description: `Recurring subscription ${subscription.currentPeriodStart.toISOString()} – ${subscription.currentPeriodEnd.toISOString()}`,
-          quantity: 1,
-          unit_amount: subscription.unitAmount.toString(),
+  let invoiceId = renewal.invoiceId;
+  let checkout: { checkout_url: string | null };
+  if (invoiceId) {
+    checkout = (await collectInvoice(
+      context,
+      invoiceId,
+      `renewal-retry-checkout:${renewal.id}:${renewal.attemptCount + 1}`,
+      { forceNew: true },
+    )) as { checkout_url: string | null };
+  } else {
+    const created = (await createInvoice(
+      context,
+      {
+        merchant_id: subscription.merchantId,
+        customer_id: subscription.customerId,
+        location_id: subscription.locationId,
+        currency: subscription.currency,
+        due_at: now,
+        metadata: {
+          channel: "subscription",
+          subscription_id: subscription.id,
+          renewal_id: renewal.id,
         },
-      ],
-    },
-    `renewal:${subscription.id}:${subscription.currentPeriodStart.toISOString()}`,
-  )) as { id: string };
-  await withTenantTransaction(context.tenant, async (tx) => {
-    await tx
-      .update(invoices)
-      .set({
-        subscriptionId: subscription.id,
-        billingPeriodStart: subscription.currentPeriodStart,
-        billingPeriodEnd: subscription.currentPeriodEnd,
-      })
-      .where(eq(invoices.id, created.id));
-    await tx
-      .update(subscriptionRenewals)
-      .set({ invoiceId: created.id, updatedAt: now })
-      .where(eq(subscriptionRenewals.id, renewal.id));
-  });
-  const issued = (await issueInvoice(context, created.id)) as { invoice_url?: string };
-  const invoiceToken = issued.invoice_url?.split("/").pop();
-  if (!invoiceToken)
-    throw new ApiError(500, "internal_error", "invoice_token_missing", "Renewal Invoice token is missing.");
-  const checkout = (await payPublicInvoice(
-    invoiceToken,
-    `renewal-checkout:${renewal.id}`,
-  )) as { checkout_url: string | null };
+        items: [
+          {
+            description: `Recurring subscription ${subscription.currentPeriodStart.toISOString()} – ${subscription.currentPeriodEnd.toISOString()}`,
+            quantity: 1,
+            unit_amount: subscription.unitAmount.toString(),
+          },
+        ],
+      },
+      `renewal:${subscription.id}:${subscription.currentPeriodStart.toISOString()}`,
+    )) as { id: string };
+    invoiceId = created.id;
+    await withTenantTransaction(context.tenant, async (tx) => {
+      await tx
+        .update(invoices)
+        .set({
+          subscriptionId: subscription.id,
+          billingPeriodStart: subscription.currentPeriodStart,
+          billingPeriodEnd: subscription.currentPeriodEnd,
+        })
+        .where(eq(invoices.id, created.id));
+      await tx
+        .update(subscriptionRenewals)
+        .set({ invoiceId: created.id, updatedAt: now })
+        .where(eq(subscriptionRenewals.id, renewal.id));
+    });
+    const issued = (await issueInvoice(context, created.id)) as { invoice_url?: string };
+    const invoiceToken = issued.invoice_url?.split("/").pop();
+    if (!invoiceToken)
+      throw new ApiError(
+        500,
+        "internal_error",
+        "invoice_token_missing",
+        "Renewal Invoice token is missing.",
+      );
+    checkout = (await payPublicInvoice(invoiceToken, `renewal-checkout:${renewal.id}`)) as {
+      checkout_url: string | null;
+    };
+  }
   const checkoutToken = checkout.checkout_url?.split("/").pop();
   if (!checkoutToken)
-    return { status: "pending", subscription_id: subscription.id, invoice_id: created.id };
+    return { status: "pending", subscription_id: subscription.id, invoice_id: invoiceId };
   const scenario =
     subscription.mockRenewalOutcome === "succeed"
       ? "success"
@@ -160,7 +177,7 @@ export async function processSubscriptionRenewal(
         ? "failed"
         : "pending";
   await recordRenewalOutcome(context, subscription.id, renewal.id, outcome, now);
-  return { status: outcome, subscription_id: subscription.id, invoice_id: created.id };
+  return { status: outcome, subscription_id: subscription.id, invoice_id: invoiceId };
 }
 
 async function recordRenewalOutcome(
@@ -213,7 +230,11 @@ async function recordRenewalOutcome(
           aggregateType: "subscription",
           aggregateId: updated.id,
           aggregateVersion: updated.version,
-          data: { subscription_id: updated.id, renewal_id: renewal.id, invoice_id: renewal.invoiceId },
+          data: {
+            subscription_id: updated.id,
+            renewal_id: renewal.id,
+            invoice_id: renewal.invoiceId,
+          },
         });
       return;
     }

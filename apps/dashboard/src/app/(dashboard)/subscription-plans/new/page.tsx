@@ -6,16 +6,20 @@ import { activeUserContext } from "../../../../lib/context";
 
 async function create(form: FormData) {
   "use server";
+  const value = (name: string) => {
+    const field = form.get(name);
+    return typeof field === "string" ? field : "";
+  };
   const context = await activeUserContext(createRequestId());
   const plan = await createPlan(context, {
-    name: String(form.get("name")),
-    description: String(form.get("description") || "") || null,
+    name: value("name"),
+    description: value("description") || null,
     metadata: {},
   });
   await createPrice(context, {
     plan_id: plan.id,
-    currency: String(form.get("currency")),
-    unit_amount: String(form.get("unit_amount")),
+    currency: value("currency"),
+    unit_amount: value("unit_amount"),
     interval: form.get("interval") === "year" ? "year" : "month",
     interval_count: 1,
     metadata: {},
@@ -24,5 +28,38 @@ async function create(form: FormData) {
 }
 
 export default function NewPlanPage() {
-  return <><PageHeader title="Create subscription plan" description="Prices are immutable after creation; create a new Price to change terms." /><form action={create} className="card form-stack"><label>Plan name<input name="name" required maxLength={160} /></label><label>Description<textarea name="description" maxLength={2000} /></label><label>Currency<input name="currency" defaultValue="NGN" pattern="[A-Z]{3}" required /></label><label>Amount in minor units<input name="unit_amount" inputMode="numeric" pattern="[1-9][0-9]*" required /></label><label>Billing interval<select name="interval"><option value="month">Monthly</option><option value="year">Annual</option></select></label><Button type="submit">Create plan and price</Button></form></>;
+  return (
+    <>
+      <PageHeader
+        title="Create subscription plan"
+        description="Prices are immutable after creation; create a new Price to change terms."
+      />
+      <form action={create} className="card form-stack">
+        <label>
+          Plan name
+          <input name="name" required maxLength={160} />
+        </label>
+        <label>
+          Description
+          <textarea name="description" maxLength={2000} />
+        </label>
+        <label>
+          Currency
+          <input name="currency" defaultValue="NGN" pattern="[A-Z]{3}" required />
+        </label>
+        <label>
+          Amount in minor units
+          <input name="unit_amount" inputMode="numeric" pattern="[1-9][0-9]*" required />
+        </label>
+        <label>
+          Billing interval
+          <select name="interval">
+            <option value="month">Monthly</option>
+            <option value="year">Annual</option>
+          </select>
+        </label>
+        <Button type="submit">Create plan and price</Button>
+      </form>
+    </>
+  );
 }

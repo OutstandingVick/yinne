@@ -1,6 +1,12 @@
 import { ApiError } from "@yinne/contracts";
 
-export type SubscriptionStatus = "trialing" | "active" | "past_due" | "paused" | "cancelled" | "ended";
+export type SubscriptionStatus =
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "paused"
+  | "cancelled"
+  | "ended";
 
 const transitions: Record<SubscriptionStatus, SubscriptionStatus[]> = {
   trialing: ["active", "paused", "cancelled"],
@@ -13,5 +19,10 @@ const transitions: Record<SubscriptionStatus, SubscriptionStatus[]> = {
 
 export function assertSubscriptionTransition(from: SubscriptionStatus, to: SubscriptionStatus) {
   if (!transitions[from].includes(to))
-    throw new ApiError(409, "conflict", "invalid_subscription_transition", `Subscription cannot transition from ${from} to ${to}.`);
+    throw new ApiError(
+      409,
+      "conflict",
+      "invalid_subscription_transition",
+      `Subscription cannot transition from ${from} to ${to}.`,
+    );
 }

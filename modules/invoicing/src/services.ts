@@ -510,11 +510,23 @@ export async function getPublicInvoice(token: string) {
 }
 export async function payPublicInvoice(token: string, idempotencyKey: string, origin?: string) {
   const resolved = await resolvePublicInvoice(token);
-  const row = await withTenantTransaction(resolved.context.tenant, async (tx) => {
+  return collectInvoice(resolved.context, resolved.id, idempotencyKey, {
+    token,
+    ...(origin ? { origin } : {}),
+  });
+}
+
+export async function collectInvoice(
+  context: RequestContext,
+  invoiceId: string,
+  idempotencyKey: string,
+  options: { token?: string; origin?: string; forceNew?: boolean } = {},
+) {
+  const row = await withTenantTransaction(context.tenant, async (tx) => {
     const [invoice] = await tx
       .select()
       .from(invoices)
-      .where(eq(invoices.id, resolved.id))
+      .where(eq(invoices.id, invoiceId))
       .for("update")
       .limit(1);
     if (!invoice || invoice.status !== "open")
@@ -526,7 +538,7 @@ export async function payPublicInvoice(token: string, idempotencyKey: string, or
         "invoice_location_required",
         "Invoice needs an active Location before payment.",
       );
-    if (invoice.checkoutSessionId) {
+    if (invoice.checkoutSessionId && !options.forceNew) {
       const [session] = await tx
         .select()
         .from(checkoutSessions)
@@ -542,7 +554,7 @@ export async function payPublicInvoice(token: string, idempotencyKey: string, or
     return { invoice, existing: false };
   });
   if (row.existing && row.invoice.checkoutSessionId)
-    return withTenantTransaction(resolved.context.tenant, async (tx) => {
+    return withTenantTransaction(context.tenant, async (tx) => {
       const [session] = await tx
         .select()
         .from(checkoutSessions)
@@ -551,15 +563,18 @@ export async function payPublicInvoice(token: string, idempotencyKey: string, or
       return session ? { id: session.id, status: session.status, checkout_url: null } : notFound();
     });
   const checkout = await createCollectionCheckoutSession(
-    resolved.context,
+    context,
     {
       merchant_id: row.invoice.merchantId,
       location_id: row.invoice.locationId!,
       currency: row.invoice.currency,
       description: `Invoice ${row.invoice.number}`,
       amount: row.invoice.totalAmount.toString(),
-      ...(origin
-        ? { success_url: `${origin}/invoice/${token}`, cancel_url: `${origin}/invoice/${token}` }
+      ...(options.origin && options.token
+        ? {
+            success_url: `${options.origin}/invoice/${options.token}`,
+            cancel_url: `${options.origin}/invoice/${options.token}`,
+          }
         : {}),
       metadata: {
         channel: "invoice",
@@ -569,7 +584,7 @@ export async function payPublicInvoice(token: string, idempotencyKey: string, or
     },
     idempotencyKey,
   );
-  await withTenantTransaction(resolved.context.tenant, (tx) =>
+  await withTenantTransaction(context.tenant, (tx) =>
     tx
       .update(invoices)
       .set({

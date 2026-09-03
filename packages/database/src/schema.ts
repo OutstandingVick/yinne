@@ -1338,7 +1338,9 @@ export const subscriptionPlans = pgTable(
   "subscription_plans",
   {
     id: id(),
-    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
     name: text("name").notNull(),
     description: text("description"),
     status: text("status").notNull().default("active"),
@@ -1350,7 +1352,11 @@ export const subscriptionPlans = pgTable(
   },
   (table) => [
     uniqueIndex("subscription_plans_org_id_uidx").on(table.organizationId, table.id),
-    index("subscription_plans_org_status_idx").on(table.organizationId, table.status, table.createdAt),
+    index("subscription_plans_org_status_idx").on(
+      table.organizationId,
+      table.status,
+      table.createdAt,
+    ),
     check("subscription_plans_status_check", sql`${table.status} in ('active', 'archived')`),
   ],
 );
@@ -1359,7 +1365,9 @@ export const recurringPrices = pgTable(
   "recurring_prices",
   {
     id: id(),
-    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
     planId: uuid("plan_id").notNull(),
     currency: text("currency").notNull(),
     unitAmount: bigint("unit_amount", { mode: "bigint" }).notNull(),
@@ -1371,12 +1379,23 @@ export const recurringPrices = pgTable(
     archivedAt: timestamp("archived_at", { withTimezone: true }),
   },
   (table) => [
-    foreignKey({ name: "recurring_prices_plan_org_fk", columns: [table.organizationId, table.planId], foreignColumns: [subscriptionPlans.organizationId, subscriptionPlans.id] }),
+    foreignKey({
+      name: "recurring_prices_plan_org_fk",
+      columns: [table.organizationId, table.planId],
+      foreignColumns: [subscriptionPlans.organizationId, subscriptionPlans.id],
+    }),
     uniqueIndex("recurring_prices_org_id_uidx").on(table.organizationId, table.id),
-    index("recurring_prices_org_plan_status_idx").on(table.organizationId, table.planId, table.status),
+    index("recurring_prices_org_plan_status_idx").on(
+      table.organizationId,
+      table.planId,
+      table.status,
+    ),
     check("recurring_prices_amount_check", sql`${table.unitAmount} > 0`),
     check("recurring_prices_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
-    check("recurring_prices_interval_check", sql`${table.interval} in ('month', 'year') and ${table.intervalCount} = 1`),
+    check(
+      "recurring_prices_interval_check",
+      sql`${table.interval} in ('month', 'year') and ${table.intervalCount} = 1`,
+    ),
     check("recurring_prices_status_check", sql`${table.status} in ('active', 'archived')`),
   ],
 );
@@ -1385,7 +1404,9 @@ export const subscriptions = pgTable(
   "subscriptions",
   {
     id: id(),
-    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
     environment: text("environment").notNull(),
     merchantId: uuid("merchant_id").notNull(),
     locationId: uuid("location_id").notNull(),
@@ -1416,22 +1437,63 @@ export const subscriptions = pgTable(
     updatedAt: updatedAt(),
   },
   (table) => [
-    foreignKey({ name: "subscriptions_merchant_org_fk", columns: [table.organizationId, table.merchantId], foreignColumns: [merchants.organizationId, merchants.id] }),
-    foreignKey({ name: "subscriptions_location_org_fk", columns: [table.organizationId, table.locationId], foreignColumns: [locations.organizationId, locations.id] }),
-    foreignKey({ name: "subscriptions_customer_org_fk", columns: [table.organizationId, table.customerId], foreignColumns: [customers.organizationId, customers.id] }),
-    foreignKey({ name: "subscriptions_plan_org_fk", columns: [table.organizationId, table.planId], foreignColumns: [subscriptionPlans.organizationId, subscriptionPlans.id] }),
-    foreignKey({ name: "subscriptions_price_org_fk", columns: [table.organizationId, table.priceId], foreignColumns: [recurringPrices.organizationId, recurringPrices.id] }),
+    foreignKey({
+      name: "subscriptions_merchant_org_fk",
+      columns: [table.organizationId, table.merchantId],
+      foreignColumns: [merchants.organizationId, merchants.id],
+    }),
+    foreignKey({
+      name: "subscriptions_location_org_fk",
+      columns: [table.organizationId, table.locationId],
+      foreignColumns: [locations.organizationId, locations.id],
+    }),
+    foreignKey({
+      name: "subscriptions_customer_org_fk",
+      columns: [table.organizationId, table.customerId],
+      foreignColumns: [customers.organizationId, customers.id],
+    }),
+    foreignKey({
+      name: "subscriptions_plan_org_fk",
+      columns: [table.organizationId, table.planId],
+      foreignColumns: [subscriptionPlans.organizationId, subscriptionPlans.id],
+    }),
+    foreignKey({
+      name: "subscriptions_price_org_fk",
+      columns: [table.organizationId, table.priceId],
+      foreignColumns: [recurringPrices.organizationId, recurringPrices.id],
+    }),
     uniqueIndex("subscriptions_org_id_uidx").on(table.organizationId, table.id),
-    index("subscriptions_due_idx").on(table.environment, table.status, table.nextBillingAt, table.id),
-    index("subscriptions_org_customer_idx").on(table.organizationId, table.customerId, table.createdAt),
+    index("subscriptions_due_idx").on(
+      table.environment,
+      table.status,
+      table.nextBillingAt,
+      table.id,
+    ),
+    index("subscriptions_org_customer_idx").on(
+      table.organizationId,
+      table.customerId,
+      table.createdAt,
+    ),
     check("subscriptions_environment_check", sql`${table.environment} in ('test', 'live')`),
-    check("subscriptions_status_check", sql`${table.status} in ('trialing', 'active', 'past_due', 'paused', 'cancelled', 'ended')`),
+    check(
+      "subscriptions_status_check",
+      sql`${table.status} in ('trialing', 'active', 'past_due', 'paused', 'cancelled', 'ended')`,
+    ),
     check("subscriptions_amount_check", sql`${table.unitAmount} > 0`),
     check("subscriptions_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
-    check("subscriptions_interval_check", sql`${table.interval} in ('month', 'year') and ${table.intervalCount} = 1`),
+    check(
+      "subscriptions_interval_check",
+      sql`${table.interval} in ('month', 'year') and ${table.intervalCount} = 1`,
+    ),
     check("subscriptions_anchor_check", sql`${table.anchorDay} between 1 and 31`),
-    check("subscriptions_period_check", sql`${table.currentPeriodEnd} > ${table.currentPeriodStart}`),
-    check("subscriptions_mock_outcome_check", sql`${table.mockRenewalOutcome} in ('succeed', 'fail', 'pending')`),
+    check(
+      "subscriptions_period_check",
+      sql`${table.currentPeriodEnd} > ${table.currentPeriodStart}`,
+    ),
+    check(
+      "subscriptions_mock_outcome_check",
+      sql`${table.mockRenewalOutcome} in ('succeed', 'fail', 'pending')`,
+    ),
   ],
 );
 
@@ -1599,7 +1661,9 @@ export const subscriptionRenewals = pgTable(
   "subscription_renewals",
   {
     id: id(),
-    organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
     environment: text("environment").notNull(),
     subscriptionId: uuid("subscription_id").notNull(),
     invoiceId: uuid("invoice_id"),
@@ -1614,14 +1678,34 @@ export const subscriptionRenewals = pgTable(
     updatedAt: updatedAt(),
   },
   (table) => [
-    foreignKey({ name: "subscription_renewals_subscription_org_fk", columns: [table.organizationId, table.subscriptionId], foreignColumns: [subscriptions.organizationId, subscriptions.id] }),
-    foreignKey({ name: "subscription_renewals_invoice_org_fk", columns: [table.organizationId, table.invoiceId], foreignColumns: [invoices.organizationId, invoices.id] }),
-    foreignKey({ name: "subscription_renewals_payment_org_fk", columns: [table.organizationId, table.lastPaymentId], foreignColumns: [payments.organizationId, payments.id] }),
-    uniqueIndex("subscription_renewals_period_uidx").on(table.organizationId, table.environment, table.subscriptionId, table.periodStart),
+    foreignKey({
+      name: "subscription_renewals_subscription_org_fk",
+      columns: [table.organizationId, table.subscriptionId],
+      foreignColumns: [subscriptions.organizationId, subscriptions.id],
+    }),
+    foreignKey({
+      name: "subscription_renewals_invoice_org_fk",
+      columns: [table.organizationId, table.invoiceId],
+      foreignColumns: [invoices.organizationId, invoices.id],
+    }),
+    foreignKey({
+      name: "subscription_renewals_payment_org_fk",
+      columns: [table.organizationId, table.lastPaymentId],
+      foreignColumns: [payments.organizationId, payments.id],
+    }),
+    uniqueIndex("subscription_renewals_period_uidx").on(
+      table.organizationId,
+      table.environment,
+      table.subscriptionId,
+      table.periodStart,
+    ),
     uniqueIndex("subscription_renewals_org_id_uidx").on(table.organizationId, table.id),
     index("subscription_renewals_retry_idx").on(table.environment, table.status, table.nextRetryAt),
     check("subscription_renewals_environment_check", sql`${table.environment} in ('test', 'live')`),
-    check("subscription_renewals_status_check", sql`${table.status} in ('started', 'pending', 'failed', 'succeeded', 'exhausted')`),
+    check(
+      "subscription_renewals_status_check",
+      sql`${table.status} in ('started', 'pending', 'failed', 'succeeded', 'exhausted')`,
+    ),
     check("subscription_renewals_period_check", sql`${table.periodEnd} > ${table.periodStart}`),
     check("subscription_renewals_attempt_check", sql`${table.attemptCount} between 0 and 3`),
   ],

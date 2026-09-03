@@ -11,8 +11,20 @@ export function advanceBillingDate(
 ) {
   const year = instant.getUTCFullYear() + (interval === "year" ? 1 : 0);
   const month = instant.getUTCMonth() + (interval === "month" ? 1 : 0);
-  const normalized = new Date(Date.UTC(year, month, 1, instant.getUTCHours(), instant.getUTCMinutes(), instant.getUTCSeconds(), instant.getUTCMilliseconds()));
-  normalized.setUTCDate(Math.min(anchorDay, lastUtcDay(normalized.getUTCFullYear(), normalized.getUTCMonth())));
+  const normalized = new Date(
+    Date.UTC(
+      year,
+      month,
+      1,
+      instant.getUTCHours(),
+      instant.getUTCMinutes(),
+      instant.getUTCSeconds(),
+      instant.getUTCMilliseconds(),
+    ),
+  );
+  normalized.setUTCDate(
+    Math.min(anchorDay, lastUtcDay(normalized.getUTCFullYear(), normalized.getUTCMonth())),
+  );
   return normalized;
 }
 

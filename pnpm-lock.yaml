@@ -346,9 +346,6 @@ importers:
       '@yinne/application':
         specifier: workspace:*
         version: link:../../packages/application
-      '@yinne/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@yinne/checkout':
         specifier: workspace:*
         version: link:../checkout

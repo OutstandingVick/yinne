@@ -25,8 +25,6 @@ export const permissionKeys = [
   "customers:pii_read",
   "subscriptions:read",
   "subscriptions:write",
-  "subscriptions:cancel",
-  "subscriptions:retry",
   "analytics:read",
   "locations:read",
   "locations:write",
@@ -50,6 +48,8 @@ export const permissionKeys = [
   "invoices:write",
   "invoices:issue",
   "invoices:void",
+  "subscriptions:cancel",
+  "subscriptions:retry",
 ] as const;
 
 export type PermissionKey = (typeof permissionKeys)[number];

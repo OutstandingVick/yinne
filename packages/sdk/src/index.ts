@@ -768,19 +768,67 @@ export class YinneClient {
   readonly subscriptionPlans = {
     list: (params: { limit?: number; status?: SubscriptionPlan["status"] } = {}) =>
       this.request<Page<SubscriptionPlan>>(`/v1/subscription-plans${query(params)}`),
-    retrieve: (id: string) => this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}`).then((value) => value.plan),
-    create: (input: Record<string, unknown>) => this.request<{ plan: SubscriptionPlan }>("/v1/subscription-plans", { method: "POST", body: JSON.stringify(input) }).then((value) => value.plan),
-    archive: (id: string) => this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}/archive`, { method: "POST" }).then((value) => value.plan),
-    createPrice: (input: Record<string, unknown>) => this.request<{ price: RecurringPrice }>("/v1/recurring-prices", { method: "POST", body: JSON.stringify(input) }).then((value) => value.price),
-    archivePrice: (id: string) => this.request<{ price: RecurringPrice }>(`/v1/recurring-prices/${id}/archive`, { method: "POST" }).then((value) => value.price),
+    retrieve: (id: string) =>
+      this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}`).then(
+        (value) => value.plan,
+      ),
+    create: (input: Record<string, unknown>) =>
+      this.request<{ plan: SubscriptionPlan }>("/v1/subscription-plans", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((value) => value.plan),
+    archive: (id: string) =>
+      this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}/archive`, {
+        method: "POST",
+      }).then((value) => value.plan),
+    createPrice: (input: Record<string, unknown>) =>
+      this.request<{ price: RecurringPrice }>("/v1/recurring-prices", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((value) => value.price),
+    archivePrice: (id: string) =>
+      this.request<{ price: RecurringPrice }>(`/v1/recurring-prices/${id}/archive`, {
+        method: "POST",
+      }).then((value) => value.price),
   };
   readonly subscriptions = {
-    list: (params: { limit?: number; status?: Subscription["status"]; customer_id?: string; plan_id?: string } = {}) => this.request<Page<Subscription>>(`/v1/subscriptions${query(params)}`),
-    retrieve: (id: string) => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}`).then((value) => value.subscription),
-    create: (input: Record<string, unknown>, options: { idempotencyKey?: string } = {}) => this.request<{ subscription: Subscription }>("/v1/subscriptions", { method: "POST", headers: { "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID() }, body: JSON.stringify(input) }).then((value) => value.subscription),
-    pause: (id: string) => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/pause`, { method: "POST" }).then((value) => value.subscription),
-    resume: (id: string) => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/resume`, { method: "POST" }).then((value) => value.subscription),
-    cancel: (id: string, mode: "immediate" | "period_end") => this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/cancel`, { method: "POST", body: JSON.stringify({ mode }) }).then((value) => value.subscription),
-    retry: (id: string, mockOutcome?: "succeed" | "fail" | "pending") => this.request<{ renewal: Record<string, unknown> }>(`/v1/subscriptions/${id}/retry`, { method: "POST", body: JSON.stringify(mockOutcome ? { mock_outcome: mockOutcome } : {}) }).then((value) => value.renewal),
+    list: (
+      params: {
+        limit?: number;
+        status?: Subscription["status"];
+        customer_id?: string;
+        plan_id?: string;
+      } = {},
+    ) => this.request<Page<Subscription>>(`/v1/subscriptions${query(params)}`),
+    retrieve: (id: string) =>
+      this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}`).then(
+        (value) => value.subscription,
+      ),
+    create: (input: Record<string, unknown>, options: { idempotencyKey?: string } = {}) =>
+      this.request<{ subscription: Subscription }>("/v1/subscriptions", {
+        method: "POST",
+        headers: {
+          "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() + crypto.randomUUID(),
+        },
+        body: JSON.stringify(input),
+      }).then((value) => value.subscription),
+    pause: (id: string) =>
+      this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/pause`, {
+        method: "POST",
+      }).then((value) => value.subscription),
+    resume: (id: string) =>
+      this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/resume`, {
+        method: "POST",
+      }).then((value) => value.subscription),
+    cancel: (id: string, mode: "immediate" | "period_end") =>
+      this.request<{ subscription: Subscription }>(`/v1/subscriptions/${id}/cancel`, {
+        method: "POST",
+        body: JSON.stringify({ mode }),
+      }).then((value) => value.subscription),
+    retry: (id: string, mockOutcome?: "succeed" | "fail" | "pending") =>
+      this.request<{ renewal: Record<string, unknown> }>(`/v1/subscriptions/${id}/retry`, {
+        method: "POST",
+        body: JSON.stringify(mockOutcome ? { mock_outcome: mockOutcome } : {}),
+      }).then((value) => value.renewal),
   };
 }

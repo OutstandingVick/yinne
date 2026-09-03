@@ -16,6 +16,8 @@ import {
   providerAccounts,
   providerEvents,
   refunds,
+  subscriptionRenewals,
+  subscriptions,
   transactions,
   withTenantTransaction,
   type TenantTransaction,
@@ -29,6 +31,26 @@ import {
 import { MOCK_WEBHOOK_SECRET, mockProvider, type ProviderResult } from "./provider";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
+function advanceSubscriptionPeriod(end: Date, interval: string, anchorDay: number) {
+  const year = end.getUTCFullYear() + (interval === "year" ? 1 : 0);
+  const month = end.getUTCMonth() + (interval === "month" ? 1 : 0);
+  const result = new Date(
+    Date.UTC(
+      year,
+      month,
+      1,
+      end.getUTCHours(),
+      end.getUTCMinutes(),
+      end.getUTCSeconds(),
+      end.getUTCMilliseconds(),
+    ),
+  );
+  const lastDay = new Date(
+    Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  result.setUTCDate(Math.min(anchorDay, lastDay));
+  return result;
+}
 function notFound(): never {
   throw new ApiError(
     404,
@@ -419,6 +441,70 @@ async function finalizePayment(
           currency: payment.currency,
         },
       });
+      if (paidInvoice.subscriptionId) {
+        const [renewal] = await tx
+          .select()
+          .from(subscriptionRenewals)
+          .where(
+            and(
+              eq(subscriptionRenewals.organizationId, context.tenant.organizationId),
+              eq(subscriptionRenewals.environment, context.tenant.environment),
+              eq(subscriptionRenewals.subscriptionId, paidInvoice.subscriptionId),
+              eq(subscriptionRenewals.invoiceId, paidInvoice.id),
+            ),
+          )
+          .for("update")
+          .limit(1);
+        const [subscription] = await tx
+          .select()
+          .from(subscriptions)
+          .where(eq(subscriptions.id, paidInvoice.subscriptionId))
+          .for("update")
+          .limit(1);
+        if (renewal && subscription && renewal.status !== "succeeded") {
+          const nextEnd = advanceSubscriptionPeriod(
+            subscription.currentPeriodEnd,
+            subscription.interval,
+            subscription.anchorDay,
+          );
+          const [advanced] = await tx
+            .update(subscriptions)
+            .set({
+              status: "active",
+              currentPeriodStart: subscription.currentPeriodEnd,
+              currentPeriodEnd: nextEnd,
+              nextBillingAt: nextEnd,
+              retryCount: 0,
+              version: sql`${subscriptions.version} + 1`,
+              updatedAt: now,
+            })
+            .where(eq(subscriptions.id, subscription.id))
+            .returning();
+          await tx
+            .update(subscriptionRenewals)
+            .set({
+              status: "succeeded",
+              lastPaymentId: payment.id,
+              completedAt: now,
+              updatedAt: now,
+            })
+            .where(eq(subscriptionRenewals.id, renewal.id));
+          if (advanced)
+            await recordDomainChange(tx, context, {
+              action: "subscription.renewal_succeeded",
+              aggregateType: "subscription",
+              aggregateId: advanced.id,
+              aggregateVersion: advanced.version,
+              data: {
+                subscription_id: advanced.id,
+                renewal_id: renewal.id,
+                invoice_id: paidInvoice.id,
+                payment_id: payment.id,
+                next_billing_at: nextEnd.toISOString(),
+              },
+            });
+        }
+      }
     }
   }
   const [updatedPayment] = await tx

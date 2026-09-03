@@ -6,4 +6,5 @@ export default defineConfig({
   dts: true,
   clean: true,
   noExternal: [/^@yinne\//],
+  external: ["@node-rs/argon2"],
 });

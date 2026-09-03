@@ -918,12 +918,41 @@ try {
     }
 
     const planFixtures = [
-      { id: 2600, name: "Coffee Club", description: "Fresh coffee delivered every month", status: "active" },
-      { id: 2601, name: "Office Coffee Annual", description: "Annual office coffee service", status: "active" },
-      { id: 2602, name: "Legacy Tasting Club", description: "Archived legacy membership", status: "archived" },
+      {
+        id: 2600,
+        name: "Coffee Club",
+        description: "Fresh coffee delivered every month",
+        status: "active",
+      },
+      {
+        id: 2601,
+        name: "Office Coffee Annual",
+        description: "Annual office coffee service",
+        status: "active",
+      },
+      {
+        id: 2602,
+        name: "Legacy Tasting Club",
+        description: "Archived legacy membership",
+        status: "archived",
+      },
     ] as const;
     for (const plan of planFixtures)
-      await tx.insert(subscriptionPlans).values({ id: fixtureId(plan.id), organizationId, name: plan.name, description: plan.description, status: plan.status, archivedAt: plan.status === "archived" ? new Date("2026-08-01T00:00:00Z") : null, metadata: { seeded: true } }).onConflictDoUpdate({ target: subscriptionPlans.id, set: { name: plan.name, status: plan.status, updatedAt: new Date() } });
+      await tx
+        .insert(subscriptionPlans)
+        .values({
+          id: fixtureId(plan.id),
+          organizationId,
+          name: plan.name,
+          description: plan.description,
+          status: plan.status,
+          archivedAt: plan.status === "archived" ? new Date("2026-08-01T00:00:00Z") : null,
+          metadata: { seeded: true },
+        })
+        .onConflictDoUpdate({
+          target: subscriptionPlans.id,
+          set: { name: plan.name, status: plan.status, updatedAt: new Date() },
+        });
 
     const priceFixtures = [
       { id: 2610, planId: 2600, amount: 2000000n, interval: "month", status: "active" },
@@ -931,11 +960,31 @@ try {
       { id: 2612, planId: 2600, amount: 1500000n, interval: "month", status: "archived" },
     ] as const;
     for (const price of priceFixtures)
-      await tx.insert(recurringPrices).values({ id: fixtureId(price.id), organizationId, planId: fixtureId(price.planId), currency: "NGN", unitAmount: price.amount, interval: price.interval, intervalCount: 1, status: price.status, archivedAt: price.status === "archived" ? new Date("2026-08-01T00:00:00Z") : null, metadata: { seeded: true } }).onConflictDoUpdate({ target: recurringPrices.id, set: { status: price.status } });
+      await tx
+        .insert(recurringPrices)
+        .values({
+          id: fixtureId(price.id),
+          organizationId,
+          planId: fixtureId(price.planId),
+          currency: "NGN",
+          unitAmount: price.amount,
+          interval: price.interval,
+          intervalCount: 1,
+          status: price.status,
+          archivedAt: price.status === "archived" ? new Date("2026-08-01T00:00:00Z") : null,
+          metadata: { seeded: true },
+        })
+        .onConflictDoUpdate({ target: recurringPrices.id, set: { status: price.status } });
 
     const subscriptionFixtures = [
       { id: 2620, status: "active", outcome: "succeed", next: "2026-10-01T00:00:00Z", price: 2610 },
-      { id: 2621, status: "trialing", outcome: "succeed", next: "2026-09-10T00:00:00Z", price: 2610 },
+      {
+        id: 2621,
+        status: "trialing",
+        outcome: "succeed",
+        next: "2026-09-10T00:00:00Z",
+        price: 2610,
+      },
       { id: 2622, status: "past_due", outcome: "fail", next: "2026-09-03T00:00:00Z", price: 2610 },
       { id: 2623, status: "paused", outcome: "succeed", next: null, price: 2610 },
       { id: 2624, status: "active", outcome: "succeed", next: "2026-10-01T00:00:00Z", price: 2610 },
@@ -945,7 +994,45 @@ try {
     ] as const;
     for (const [index, fixture] of subscriptionFixtures.entries()) {
       const annual = fixture.price === 2611;
-      await tx.insert(subscriptions).values({ id: fixtureId(fixture.id), organizationId, environment: "test", merchantId, locationId: fixtureId(10 + (index % 4)), customerId: fixtureId(1000 + index), planId: fixtureId(annual ? 2601 : 2600), priceId: fixtureId(fixture.price), status: fixture.status, currency: "NGN", unitAmount: annual ? 18000000n : 2000000n, interval: annual ? "year" : "month", intervalCount: 1, billingTimezone: "Africa/Lagos", anchorDay: 1, currentPeriodStart: new Date("2026-09-01T00:00:00Z"), currentPeriodEnd: new Date(annual ? "2027-09-01T00:00:00Z" : "2026-10-01T00:00:00Z"), nextBillingAt: fixture.next ? new Date(fixture.next) : null, trialStart: fixture.status === "trialing" ? new Date("2026-09-01T00:00:00Z") : null, trialEnd: fixture.status === "trialing" ? new Date("2026-09-10T00:00:00Z") : null, cancelAtPeriodEnd: fixture.id === 2624, cancelledAt: fixture.status === "cancelled" ? new Date("2026-09-02T00:00:00Z") : null, pausedAt: fixture.status === "paused" ? new Date("2026-09-02T00:00:00Z") : null, mockRenewalOutcome: fixture.outcome, retryCount: fixture.status === "past_due" ? 1 : 0, metadata: { seeded: true } }).onConflictDoUpdate({ target: subscriptions.id, set: { status: fixture.status, nextBillingAt: fixture.next ? new Date(fixture.next) : null, mockRenewalOutcome: fixture.outcome, updatedAt: new Date() } });
+      await tx
+        .insert(subscriptions)
+        .values({
+          id: fixtureId(fixture.id),
+          organizationId,
+          environment: "test",
+          merchantId,
+          locationId: fixtureId(10 + (index % 4)),
+          customerId: fixtureId(1000 + index),
+          planId: fixtureId(annual ? 2601 : 2600),
+          priceId: fixtureId(fixture.price),
+          status: fixture.status,
+          currency: "NGN",
+          unitAmount: annual ? 18000000n : 2000000n,
+          interval: annual ? "year" : "month",
+          intervalCount: 1,
+          billingTimezone: "Africa/Lagos",
+          anchorDay: 1,
+          currentPeriodStart: new Date("2026-09-01T00:00:00Z"),
+          currentPeriodEnd: new Date(annual ? "2027-09-01T00:00:00Z" : "2026-10-01T00:00:00Z"),
+          nextBillingAt: fixture.next ? new Date(fixture.next) : null,
+          trialStart: fixture.status === "trialing" ? new Date("2026-09-01T00:00:00Z") : null,
+          trialEnd: fixture.status === "trialing" ? new Date("2026-09-10T00:00:00Z") : null,
+          cancelAtPeriodEnd: fixture.id === 2624,
+          cancelledAt: fixture.status === "cancelled" ? new Date("2026-09-02T00:00:00Z") : null,
+          pausedAt: fixture.status === "paused" ? new Date("2026-09-02T00:00:00Z") : null,
+          mockRenewalOutcome: fixture.outcome,
+          retryCount: fixture.status === "past_due" ? 1 : 0,
+          metadata: { seeded: true },
+        })
+        .onConflictDoUpdate({
+          target: subscriptions.id,
+          set: {
+            status: fixture.status,
+            nextBillingAt: fixture.next ? new Date(fixture.next) : null,
+            mockRenewalOutcome: fixture.outcome,
+            updatedAt: new Date(),
+          },
+        });
     }
 
     await tx
