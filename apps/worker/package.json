@@ -14,6 +14,7 @@
   "dependencies": {
     "@yinne/config": "workspace:*",
     "@yinne/database": "workspace:*",
+    "@yinne/subscriptions": "workspace:*",
     "dotenv": "16.6.1",
     "drizzle-orm": "0.44.5",
     "graphile-worker": "0.16.6",

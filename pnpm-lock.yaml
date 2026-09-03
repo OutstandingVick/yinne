@@ -138,6 +138,9 @@ importers:
       '@yinne/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@yinne/subscriptions':
+        specifier: workspace:*
+        version: link:../../modules/subscriptions
       dotenv:
         specifier: 16.6.1
         version: 16.6.1
@@ -343,6 +346,9 @@ importers:
       '@yinne/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@yinne/checkout':
+        specifier: workspace:*
+        version: link:../checkout
       '@yinne/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
