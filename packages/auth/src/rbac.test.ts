@@ -34,4 +34,24 @@ describe("central RBAC", () => {
     expect(can(assignments, "products:publish", { organizationId: org })).toBe(false);
     expect(can(assignments, "customers:pii_read", { organizationId: org })).toBe(false);
   });
+
+  it("grants analysts organization analytics without write access", () => {
+    const assignments: PermissionAssignment[] = [
+      { role: "analyst", scope: { type: "organization", id: org } },
+    ];
+    expect(can(assignments, "analytics:read", { organizationId: org })).toBe(true);
+    expect(can(assignments, "orders:write", { organizationId: org })).toBe(false);
+  });
+
+  it("constrains manager analytics to the assigned location", () => {
+    const assignments: PermissionAssignment[] = [
+      { role: "manager", scope: { type: "location", id: ikeja } },
+    ];
+    expect(can(assignments, "analytics:read", { organizationId: org, locationId: ikeja })).toBe(
+      true,
+    );
+    expect(can(assignments, "analytics:read", { organizationId: org, locationId: lekki })).toBe(
+      false,
+    );
+  });
 });
