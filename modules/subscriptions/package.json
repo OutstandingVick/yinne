@@ -1,0 +1,21 @@
+{
+  "name": "@yinne/subscriptions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@yinne/application": "workspace:*",
+    "@yinne/auth": "workspace:*",
+    "@yinne/contracts": "workspace:*",
+    "@yinne/core": "workspace:*",
+    "@yinne/database": "workspace:*",
+    "@yinne/invoicing": "workspace:*",
+    "drizzle-orm": "0.44.5"
+  }
+}
