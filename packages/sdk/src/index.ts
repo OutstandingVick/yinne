@@ -9,6 +9,29 @@ export interface ListParams {
   after?: string;
   search?: string;
 }
+export interface AnalyticsParams {
+  from: string;
+  to: string;
+  timezone?: string;
+  currency?: string;
+  location_id?: string;
+  granularity?: "day" | "week" | "month";
+  limit?: number;
+}
+export interface AnalyticsMeta {
+  formula_version: "analytics.v1";
+  from: string;
+  to: string;
+  timezone: string;
+  granularity: "day" | "week" | "month";
+  freshness: { mode: "live"; as_of: string };
+  filters: { currency: string | null; location_id: string | null };
+}
+export interface AnalyticsReport {
+  meta: AnalyticsMeta;
+  request_id: string;
+  [key: string]: unknown;
+}
 export interface Customer {
   id: string;
   name: string;
@@ -830,5 +853,23 @@ export class YinneClient {
         method: "POST",
         body: JSON.stringify(mockOutcome ? { mock_outcome: mockOutcome } : {}),
       }).then((value) => value.renewal),
+  };
+  readonly analytics = {
+    overview: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/overview${query(params)}`),
+    sales: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/sales${query(params)}`),
+    payments: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/payments${query(params)}`),
+    customers: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/customers${query(params)}`),
+    subscriptions: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/subscriptions${query(params)}`),
+    invoices: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/invoices${query(params)}`),
+    locations: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/locations${query(params)}`),
+    products: (params: AnalyticsParams) =>
+      this.request<AnalyticsReport>(`/v1/analytics/products${query(params)}`),
   };
 }
