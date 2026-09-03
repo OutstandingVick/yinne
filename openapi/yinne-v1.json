@@ -1012,6 +1012,42 @@
         }
       }
     },
+    "/v1/subscription-plans": {
+      "get": { "operationId": "listSubscriptionPlans", "parameters": [{ "$ref": "#/components/parameters/Limit" }], "responses": { "200": { "description": "Bounded Plan page" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "createSubscriptionPlan", "responses": { "201": { "description": "Active Plan created" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscription-plans/{id}": {
+      "get": { "operationId": "getSubscriptionPlan", "responses": { "200": { "description": "Plan with immutable Prices" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscription-plans/{id}/archive": {
+      "post": { "operationId": "archiveSubscriptionPlan", "responses": { "200": { "description": "Plan archived" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/recurring-prices": {
+      "get": { "operationId": "listRecurringPrices", "parameters": [{ "$ref": "#/components/parameters/Limit" }], "responses": { "200": { "description": "Monthly or annual Price page" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "createRecurringPrice", "description": "Creates an immutable positive minor-unit Price.", "responses": { "201": { "description": "Price created" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/recurring-prices/{id}/archive": {
+      "post": { "operationId": "archiveRecurringPrice", "responses": { "200": { "description": "Price archived for new sales" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscriptions": {
+      "get": { "operationId": "listSubscriptions", "parameters": [{ "$ref": "#/components/parameters/Limit" }], "responses": { "200": { "description": "Environment-isolated Subscription page" }, "default": { "$ref": "#/components/responses/Error" } } },
+      "post": { "operationId": "createSubscription", "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }], "description": "Snapshots an active Price. Test-mode Mock renewal only; no production saved card is implied.", "responses": { "201": { "description": "Subscription and initial billing created" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscriptions/{id}": {
+      "get": { "operationId": "getSubscription", "responses": { "200": { "description": "Subscription lifecycle and period" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscriptions/{id}/pause": {
+      "post": { "operationId": "pauseSubscription", "responses": { "200": { "description": "Billing paused" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscriptions/{id}/resume": {
+      "post": { "operationId": "resumeSubscription", "responses": { "200": { "description": "Billing resumed with a new full period" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscriptions/{id}/cancel": {
+      "post": { "operationId": "cancelSubscription", "description": "Supports immediate or period-end cancellation.", "responses": { "200": { "description": "Cancellation applied" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/v1/subscriptions/{id}/retry": {
+      "post": { "operationId": "retrySubscriptionRenewal", "description": "Idempotently retries the same canonical renewal Invoice.", "responses": { "200": { "description": "Retry processed" }, "default": { "$ref": "#/components/responses/Error" } } }
+    },
     "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
       "parameters": [
         {
