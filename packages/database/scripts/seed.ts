@@ -795,6 +795,103 @@ try {
       }
     }
 
+    const usdOrderId = fixtureId(2710);
+    const usdPaymentId = fixtureId(2712);
+    const usdAttemptId = fixtureId(2713);
+    await tx
+      .insert(orders)
+      .values({
+        id: usdOrderId,
+        organizationId,
+        merchantId,
+        locationId: fixtureId(10),
+        customerId: fixtureId(1000),
+        number: "ORD-ANALYTICS-USD-0001",
+        financialStatus: "paid",
+        fulfilmentStatus: "fulfilled",
+        currency: "USD",
+        subtotalAmount: 2500n,
+        totalAmount: 2500n,
+        metadata: { channel: "api", seeded: true, analytics_fixture: true },
+        createdAt: new Date("2026-08-18T22:30:00Z"),
+        updatedAt: new Date("2026-08-19T00:30:00Z"),
+      })
+      .onConflictDoUpdate({
+        target: orders.id,
+        set: { financialStatus: "paid", fulfilmentStatus: "fulfilled" },
+      });
+    await tx
+      .insert(orderItems)
+      .values({
+        id: fixtureId(2711),
+        organizationId,
+        orderId: usdOrderId,
+        productName: "Analytics Sample",
+        variantTitle: "USD",
+        sku: "ANALYTICS-USD",
+        unitAmount: 2500n,
+        currency: "USD",
+        quantity: 1,
+        totalAmount: 2500n,
+        createdAt: new Date("2026-08-18T22:30:00Z"),
+      })
+      .onConflictDoNothing();
+    await tx
+      .insert(payments)
+      .values({
+        id: usdPaymentId,
+        organizationId,
+        environment: "test",
+        orderId: usdOrderId,
+        customerId: fixtureId(1000),
+        amount: 2500n,
+        currency: "USD",
+        status: "succeeded",
+        providerAccountId: fixtureId(1800),
+        refundedAmount: 0n,
+        metadata: { seeded: true, analytics_fixture: true },
+        succeededAt: new Date("2026-08-19T00:30:00Z"),
+      })
+      .onConflictDoUpdate({
+        target: payments.id,
+        set: { status: "succeeded", refundedAmount: 0n },
+      });
+    await tx
+      .insert(paymentAttempts)
+      .values({
+        id: usdAttemptId,
+        organizationId,
+        environment: "test",
+        paymentId: usdPaymentId,
+        providerAccountId: fixtureId(1800),
+        provider: "mock",
+        status: "succeeded",
+        providerReference: "mock_analytics_usd_charge",
+        requestMetadata: { mock_scenario: "success", analytics_fixture: true },
+        responseMetadata: { simulated: true },
+        startedAt: new Date("2026-08-19T00:29:59Z"),
+        completedAt: new Date("2026-08-19T00:30:00Z"),
+      })
+      .onConflictDoUpdate({ target: paymentAttempts.id, set: { status: "succeeded" } });
+    await tx
+      .update(payments)
+      .set({ latestAttemptId: usdAttemptId })
+      .where(eq(payments.id, usdPaymentId));
+    await tx
+      .insert(transactions)
+      .values({
+        id: fixtureId(2714),
+        organizationId,
+        environment: "test",
+        paymentId: usdPaymentId,
+        kind: "charge",
+        amount: 2500n,
+        currency: "USD",
+        providerReference: "mock_analytics_usd_charge",
+        occurredAt: new Date("2026-08-19T00:30:00Z"),
+      })
+      .onConflictDoNothing();
+
     await tx
       .insert(invoiceCounters)
       .values({
@@ -1047,7 +1144,7 @@ try {
     .where(eq(seedVersions.key, "acme-foundation"));
   if (!seed) throw new Error("Seed verification failed.");
   console.log(
-    "Seeded Acme Coffee Phase 7 subscriptions, recurring scenarios, operations, and deterministic Mock Provider dataset.",
+    "Seeded Acme Coffee Phase 8 known-answer analytics, subscriptions, operations, and deterministic Mock Provider dataset.",
   );
   console.log("Login: owner@acme.test (password from YINNE_SEED_PASSWORD)");
 } finally {

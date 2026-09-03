@@ -84,7 +84,7 @@ async function loadSalesFacts(
       currency: orders.currency,
       customerId: orders.customerId,
       locationId: orders.locationId,
-      channel: sql<string>`coalesce(${orders.metadata}->>'source', 'unknown')`,
+      channel: sql<string>`coalesce(${orders.metadata}->>'source', ${orders.metadata}->>'channel', 'unknown')`,
       paidAt: payments.succeededAt,
     })
     .from(orders)
