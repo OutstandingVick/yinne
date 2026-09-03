@@ -25,6 +25,7 @@ const nav = [
   ["Employees", "/operations/employees", false],
   ["Subscription Plans", "/subscription-plans", false],
   ["Subscriptions", "/subscriptions", false],
+  ["Analytics", "/analytics", false],
   ["Intelligence", "/coming-later?area=Intelligence", true],
   ["Team", "/settings/team", false],
   ["Organization", "/settings/organization", false],
@@ -58,7 +59,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
           <nav aria-label="Primary">
             <div className="nav-label">Workspace</div>
-            {nav.slice(0, 17).map(([label, href, planned]) => (
+            {nav.slice(0, 18).map(([label, href, planned]) => (
               <Link
                 className={"nav-link " + (planned ? "nav-planned" : "")}
                 href={href}
@@ -69,7 +70,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </Link>
             ))}
             <div className="nav-label">Platform</div>
-            {nav.slice(17).map(([label, href]) => (
+            {nav.slice(18).map(([label, href]) => (
               <Link className="nav-link" href={href} key={label}>
                 {label}
               </Link>
