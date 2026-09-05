@@ -39,12 +39,20 @@ export async function locationsReport(context: RequestContext, query: AnalyticsQ
         id: locations.id,
         name: locations.name,
         orderId: orders.id,
+        paymentId: payments.id,
         financialStatus: orders.financialStatus,
         currency: orders.currency,
         amount: orders.totalAmount,
       })
       .from(locations)
-      .leftJoin(orders, eq(orders.locationId, locations.id))
+      .leftJoin(
+        orders,
+        and(
+          eq(orders.locationId, locations.id),
+          gte(orders.createdAt, window.from),
+          lt(orders.createdAt, window.to),
+        ),
+      )
       .leftJoin(
         payments,
         and(
@@ -87,6 +95,7 @@ export async function locationsReport(context: RequestContext, query: AnalyticsQ
       if (row.orderId) item.orders.add(row.orderId);
       if (
         row.orderId &&
+        row.paymentId &&
         row.currency &&
         row.amount !== null &&
         ["paid", "partially_refunded", "refunded"].includes(row.financialStatus ?? "")

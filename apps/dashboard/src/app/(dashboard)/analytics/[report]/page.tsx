@@ -69,7 +69,7 @@ function display(value: unknown): string {
   if (Array.isArray(value)) return value.length ? `${value.length} rows` : "None";
   if (value && typeof value === "object")
     return Object.entries(value as Record<string, unknown>)
-      .map(([key, child]) => `${key}: ${display(child)}`)
+      .map(([key, child]) => `${key}: ${child === null ? "—" : display(child)}`)
       .join(" · ");
   return "—";
 }

@@ -1,4 +1,4 @@
-import { and, eq, gte, inArray, lt } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { authorizedLocationIds, type RequestContext } from "@yinne/application";
 import { ApiError, type AnalyticsQuery } from "@yinne/contracts";
 import { invoices, withTenantTransaction } from "@yinne/database";
