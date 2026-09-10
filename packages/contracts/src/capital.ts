@@ -79,6 +79,8 @@ export const capitalRecalculateSchema = z
   .strict();
 
 export type CapitalProfile = z.infer<typeof capitalProfileSchema>;
+export type CapitalBand = z.infer<typeof capitalBandSchema>;
+export type CapitalDataSufficiency = z.infer<typeof capitalDataSufficiencySchema>;
 export type CapitalSignal = z.infer<typeof capitalSignalSchema>;
 export type CapitalDimension = z.infer<typeof capitalDimensionSchema>;
 export type CapitalRecalculateInput = z.infer<typeof capitalRecalculateSchema>;
