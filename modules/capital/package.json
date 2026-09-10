@@ -15,6 +15,7 @@
     "@yinne/analytics": "workspace:*",
     "@yinne/application": "workspace:*",
     "@yinne/contracts": "workspace:*",
+    "@yinne/core": "workspace:*",
     "@yinne/database": "workspace:*",
     "drizzle-orm": "0.44.5"
   }

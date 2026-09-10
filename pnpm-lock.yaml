@@ -202,6 +202,9 @@ importers:
       '@yinne/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@yinne/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@yinne/database':
         specifier: workspace:*
         version: link:../../packages/database

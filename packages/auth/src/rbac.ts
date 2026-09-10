@@ -29,6 +29,7 @@ export const permissionKeys = [
   "locations:read",
   "locations:write",
   "capital:read",
+  "capital:recalculate",
   "webhooks:read",
   "webhooks:write",
   "webhooks:replay",
@@ -68,7 +69,7 @@ const all = [...permissionKeys];
 
 export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]> = {
   owner: all,
-  admin: all.filter((permission) => permission !== "capital:read"),
+  admin: all,
   finance: [
     "organization:read",
     "providers:read",
@@ -90,6 +91,7 @@ export const predefinedRolePermissions: Record<RoleKey, readonly PermissionKey[]
     "subscriptions:retry",
     "analytics:read",
     "capital:read",
+    "capital:recalculate",
     "employees:read",
     "invoices:read",
     "invoices:write",
