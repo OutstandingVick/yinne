@@ -1,3 +1,5 @@
+import type { CapitalProfile, CapitalSignal } from "@yinne/contracts";
+
 export interface Page<T> {
   data: T[];
   has_more: boolean;
@@ -871,5 +873,26 @@ export class YinneClient {
       this.request<AnalyticsReport>(`/v1/analytics/locations${query(params)}`),
     products: (params: AnalyticsParams) =>
       this.request<AnalyticsReport>(`/v1/analytics/products${query(params)}`),
+  };
+  readonly capital = {
+    profile: () =>
+      this.request<{ profile: CapitalProfile | null }>("/v1/capital/profile").then(
+        (value) => value.profile,
+      ),
+    history: (params: { limit?: number } = {}) =>
+      this.request<{ profiles: CapitalProfile[] }>(
+        `/v1/capital/profile/history${query(params)}`,
+      ).then((value) => value.profiles),
+    signals: () =>
+      this.request<{
+        profile_id: string | null;
+        model_version: string | null;
+        signals: CapitalSignal[];
+      }>("/v1/capital/signals"),
+    recalculate: (input: { as_of?: string; currency?: string } = {}) =>
+      this.request<{ status: "queued"; job_key: string }>("/v1/capital/recalculate", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
   };
 }

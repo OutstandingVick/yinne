@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@yinne/contracts": "workspace:*"
+  },
   "devDependencies": {}
 }
