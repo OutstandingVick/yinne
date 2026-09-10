@@ -1711,6 +1711,70 @@ export const subscriptionRenewals = pgTable(
   ],
 );
 
+export const capitalProfiles = pgTable(
+  "capital_profiles",
+  {
+    id: id(),
+    organizationId: uuid("organization_id")
+      .notNull()
+      .references(() => organizations.id),
+    environment: text("environment").notNull(),
+    modelVersion: text("model_version").notNull(),
+    currency: text("currency").notNull(),
+    status: text("status").notNull(),
+    score: integer("score"),
+    band: text("band"),
+    dataSufficiency: text("data_sufficiency").notNull(),
+    calculatedAt: timestamp("calculated_at", { withTimezone: true }).notNull(),
+    lookbackStart: timestamp("lookback_start", { withTimezone: true }).notNull(),
+    lookbackEnd: timestamp("lookback_end", { withTimezone: true }).notNull(),
+    dimensions: jsonb("dimensions").$type<Record<string, unknown>[]>().notNull().default([]),
+    signals: jsonb("signals").$type<Record<string, unknown>[]>().notNull().default([]),
+    strengths: jsonb("strengths").$type<string[]>().notNull().default([]),
+    watchAreas: jsonb("watch_areas").$type<string[]>().notNull().default([]),
+    missingRequirements: jsonb("missing_requirements").$type<string[]>().notNull().default([]),
+    scoreChange: jsonb("score_change").$type<Record<string, unknown> | null>(),
+    limitations: jsonb("limitations").$type<string[]>().notNull().default([]),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    uniqueIndex("capital_profiles_replay_uidx").on(
+      table.organizationId,
+      table.environment,
+      table.modelVersion,
+      table.currency,
+      table.lookbackEnd,
+    ),
+    uniqueIndex("capital_profiles_org_id_uidx").on(table.organizationId, table.id),
+    index("capital_profiles_latest_idx").on(
+      table.organizationId,
+      table.environment,
+      table.currency,
+      table.calculatedAt,
+    ),
+    check("capital_profiles_environment_check", sql`${table.environment} in ('test', 'live')`),
+    check("capital_profiles_currency_check", sql`${table.currency} ~ '^[A-Z]{3}$'`),
+    check("capital_profiles_status_check", sql`${table.status} in ('scored', 'insufficient_data')`),
+    check(
+      "capital_profiles_score_check",
+      sql`${table.score} is null or ${table.score} between 0 and 100`,
+    ),
+    check(
+      "capital_profiles_band_check",
+      sql`${table.band} is null or ${table.band} in ('limited', 'developing', 'stable', 'highly_stable')`,
+    ),
+    check(
+      "capital_profiles_sufficiency_check",
+      sql`${table.dataSufficiency} in ('insufficient', 'limited', 'sufficient', 'strong')`,
+    ),
+    check(
+      "capital_profiles_score_status_check",
+      sql`(${table.status} = 'scored' and ${table.score} is not null and ${table.band} is not null) or (${table.status} = 'insufficient_data' and ${table.score} is null and ${table.band} is null)`,
+    ),
+    check("capital_profiles_window_check", sql`${table.lookbackEnd} > ${table.lookbackStart}`),
+  ],
+);
+
 export const seedVersions = pgTable("seed_versions", {
   key: text("key").primaryKey(),
   version: integer("version").notNull(),
