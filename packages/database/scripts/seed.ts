@@ -6,6 +6,7 @@ import postgres from "postgres";
 import { hashPassword, permissionKeys, predefinedRolePermissions, roleKeys } from "@yinne/auth";
 import {
   auditLogs,
+  capitalProfiles,
   customers,
   checkoutLineItems,
   checkoutSessions,
@@ -65,8 +66,14 @@ const eventId = fixtureId(3);
 const passwordHash = await hashPassword(password);
 
 const roleIdByKey = new Map(roleKeys.map((key, index) => [key, fixtureId(100 + index)]));
+const establishedPermissionKeys = permissionKeys.filter((key) => key !== "capital:recalculate");
 const permissionIdByKey = new Map(
-  permissionKeys.map((key, index) => [key, fixtureId(200 + index)]),
+  permissionKeys.map((key) => [
+    key,
+    key === "capital:recalculate"
+      ? fixtureId(299)
+      : fixtureId(200 + establishedPermissionKeys.indexOf(key)),
+  ]),
 );
 
 const people = [
@@ -892,6 +899,159 @@ try {
       })
       .onConflictDoNothing();
 
+    for (let index = 0; index < 36; index += 1) {
+      const orderId = fixtureId(3000 + index);
+      const paymentId = fixtureId(3100 + index);
+      const attemptId = fixtureId(3200 + index);
+      const occurredAt = new Date(Date.UTC(2026, 2, 1 + index * 5, 12));
+      const amount = 900000n + BigInt(index % 6) * 30000n + BigInt(index) * 5000n;
+      await tx
+        .insert(orders)
+        .values({
+          id: orderId,
+          organizationId,
+          merchantId,
+          locationId: fixtureId(10 + (index % 4)),
+          customerId: fixtureId(1000 + (index % 18)),
+          number: `ORD-CAPITAL-${(index + 1).toString().padStart(4, "0")}`,
+          financialStatus: "paid",
+          fulfilmentStatus: "fulfilled",
+          currency: "NGN",
+          subtotalAmount: amount,
+          totalAmount: amount,
+          metadata: {
+            channel: index % 2 ? "storefront" : "dashboard",
+            seeded: true,
+            capital_fixture: true,
+          },
+          createdAt: occurredAt,
+          updatedAt: occurredAt,
+        })
+        .onConflictDoUpdate({ target: orders.id, set: { financialStatus: "paid" } });
+      await tx
+        .insert(payments)
+        .values({
+          id: paymentId,
+          organizationId,
+          environment: "test",
+          orderId,
+          customerId: fixtureId(1000 + (index % 18)),
+          amount,
+          currency: "NGN",
+          status: "succeeded",
+          providerAccountId: fixtureId(1800),
+          refundedAmount: 0n,
+          metadata: { seeded: true, capital_fixture: true },
+          succeededAt: occurredAt,
+        })
+        .onConflictDoUpdate({
+          target: payments.id,
+          set: { status: "succeeded", succeededAt: occurredAt },
+        });
+      await tx
+        .insert(paymentAttempts)
+        .values({
+          id: attemptId,
+          organizationId,
+          environment: "test",
+          paymentId,
+          providerAccountId: fixtureId(1800),
+          provider: "mock",
+          status: "succeeded",
+          providerReference: `mock_capital_${index}`,
+          requestMetadata: { mock_scenario: "success", capital_fixture: true },
+          responseMetadata: { simulated: true },
+          startedAt: occurredAt,
+          completedAt: occurredAt,
+        })
+        .onConflictDoUpdate({ target: paymentAttempts.id, set: { status: "succeeded" } });
+      await tx
+        .update(payments)
+        .set({ latestAttemptId: attemptId })
+        .where(eq(payments.id, paymentId));
+      await tx
+        .insert(transactions)
+        .values({
+          id: fixtureId(3300 + index),
+          organizationId,
+          environment: "test",
+          paymentId,
+          kind: "charge",
+          amount,
+          currency: "NGN",
+          providerReference: `mock_capital_${index}`,
+          occurredAt,
+        })
+        .onConflictDoNothing();
+    }
+
+    const seededSignals = [
+      ["revenue_consistency", 82, 25, 20.5],
+      ["positive_growth", 68, 20, 13.6],
+      ["cash_flow_stability", 76, 20, 15.2],
+      ["customer_quality", 73, 15, 10.95],
+      ["refund_risk", 90, 10, 9],
+      ["operating_history", 31, 10, 3.1],
+    ].map(([key, score, weight, contribution]) => ({
+      key,
+      dimension: key,
+      status: "available",
+      raw: { known_answer_fixture: true },
+      normalized_score: score,
+      base_weight: weight,
+      effective_weight: weight,
+      contribution,
+      reason: "Deterministic Acme known-answer seed evidence.",
+      explanation: `${String(key).replaceAll("_", " ")} follows the documented rules-1 thresholds.`,
+    }));
+    for (const snapshot of [
+      { id: fixtureId(3400), score: 71, end: "2026-08-25T00:00:00.000Z", change: null },
+      {
+        id: fixtureId(3401),
+        score: 72,
+        end: "2026-09-01T00:00:00.000Z",
+        change: {
+          delta: 1,
+          previous_profile_id: fixtureId(3400),
+          contributors: [{ key: "positive_growth", delta: 1, direction: "up" }],
+        },
+      },
+    ]) {
+      const end = new Date(snapshot.end);
+      await tx
+        .insert(capitalProfiles)
+        .values({
+          id: snapshot.id,
+          organizationId,
+          environment: "test",
+          modelVersion: "rules-1",
+          currency: "NGN",
+          status: "scored",
+          score: snapshot.score,
+          band: "stable",
+          dataSufficiency: "sufficient",
+          calculatedAt: end,
+          lookbackStart: new Date(end.getTime() - 180 * 86_400_000),
+          lookbackEnd: end,
+          dimensions: seededSignals.map((signal) => ({
+            key: signal.key,
+            label: String(signal.key).replaceAll("_", " "),
+            score: signal.normalized_score,
+            effective_weight: signal.effective_weight,
+            contribution: signal.contribution,
+          })),
+          signals: seededSignals,
+          strengths: ["Refund behavior is strong under the documented rules-1 thresholds."],
+          watchAreas: ["Operating history remains limited under rules-1."],
+          missingRequirements: [],
+          scoreChange: snapshot.change,
+          limitations: [
+            "This profile is merchant analytics, not a credit decision, approval, or financing offer.",
+          ],
+        })
+        .onConflictDoNothing();
+    }
+
     await tx
       .insert(invoiceCounters)
       .values({
@@ -1134,8 +1294,8 @@ try {
 
     await tx
       .insert(seedVersions)
-      .values({ key: "acme-foundation", version: 4 })
-      .onConflictDoUpdate({ target: seedVersions.key, set: { version: 4, appliedAt: new Date() } });
+      .values({ key: "acme-foundation", version: 5 })
+      .onConflictDoUpdate({ target: seedVersions.key, set: { version: 5, appliedAt: new Date() } });
   });
 
   const [seed] = await db
@@ -1144,7 +1304,7 @@ try {
     .where(eq(seedVersions.key, "acme-foundation"));
   if (!seed) throw new Error("Seed verification failed.");
   console.log(
-    "Seeded Acme Coffee Phase 8 known-answer analytics, subscriptions, operations, and deterministic Mock Provider dataset.",
+    "Seeded Acme Coffee Phase 9 Capital Intelligence and deterministic Mock Provider dataset.",
   );
   console.log("Login: owner@acme.test (password from YINNE_SEED_PASSWORD)");
 } finally {
