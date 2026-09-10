@@ -8,7 +8,7 @@ import { activeUserContext } from "../../lib/context";
 import { listUserOrganizations } from "@yinne/organizations/identity";
 import { switchOrganizationAction } from "./actions";
 
-const nav = [
+const workspaceNav = [
   ["Home", "/", false],
   ["Customers", "/commerce/customers", false],
   ["Products", "/commerce/products", false],
@@ -25,8 +25,12 @@ const nav = [
   ["Employees", "/operations/employees", false],
   ["Subscription Plans", "/subscription-plans", false],
   ["Subscriptions", "/subscriptions", false],
-  ["Analytics", "/analytics", false],
-  ["Intelligence", "/coming-later?area=Intelligence", true],
+] as const;
+const intelligenceNav = [
+  ["Analytics", "/analytics"],
+  ["Capital", "/capital"],
+] as const;
+const platformNav = [
   ["Team", "/settings/team", false],
   ["Organization", "/settings/organization", false],
   ["Providers", "/settings/providers", false],
@@ -59,18 +63,19 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
           <nav aria-label="Primary">
             <div className="nav-label">Workspace</div>
-            {nav.slice(0, 18).map(([label, href, planned]) => (
-              <Link
-                className={"nav-link " + (planned ? "nav-planned" : "")}
-                href={href}
-                key={label}
-              >
-                <span>{label}</span>
-                {planned ? <span className="nav-tag">Later</span> : null}
+            {workspaceNav.map(([label, href]) => (
+              <Link className="nav-link" href={href} key={label}>
+                {label}
+              </Link>
+            ))}
+            <div className="nav-label">Intelligence</div>
+            {intelligenceNav.map(([label, href]) => (
+              <Link className="nav-link" href={href} key={label}>
+                {label}
               </Link>
             ))}
             <div className="nav-label">Platform</div>
-            {nav.slice(18).map(([label, href]) => (
+            {platformNav.map(([label, href]) => (
               <Link className="nav-link" href={href} key={label}>
                 {label}
               </Link>
