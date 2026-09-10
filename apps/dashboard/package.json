@@ -16,6 +16,7 @@
     "@yinne/application": "workspace:*",
     "@yinne/commerce": "workspace:*",
     "@yinne/checkout": "workspace:*",
+    "@yinne/capital": "workspace:*",
     "@yinne/config": "workspace:*",
     "@yinne/contracts": "workspace:*",
     "@yinne/core": "workspace:*",

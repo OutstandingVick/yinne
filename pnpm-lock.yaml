@@ -56,6 +56,9 @@ importers:
       '@yinne/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@yinne/capital':
+        specifier: workspace:*
+        version: link:../../modules/capital
       '@yinne/checkout':
         specifier: workspace:*
         version: link:../../modules/checkout
