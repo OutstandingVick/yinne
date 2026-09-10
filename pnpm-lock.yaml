@@ -191,6 +191,24 @@ importers:
         specifier: 0.44.5
         version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
 
+  modules/capital:
+    dependencies:
+      '@yinne/analytics':
+        specifier: workspace:*
+        version: link:../analytics
+      '@yinne/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@yinne/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@yinne/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      drizzle-orm:
+        specifier: 0.44.5
+        version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
+
   modules/checkout:
     dependencies:
       '@yinne/application':
