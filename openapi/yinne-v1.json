@@ -1270,6 +1270,64 @@
         }
       }
     },
+    "/v1/capital/profile": {
+      "get": {
+        "operationId": "getCapitalProfile",
+        "summary": "Get the latest explainable merchant Capital Profile",
+        "responses": {
+          "200": { "$ref": "#/components/responses/CapitalProfile" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/capital/profile/history": {
+      "get": {
+        "operationId": "listCapitalProfileHistory",
+        "summary": "List immutable Capital Profile snapshots",
+        "parameters": [{ "$ref": "#/components/parameters/Limit" }],
+        "responses": {
+          "200": {
+            "description": "Capital Profile history",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/capital/signals": {
+      "get": {
+        "operationId": "getCapitalSignals",
+        "summary": "Get aggregate signal evidence for the latest profile",
+        "responses": {
+          "200": {
+            "description": "Aggregate signal evidence",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/capital/recalculate": {
+      "post": {
+        "operationId": "recalculateCapitalProfile",
+        "summary": "Queue an authorized Capital Profile recalculation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CapitalRecalculationInput" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Recalculation queued",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
       "parameters": [
         {
@@ -1589,6 +1647,88 @@
           "metadata": { "type": "object" }
         }
       },
+      "CapitalSignal": {
+        "type": "object",
+        "required": [
+          "key",
+          "dimension",
+          "status",
+          "raw",
+          "normalized_score",
+          "base_weight",
+          "effective_weight",
+          "contribution",
+          "reason",
+          "explanation"
+        ],
+        "properties": {
+          "key": { "type": "string" },
+          "dimension": { "type": "string" },
+          "status": { "type": "string", "enum": ["available", "not_applicable", "insufficient"] },
+          "raw": { "type": "object" },
+          "normalized_score": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+          "base_weight": { "type": "number" },
+          "effective_weight": { "type": "number" },
+          "contribution": { "type": "number" },
+          "reason": { "type": "string" },
+          "explanation": { "type": "string" }
+        }
+      },
+      "CapitalProfile": {
+        "type": "object",
+        "description": "Explainable merchant intelligence; not a credit decision, approval, or financing offer.",
+        "required": [
+          "id",
+          "status",
+          "model_version",
+          "currency",
+          "score",
+          "band",
+          "data_sufficiency",
+          "calculated_at",
+          "lookback_start",
+          "lookback_end",
+          "dimensions",
+          "signals",
+          "strengths",
+          "watch_areas",
+          "missing_requirements",
+          "limitations"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["scored", "insufficient_data"] },
+          "model_version": { "const": "rules-1" },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "score": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+          "band": {
+            "type": ["string", "null"],
+            "enum": ["limited", "developing", "stable", "highly_stable", null]
+          },
+          "data_sufficiency": {
+            "type": "string",
+            "enum": ["insufficient", "limited", "sufficient", "strong"]
+          },
+          "calculated_at": { "type": "string", "format": "date-time" },
+          "lookback_start": { "type": "string", "format": "date-time" },
+          "lookback_end": { "type": "string", "format": "date-time" },
+          "dimensions": { "type": "array", "items": { "type": "object" } },
+          "signals": { "type": "array", "items": { "$ref": "#/components/schemas/CapitalSignal" } },
+          "strengths": { "type": "array", "items": { "type": "string" } },
+          "watch_areas": { "type": "array", "items": { "type": "string" } },
+          "missing_requirements": { "type": "array", "items": { "type": "string" } },
+          "score_change": { "type": ["object", "null"] },
+          "limitations": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "CapitalRecalculationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "as_of": { "type": "string", "format": "date-time" },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+        }
+      },
       "ApiError": {
         "type": "object",
         "required": ["error"],
@@ -1667,6 +1807,22 @@
                 "request_id": { "type": "string" }
               },
               "additionalProperties": true
+            }
+          }
+        }
+      },
+      "CapitalProfile": {
+        "description": "Latest materialized Capital Profile, or null before first calculation.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profile": {
+                  "anyOf": [{ "$ref": "#/components/schemas/CapitalProfile" }, { "type": "null" }]
+                },
+                "request_id": { "type": "string" }
+              }
             }
           }
         }
