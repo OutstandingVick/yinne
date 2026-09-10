@@ -79,6 +79,9 @@ export const domainEventTypes = [
   "subscription.renewal_pending",
   "subscription.renewal_retried",
   "subscription.period_advanced",
+  "capital.profile_calculated",
+  "capital.profile_changed",
+  "capital.recalculation_requested",
 ] as const;
 
 export type DomainEventType = (typeof domainEventTypes)[number];

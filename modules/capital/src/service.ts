@@ -1,5 +1,5 @@
 import { and, desc, eq } from "drizzle-orm";
-import { requirePermission, type RequestContext } from "@yinne/application";
+import { recordDomainChange, requirePermission, type RequestContext } from "@yinne/application";
 import { capitalProfileSchema, type CapitalProfile } from "@yinne/contracts";
 import { createId } from "@yinne/core";
 import { capitalProfiles, organizations, withTenantTransaction } from "@yinne/database";
@@ -146,7 +146,39 @@ export async function calculateCapitalProfile(
       })
       .onConflictDoNothing()
       .returning();
-    if (inserted) return mapProfile(inserted);
+    if (inserted) {
+      await recordDomainChange(tx, context, {
+        action: "capital.profile_calculated",
+        aggregateType: "capital_profile",
+        aggregateId: inserted.id,
+        aggregateVersion: 1,
+        data: {
+          profile_id: inserted.id,
+          status: inserted.status,
+          score: inserted.score,
+          band: inserted.band,
+          model_version: inserted.modelVersion,
+          currency: inserted.currency,
+        },
+      });
+      if (profile.score_change && profile.score_change.delta !== 0) {
+        await recordDomainChange(tx, context, {
+          action: "capital.profile_changed",
+          aggregateType: "capital_profile",
+          aggregateId: inserted.id,
+          aggregateVersion: 1,
+          data: {
+            profile_id: inserted.id,
+            score: inserted.score,
+            band: inserted.band,
+            score_delta: profile.score_change.delta,
+            model_version: inserted.modelVersion,
+            currency: inserted.currency,
+          },
+        });
+      }
+      return mapProfile(inserted);
+    }
     const [existing] = await tx
       .select()
       .from(capitalProfiles)
