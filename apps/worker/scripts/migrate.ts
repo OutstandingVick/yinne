@@ -124,7 +124,7 @@ try {
         RAISE EXCEPTION 'Invalid capital job scope';
       END IF;
       v_job_key := 'capital:' || p_organization_id || ':' || p_environment || ':' ||
-        p_currency || ':' || to_char(p_as_of AT TIME ZONE 'UTC', 'YYYY-MM-DD');
+        p_currency || ':' || to_char(p_as_of AT TIME ZONE 'UTC', 'YYYY-MM-DD-HH24');
       PERFORM graphile_worker.add_job(
         'capital_recalculate',
         json_build_object(

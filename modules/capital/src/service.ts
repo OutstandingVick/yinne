@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { recordDomainChange, requirePermission, type RequestContext } from "@yinne/application";
 import { capitalProfileSchema, type CapitalProfile } from "@yinne/contracts";
 import { createId } from "@yinne/core";
@@ -194,6 +194,43 @@ export async function calculateCapitalProfile(
       .limit(1);
     if (!existing) throw new Error("Capital profile replay lookup failed.");
     return mapProfile(existing);
+  });
+}
+
+export async function requestCapitalRecalculation(
+  context: RequestContext,
+  asOf = new Date(),
+  requestedCurrency?: string,
+): Promise<{ status: "queued"; job_key: string }> {
+  return withTenantTransaction(context.tenant, async (tx) => {
+    await requirePermission(tx, context.principal, "capital:recalculate", {
+      organizationId: context.tenant.organizationId,
+    });
+    const [organization] = await tx
+      .select({ currency: organizations.defaultCurrency })
+      .from(organizations)
+      .where(eq(organizations.id, context.tenant.organizationId))
+      .limit(1);
+    if (!organization) throw new Error("Organization is unavailable.");
+    const currency = requestedCurrency ?? organization.currency;
+    const result = await tx.execute(
+      sql`select public.yinne_enqueue_capital_job(
+        ${context.tenant.organizationId}::uuid,
+        ${context.tenant.environment}::text,
+        ${asOf}::timestamptz,
+        ${currency}::text
+      ) as job_key`,
+    );
+    const jobKey = String(result[0]?.job_key ?? "");
+    if (!jobKey) throw new Error("Capital recalculation could not be queued.");
+    await recordDomainChange(tx, context, {
+      action: "capital.recalculation_requested",
+      aggregateType: "capital_profile",
+      aggregateId: context.tenant.organizationId,
+      aggregateVersion: 1,
+      data: { currency, as_of: asOf.toISOString(), job_key: jobKey },
+    });
+    return { status: "queued", job_key: jobKey };
   });
 }
 
