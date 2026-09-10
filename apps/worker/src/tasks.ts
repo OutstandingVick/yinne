@@ -4,6 +4,7 @@ import { z } from "zod";
 import { outboxMessages, withTenantTransaction } from "@yinne/database";
 import { processDueSubscriptions } from "@yinne/subscriptions";
 import { overviewReport } from "@yinne/analytics";
+import { calculateCapitalProfile } from "@yinne/capital";
 const payloadSchema = z.object({
   organizationId: z.string().uuid(),
   environment: z.enum(["test", "live"]),
@@ -22,8 +23,37 @@ export const analyticsRefreshPayloadSchema = z.object({
   to: z.coerce.date(),
   timezone: z.string().min(1).max(100).default("Africa/Lagos"),
 });
+export const capitalRecalculatePayloadSchema = z.object({
+  organizationId: z.string().uuid(),
+  environment: z.enum(["test", "live"]),
+  asOf: z.coerce.date().optional(),
+  currency: z
+    .string()
+    .regex(/^[A-Z]{3}$/)
+    .optional(),
+});
 
 export const taskList: TaskList = {
+  capital_recalculate: async (rawPayload, helpers) => {
+    const payload = capitalRecalculatePayloadSchema.parse(rawPayload);
+    const profile = await calculateCapitalProfile(
+      {
+        tenant: { organizationId: payload.organizationId, environment: payload.environment },
+        principal: {
+          type: "system",
+          id: "00000000-0000-7000-8000-000000000009",
+          organizationId: payload.organizationId,
+          environment: payload.environment,
+        },
+        requestId: helpers.job.id.toString(),
+      },
+      payload.asOf ?? new Date(),
+      payload.currency,
+    );
+    helpers.logger.info(
+      `Calculated ${profile.model_version} capital profile ${profile.id} with status ${profile.status}.`,
+    );
+  },
   analytics_refresh: async (rawPayload, helpers) => {
     const payload = analyticsRefreshPayloadSchema.parse(rawPayload);
     const report = await overviewReport(

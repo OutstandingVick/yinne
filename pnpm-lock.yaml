@@ -144,6 +144,9 @@ importers:
       '@yinne/analytics':
         specifier: workspace:*
         version: link:../../modules/analytics
+      '@yinne/capital':
+        specifier: workspace:*
+        version: link:../../modules/capital
       '@yinne/config':
         specifier: workspace:*
         version: link:../../packages/config
