@@ -102,6 +102,50 @@ try {
   await client.unsafe(
     "GRANT EXECUTE ON FUNCTION public.yinne_enqueue_outbox_job(uuid, text, uuid) TO yinne_app",
   );
+  await client.unsafe(`
+    CREATE OR REPLACE FUNCTION public.yinne_enqueue_capital_job(
+      p_organization_id uuid,
+      p_environment text,
+      p_as_of timestamptz,
+      p_currency text
+    ) RETURNS text
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    SET search_path = public, graphile_worker, pg_temp
+    AS $function$
+    DECLARE
+      v_job_key text;
+    BEGIN
+      IF current_setting('app.organization_id', true) IS DISTINCT FROM p_organization_id::text
+        OR current_setting('app.environment', true) IS DISTINCT FROM p_environment THEN
+        RAISE EXCEPTION 'Tenant context does not match the capital job payload';
+      END IF;
+      IF p_environment NOT IN ('test', 'live') OR p_currency !~ '^[A-Z]{3}$' THEN
+        RAISE EXCEPTION 'Invalid capital job scope';
+      END IF;
+      v_job_key := 'capital:' || p_organization_id || ':' || p_environment || ':' ||
+        p_currency || ':' || to_char(p_as_of AT TIME ZONE 'UTC', 'YYYY-MM-DD');
+      PERFORM graphile_worker.add_job(
+        'capital_recalculate',
+        json_build_object(
+          'organizationId', p_organization_id,
+          'environment', p_environment,
+          'asOf', p_as_of,
+          'currency', p_currency
+        ),
+        job_key := v_job_key,
+        job_key_mode := 'replace'
+      );
+      RETURN v_job_key;
+    END;
+    $function$
+  `);
+  await client.unsafe(
+    "REVOKE ALL ON FUNCTION public.yinne_enqueue_capital_job(uuid, text, timestamptz, text) FROM PUBLIC",
+  );
+  await client.unsafe(
+    "GRANT EXECUTE ON FUNCTION public.yinne_enqueue_capital_job(uuid, text, timestamptz, text) TO yinne_app",
+  );
   console.log("Graphile Worker schema and runtime grants are current.");
 } finally {
   await client.end();
