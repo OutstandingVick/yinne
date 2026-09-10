@@ -44,6 +44,7 @@ try {
     "recurring_prices",
     "subscriptions",
     "subscription_renewals",
+    "capital_profiles",
   ];
   const [result] = await client<{ current_user: string; protected_count: number }[]>`
     select current_user, count(*)::integer as protected_count
@@ -65,6 +66,7 @@ try {
       transaction_update: boolean;
       checkout_item_update: boolean;
       checkout_item_delete: boolean;
+      capital_update: boolean;
     }[]
   >`
     select has_table_privilege(current_user, 'inventory_movements', 'UPDATE') as movement_update,
@@ -72,6 +74,7 @@ try {
            has_table_privilege(current_user, 'transactions', 'UPDATE') as transaction_update,
            has_table_privilege(current_user, 'checkout_line_items', 'UPDATE') as checkout_item_update,
            has_table_privilege(current_user, 'checkout_line_items', 'DELETE') as checkout_item_delete
+           ,has_table_privilege(current_user, 'capital_profiles', 'UPDATE') as capital_update
   `;
   if (
     !immutability ||
@@ -79,7 +82,8 @@ try {
     immutability.item_delete ||
     immutability.transaction_update ||
     immutability.checkout_item_update ||
-    immutability.checkout_item_delete
+    immutability.checkout_item_delete ||
+    immutability.capital_update
   )
     throw new Error("Append-only grants are not configured correctly.");
   console.log(

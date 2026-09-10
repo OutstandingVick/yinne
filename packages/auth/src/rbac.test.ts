@@ -54,4 +54,30 @@ describe("central RBAC", () => {
       false,
     );
   });
+
+  it("keeps capital intelligence organization scoped", () => {
+    expect(
+      can([{ role: "analyst", scope: { type: "organization", id: org } }], "capital:read", {
+        organizationId: org,
+      }),
+    ).toBe(true);
+    expect(
+      can([{ role: "manager", scope: { type: "location", id: ikeja } }], "capital:read", {
+        organizationId: org,
+      }),
+    ).toBe(false);
+  });
+
+  it("restricts recalculation to financial administrators", () => {
+    expect(
+      can([{ role: "finance", scope: { type: "organization", id: org } }], "capital:recalculate", {
+        organizationId: org,
+      }),
+    ).toBe(true);
+    expect(
+      can([{ role: "analyst", scope: { type: "organization", id: org } }], "capital:recalculate", {
+        organizationId: org,
+      }),
+    ).toBe(false);
+  });
 });
