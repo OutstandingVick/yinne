@@ -8,18 +8,18 @@ Capital Intelligence and the complete Phase 1–8 regression passed. The impleme
 
 ## Verification evidence
 
-| Check | Result |
-| --- | --- |
-| Formatting and lint | Passed |
-| TypeScript typecheck | 21/21 packages passed |
-| Unit and contract tests | 24 files, 80 tests passed |
-| PostgreSQL integration tests | 6 files, 15 tests passed |
-| Browser E2E regression | 22 tests passed, including 5 Capital scenarios |
-| OpenAPI validation | Passed; 94 operations |
-| Clean database verification | Passed; migrations, forced RLS, grants, and repeatable seed |
-| Production build | 21/21 packages passed |
-| Capital worker processing | `rules-1` profile calculated with `scored` status |
-| Worker startup/shutdown | Registered `capital_recalculate`; SIGINT produced graceful shutdown |
+| Check                        | Result                                                              |
+| ---------------------------- | ------------------------------------------------------------------- |
+| Formatting and lint          | Passed                                                              |
+| TypeScript typecheck         | 21/21 packages passed                                               |
+| Unit and contract tests      | 24 files, 80 tests passed                                           |
+| PostgreSQL integration tests | 6 files, 15 tests passed                                            |
+| Browser E2E regression       | 22 tests passed, including 5 Capital scenarios                      |
+| OpenAPI validation           | Passed; 94 operations                                               |
+| Clean database verification  | Passed; migrations, forced RLS, grants, and repeatable seed         |
+| Production build             | 21/21 packages passed                                               |
+| Capital worker processing    | `rules-1` profile calculated with `scored` status                   |
+| Worker startup/shutdown      | Registered `capital_recalculate`; SIGINT produced graceful shutdown |
 
 ## Commands executed
 
