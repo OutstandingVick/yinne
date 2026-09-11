@@ -47,7 +47,9 @@ test("location-only manager cannot read organization-wide Capital", async ({ pag
 test("insufficient data is represented without a poor-score fallback", async ({ page }) => {
   await signIn(page);
   const response = await page.request.get("/v1/capital/profile");
-  const body = await response.json();
+  const body = (await response.json()) as {
+    profile: { status: string; missing_requirements: string[]; score: number | null };
+  };
   expect(body.profile.status).toBe("scored");
   expect(body.profile.missing_requirements).toEqual([]);
   expect(body.profile.score).not.toBe(0);

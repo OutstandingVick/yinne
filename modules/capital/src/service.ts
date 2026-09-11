@@ -221,7 +221,8 @@ export async function requestCapitalRecalculation(
         ${currency}::text
       ) as job_key`,
     );
-    const jobKey = String(result[0]?.job_key ?? "");
+    const rawJobKey = result[0]?.job_key;
+    const jobKey = typeof rawJobKey === "string" ? rawJobKey : "";
     if (!jobKey) throw new Error("Capital recalculation could not be queued.");
     await recordDomainChange(tx, context, {
       action: "capital.recalculation_requested",

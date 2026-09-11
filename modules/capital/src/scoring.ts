@@ -99,7 +99,7 @@ export function scoreSignals(inputs: CapitalSignalInput[]): {
     .filter((signal) => signal.normalized_score !== null)
     .map((signal) => ({
       key: signal.key,
-      label: labels[signal.key as CapitalSignalKey],
+      label: labels[signal.key],
       score: signal.normalized_score!,
       effective_weight: signal.effective_weight,
       contribution: signal.contribution,
