@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   analyticsRefreshPayloadSchema,
+  capitalRecalculatePayloadSchema,
   outboxDispatchPayloadSchema,
   subscriptionBillingPayloadSchema,
 } from "./tasks";
@@ -42,5 +43,17 @@ describe("worker task registration", () => {
     });
     expect(payload.timezone).toBe("Africa/Lagos");
     expect(payload.from).toBeInstanceOf(Date);
+  });
+
+  it("validates versioned capital calculation scope", () => {
+    const payload = capitalRecalculatePayloadSchema.parse({
+      organizationId: "0198f000-0000-7000-8000-000000000001",
+      environment: "test",
+      asOf: "2026-09-01T00:00:00.000Z",
+      currency: "NGN",
+    });
+    expect(payload.asOf).toBeInstanceOf(Date);
+    expect(payload.currency).toBe("NGN");
+    expect(() => capitalRecalculatePayloadSchema.parse({ ...payload, currency: "ngn" })).toThrow();
   });
 });
