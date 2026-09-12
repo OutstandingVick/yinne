@@ -18,6 +18,7 @@ const workspaceNav = [
   ["Checkout Sessions", "/checkout/sessions", false],
   ["Payment Links", "/payment-links", false],
   ["Storefront", "/storefront", false],
+  ["Marketplace", "/marketplace/manage", false],
   ["Transactions", "/transactions", false],
   ["Refunds", "/refunds", false],
   ["Invoices", "/invoices", false],
