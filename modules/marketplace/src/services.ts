@@ -4,7 +4,7 @@ import type { MarketplaceListingInput, MarketplaceModerationInput, MarketplacePr
 import { ApiError } from "@yinne/contracts";
 import { createId } from "@yinne/core";
 import { principalId } from "@yinne/auth";
-import { marketplaceCategories, marketplaceListings, marketplaceProfiles, marketplaces, merchants, products, withTenantTransaction } from "@yinne/database";
+import { inventoryLevels, marketplaceCategories, marketplaceListings, marketplaceProfiles, marketplaces, merchants, products, providerAccounts, storeListings, stores, variants, withTenantTransaction } from "@yinne/database";
 import { assertListingTransition, type ListingStatus } from "./state";
 
 const missing = (): never => { throw new ApiError(404, "invalid_request", "resource_not_found", "The requested Marketplace resource does not exist."); };
@@ -66,7 +66,21 @@ export async function transitionMarketplaceListing(context: RequestContext, id: 
     const [current]=await tx.select().from(marketplaceListings).where(and(eq(marketplaceListings.organizationId,context.tenant.organizationId),eq(marketplaceListings.environment,context.tenant.environment),eq(marketplaceListings.id,id))).for("update").limit(1);
     if(!current) return missing();
     assertListingTransition(current.status as ListingStatus,status); const now=new Date();
-    const [row]=await tx.update(marketplaceListings).set({status,version:sql`${marketplaceListings.version} + 1`,updatedAt:now,...(moderation?{moderationReasonCode:moderation.reason_code,moderationExplanation:moderation.explanation,moderatedBy:principalId(context.principal),moderatedAt:now}:{}),...(status==="archived"?{archivedAt:now}:{})}).where(eq(marketplaceListings.id,id)).returning();
+    let eligibility=current.eligibility;
+    if(status==="submitted" || status==="approved") {
+      const [e]=await tx.select({profile:marketplaceProfiles,product:products,store:stores,publication:storeListings,provider:providerAccounts,variant:variants,onHand:inventoryLevels.onHand}).from(marketplaceProfiles)
+        .innerJoin(products,and(eq(products.organizationId,marketplaceProfiles.organizationId),eq(products.id,current.productId)))
+        .leftJoin(stores,and(eq(stores.organizationId,marketplaceProfiles.organizationId),eq(stores.environment,marketplaceProfiles.environment)))
+        .leftJoin(storeListings,and(eq(storeListings.organizationId,products.organizationId),eq(storeListings.productId,products.id),eq(storeListings.storeId,stores.id)))
+        .leftJoin(providerAccounts,and(eq(providerAccounts.organizationId,marketplaceProfiles.organizationId),eq(providerAccounts.environment,marketplaceProfiles.environment),eq(providerAccounts.status,"active")))
+        .leftJoin(variants,and(eq(variants.organizationId,products.organizationId),eq(variants.productId,products.id),eq(variants.status,"active")))
+        .leftJoin(inventoryLevels,and(eq(inventoryLevels.organizationId,variants.organizationId),eq(inventoryLevels.variantId,variants.id),eq(inventoryLevels.locationId,stores.defaultLocationId)))
+        .where(eq(marketplaceProfiles.id,current.profileId)).limit(1);
+      const checks={terms_accepted:!!e?.profile.termsAcceptedAt,contact_verified:!!e?.profile.contactVerifiedAt,merchant_active:!e?.profile.suspendedAt,store_active:e?.store?.status==="active",product_active:e?.product.status==="active",storefront_published:e?.publication?.status==="published",provider_active:!!e?.provider,variant_available:!!e?.variant&&(!e.variant.trackInventory||(e.onHand??0n)>0n)};
+      eligibility={eligible:Object.values(checks).every(Boolean),checks,evaluated_at:now.toISOString()};
+      if(status==="approved" && !eligibility.eligible) throw new ApiError(409,"conflict","listing_ineligible","The listing does not satisfy Marketplace eligibility requirements.");
+    }
+    const [row]=await tx.update(marketplaceListings).set({status,eligibility,version:sql`${marketplaceListings.version} + 1`,updatedAt:now,...(moderation?{moderationReasonCode:moderation.reason_code,moderationExplanation:moderation.explanation,moderatedBy:principalId(context.principal),moderatedAt:now}:{}),...(status==="archived"?{archivedAt:now}:{})}).where(eq(marketplaceListings.id,id)).returning();
     const action = status === "submitted" ? "marketplace.listing_submitted" : status === "approved" ? "marketplace.listing_approved" : status === "rejected" ? "marketplace.listing_rejected" : status === "suspended" ? "marketplace.listing_suspended" : "marketplace.listing_archived";
     await recordDomainChange(tx,context,{action,aggregateType:"marketplace_listing",aggregateId:id,aggregateVersion:row!.version,data:{status,reason_code:moderation?.reason_code}}); return listingView(row!);
   });
