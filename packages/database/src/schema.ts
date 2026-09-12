@@ -1775,6 +1775,84 @@ export const capitalProfiles = pgTable(
   ],
 );
 
+export const marketplaces = pgTable("marketplaces", {
+  id: id(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  status: text("status").notNull().default("active"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (table) => [check("marketplaces_status_check", sql`${table.status} in ('active', 'disabled')`)]);
+
+export const marketplaceCategories = pgTable("marketplace_categories", {
+  id: id(),
+  marketplaceId: uuid("marketplace_id").notNull().references(() => marketplaces.id),
+  slug: text("slug").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  displayOrder: integer("display_order").notNull().default(0),
+  status: text("status").notNull().default("active"),
+  createdAt: createdAt(),
+}, (table) => [
+  uniqueIndex("marketplace_categories_market_slug_uidx").on(table.marketplaceId, table.slug),
+  check("marketplace_categories_status_check", sql`${table.status} in ('active', 'archived')`),
+]);
+
+export const marketplaceProfiles = pgTable("marketplace_profiles", {
+  id: id(),
+  organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+  environment: text("environment").notNull(),
+  marketplaceId: uuid("marketplace_id").notNull().references(() => marketplaces.id),
+  merchantId: uuid("merchant_id").notNull(),
+  publicName: text("public_name").notNull(),
+  slug: text("slug").notNull(),
+  description: text("description"),
+  logoUrl: text("logo_url"),
+  termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+  contactVerifiedAt: timestamp("contact_verified_at", { withTimezone: true }),
+  suspendedAt: timestamp("suspended_at", { withTimezone: true }),
+  version: integer("version").notNull().default(1),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+}, (table) => [
+  foreignKey({ name: "marketplace_profiles_merchant_org_fk", columns: [table.organizationId, table.merchantId], foreignColumns: [merchants.organizationId, merchants.id] }),
+  uniqueIndex("marketplace_profiles_market_org_env_uidx").on(table.marketplaceId, table.organizationId, table.environment),
+  uniqueIndex("marketplace_profiles_market_env_slug_uidx").on(table.marketplaceId, table.environment, table.slug),
+  uniqueIndex("marketplace_profiles_org_id_uidx").on(table.organizationId, table.id),
+  check("marketplace_profiles_environment_check", sql`${table.environment} in ('test', 'live')`),
+]);
+
+export const marketplaceListings = pgTable("marketplace_listings", {
+  id: id(),
+  organizationId: uuid("organization_id").notNull().references(() => organizations.id),
+  environment: text("environment").notNull(),
+  marketplaceId: uuid("marketplace_id").notNull().references(() => marketplaces.id),
+  profileId: uuid("profile_id").notNull(),
+  productId: uuid("product_id").notNull(),
+  categoryId: uuid("category_id").notNull().references(() => marketplaceCategories.id),
+  status: text("status").notNull().default("draft"),
+  titleOverride: text("title_override"),
+  descriptionOverride: text("description_override"),
+  eligibility: jsonb("eligibility").$type<Record<string, unknown>>().notNull().default({}),
+  rank: integer("rank").notNull().default(0),
+  moderationReasonCode: text("moderation_reason_code"),
+  moderationExplanation: text("moderation_explanation"),
+  moderatedBy: uuid("moderated_by"),
+  moderatedAt: timestamp("moderated_at", { withTimezone: true }),
+  version: integer("version").notNull().default(1),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+  archivedAt: timestamp("archived_at", { withTimezone: true }),
+}, (table) => [
+  foreignKey({ name: "marketplace_listings_profile_org_fk", columns: [table.organizationId, table.profileId], foreignColumns: [marketplaceProfiles.organizationId, marketplaceProfiles.id] }),
+  foreignKey({ name: "marketplace_listings_product_org_fk", columns: [table.organizationId, table.productId], foreignColumns: [products.organizationId, products.id] }),
+  uniqueIndex("marketplace_listings_org_id_uidx").on(table.organizationId, table.id),
+  uniqueIndex("marketplace_listings_market_product_active_uidx").on(table.marketplaceId, table.environment, table.productId).where(sql`${table.status} <> 'archived'`),
+  index("marketplace_listings_public_idx").on(table.marketplaceId, table.environment, table.status, table.categoryId, table.rank),
+  check("marketplace_listings_environment_check", sql`${table.environment} in ('test', 'live')`),
+  check("marketplace_listings_status_check", sql`${table.status} in ('draft', 'submitted', 'approved', 'rejected', 'suspended', 'archived')`),
+]);
+
 export const seedVersions = pgTable("seed_versions", {
   key: text("key").primaryKey(),
   version: integer("version").notNull(),
