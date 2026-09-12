@@ -17,6 +17,10 @@ import {
   invoiceItems,
   invoices,
   locations,
+  marketplaceCategories,
+  marketplaceListings,
+  marketplaceProfiles,
+  marketplaces,
   merchants,
   organizationMembers,
   organizations,
@@ -1292,10 +1296,31 @@ try {
         });
     }
 
+    const marketplaceId=fixtureId(4000);
+    await tx.insert(marketplaces).values({id:marketplaceId,slug:"yinne",name:"Yinne Marketplace",status:"active"}).onConflictDoUpdate({target:marketplaces.slug,set:{status:"active",updatedAt:new Date()}});
+    const categories=[[4010,"food-drink","Food & drink",0],[4011,"home-living","Home & living",1]] as const;
+    for(const [id,slug,name,displayOrder] of categories) await tx.insert(marketplaceCategories).values({id:fixtureId(id),marketplaceId,slug,name,displayOrder}).onConflictDoUpdate({target:[marketplaceCategories.marketplaceId,marketplaceCategories.slug],set:{name,status:"active"}});
+    await tx.insert(marketplaceProfiles).values({id:fixtureId(4020),organizationId,environment:"test",marketplaceId,merchantId,publicName:"Acme Coffee",slug:"acme-coffee",description:"Lagos-roasted coffee and café favourites.",termsAcceptedAt:new Date("2026-09-01T08:00:00Z"),contactVerifiedAt:new Date("2026-09-01T08:00:00Z")}).onConflictDoUpdate({target:[marketplaceProfiles.marketplaceId,marketplaceProfiles.organizationId,marketplaceProfiles.environment],set:{publicName:"Acme Coffee",termsAcceptedAt:new Date("2026-09-01T08:00:00Z"),contactVerifiedAt:new Date("2026-09-01T08:00:00Z")}});
+    const acmeMarketplaceListings=[[4030,1100,"approved","Acme House Espresso"],[4031,1108,"approved","Pour-over Kit"],[4032,1110,"submitted","Seasonal Sample"]] as const;
+    for(const [id,product,status,title] of acmeMarketplaceListings) await tx.insert(marketplaceListings).values({id:fixtureId(id),organizationId,environment:"test",marketplaceId,profileId:fixtureId(4020),productId:fixtureId(product),categoryId:fixtureId(product===1108?4011:4010),status,titleOverride:title,eligibility:{eligible:status==="approved",seeded:true},moderatedAt:status==="approved"?new Date("2026-09-02T08:00:00Z"):null,moderationReasonCode:status==="approved"?"seed_approved":null,moderationExplanation:status==="approved"?"Deterministic demo approval.":null}).onConflictDoUpdate({target:marketplaceListings.id,set:{status,titleOverride:title,eligibility:{eligible:status==="approved",seeded:true}}});
+
+    const secondOrg=fixtureId(5000),secondMerchant=fixtureId(5001),secondLocation=fixtureId(5002),secondProduct=fixtureId(5003),secondVariant=fixtureId(5004),secondStore=fixtureId(5005);
+    await tx.insert(organizations).values({id:secondOrg,name:"Aso Living",slug:"aso-living",defaultCurrency:"NGN",timezone:"Africa/Lagos"}).onConflictDoNothing();
+    await tx.insert(merchants).values({id:secondMerchant,organizationId:secondOrg,legalName:"Aso Living Limited",displayName:"Aso Living",slug:"aso"}).onConflictDoNothing();
+    await tx.insert(locations).values({id:secondLocation,organizationId:secondOrg,merchantId:secondMerchant,name:"Abuja Studio",type:"store",timezone:"Africa/Lagos"}).onConflictDoNothing();
+    await tx.insert(providerAccounts).values({id:fixtureId(5006),organizationId:secondOrg,provider:"mock",label:"Aso deterministic mock",environment:"test",capabilities:["payment.create","payment.retrieve","payment.refund","webhook.verify"],supportedCurrencies:["NGN"],configuration:{simulated:true},status:"enabled",isDefault:true}).onConflictDoUpdate({target:providerAccounts.id,set:{status:"enabled"}});
+    await tx.insert(stores).values({id:secondStore,organizationId:secondOrg,merchantId:secondMerchant,environment:"test",publicName:"Aso Living",slug:"aso-living",description:"Thoughtful objects made in Abuja.",status:"active",currency:"NGN",defaultLocationId:secondLocation,appearance:{primary_color:"#8b4a32",background_color:"#fffaf5",text_color:"#241711",type_scale:"comfortable",radius:"medium"}}).onConflictDoUpdate({target:[stores.organizationId,stores.merchantId,stores.environment],set:{status:"active"}});
+    await tx.insert(products).values({id:secondProduct,organizationId:secondOrg,name:"Woven Table Basket",slug:"woven-table-basket",description:"A handwoven table basket from Abuja.",status:"active",metadata:{seeded:true}}).onConflictDoUpdate({target:products.id,set:{status:"active"}});
+    await tx.insert(variants).values({id:secondVariant,organizationId:secondOrg,productId:secondProduct,sku:"ASO-BASKET-01",title:"Natural",unitAmount:1850000n,currency:"NGN",trackInventory:true,status:"active"}).onConflictDoUpdate({target:variants.id,set:{unitAmount:1850000n,status:"active"}});
+    await tx.insert(inventoryLevels).values({id:fixtureId(5007),organizationId:secondOrg,variantId:secondVariant,locationId:secondLocation,onHand:12n}).onConflictDoUpdate({target:inventoryLevels.id,set:{onHand:12n}});
+    await tx.insert(storeListings).values({id:fixtureId(5008),organizationId:secondOrg,storeId:secondStore,productId:secondProduct,status:"published",featured:true,displayOrder:0,imageAlt:"Woven basket from Aso Living"}).onConflictDoUpdate({target:[storeListings.storeId,storeListings.productId],set:{status:"published"}});
+    await tx.insert(marketplaceProfiles).values({id:fixtureId(5009),organizationId:secondOrg,environment:"test",marketplaceId,merchantId:secondMerchant,publicName:"Aso Living",slug:"aso-living",description:"Thoughtful objects made in Abuja.",termsAcceptedAt:new Date("2026-09-01T08:00:00Z"),contactVerifiedAt:new Date("2026-09-01T08:00:00Z")}).onConflictDoUpdate({target:[marketplaceProfiles.marketplaceId,marketplaceProfiles.organizationId,marketplaceProfiles.environment],set:{publicName:"Aso Living"}});
+    await tx.insert(marketplaceListings).values({id:fixtureId(5010),organizationId:secondOrg,environment:"test",marketplaceId,profileId:fixtureId(5009),productId:secondProduct,categoryId:fixtureId(4011),status:"approved",titleOverride:"Woven Table Basket",eligibility:{eligible:true,seeded:true},moderatedAt:new Date("2026-09-02T08:00:00Z"),moderationReasonCode:"seed_approved",moderationExplanation:"Deterministic demo approval."}).onConflictDoUpdate({target:marketplaceListings.id,set:{status:"approved"}});
+
     await tx
       .insert(seedVersions)
-      .values({ key: "acme-foundation", version: 5 })
-      .onConflictDoUpdate({ target: seedVersions.key, set: { version: 5, appliedAt: new Date() } });
+      .values({ key: "acme-foundation", version: 6 })
+      .onConflictDoUpdate({ target: seedVersions.key, set: { version: 6, appliedAt: new Date() } });
   });
 
   const [seed] = await db
@@ -1304,7 +1329,7 @@ try {
     .where(eq(seedVersions.key, "acme-foundation"));
   if (!seed) throw new Error("Seed verification failed.");
   console.log(
-    "Seeded Acme Coffee Phase 9 Capital Intelligence and deterministic Mock Provider dataset.",
+    "Seeded Phase 10 multi-merchant Marketplace and deterministic commerce dataset.",
   );
   console.log("Login: owner@acme.test (password from YINNE_SEED_PASSWORD)");
 } finally {
