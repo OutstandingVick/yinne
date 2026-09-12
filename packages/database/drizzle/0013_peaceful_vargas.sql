@@ -121,3 +121,46 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 $$;
 REVOKE ALL ON FUNCTION yinne_resolve_marketplace_listing(text, uuid, text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION yinne_resolve_marketplace_listing(text, uuid, text) TO yinne_app;
+--> statement-breakpoint
+CREATE OR REPLACE FUNCTION yinne_search_marketplace(
+  requested_marketplace text,
+  requested_environment text,
+  requested_query text DEFAULT NULL,
+  requested_category text DEFAULT NULL,
+  requested_merchant text DEFAULT NULL,
+  requested_currency text DEFAULT NULL,
+  requested_min_amount bigint DEFAULT NULL,
+  requested_max_amount bigint DEFAULT NULL,
+  requested_available boolean DEFAULT true,
+  requested_limit integer DEFAULT 20
+) RETURNS TABLE(organization_id uuid, listing_id uuid)
+LANGUAGE sql SECURITY DEFINER SET search_path = public, pg_temp AS $$
+  SELECT ml.organization_id, ml.id
+  FROM marketplace_listings ml
+  JOIN marketplaces m ON m.id = ml.marketplace_id
+  JOIN marketplace_profiles mp ON mp.id = ml.profile_id AND mp.organization_id = ml.organization_id
+  JOIN marketplace_categories mc ON mc.id = ml.category_id AND mc.marketplace_id = m.id
+  JOIN products p ON p.id = ml.product_id AND p.organization_id = ml.organization_id
+  JOIN stores s ON s.organization_id = ml.organization_id AND s.environment = ml.environment
+  JOIN store_listings sl ON sl.store_id = s.id AND sl.product_id = p.id AND sl.status = 'published'
+  WHERE m.slug = requested_marketplace AND m.status = 'active'
+    AND ml.environment = requested_environment AND ml.status = 'approved'
+    AND mp.suspended_at IS NULL AND mp.terms_accepted_at IS NOT NULL AND mp.contact_verified_at IS NOT NULL
+    AND p.status = 'active' AND s.status = 'active' AND mc.status = 'active'
+    AND (requested_query IS NULL OR coalesce(ml.title_override, p.name) ILIKE '%' || requested_query || '%' OR coalesce(ml.description_override, p.description, '') ILIKE '%' || requested_query || '%')
+    AND (requested_category IS NULL OR mc.slug = requested_category)
+    AND (requested_merchant IS NULL OR mp.slug = requested_merchant)
+    AND EXISTS (
+      SELECT 1 FROM variants v LEFT JOIN inventory_levels il
+        ON il.organization_id = v.organization_id AND il.variant_id = v.id AND il.location_id = s.default_location_id
+      WHERE v.organization_id = p.organization_id AND v.product_id = p.id AND v.status = 'active'
+        AND (requested_currency IS NULL OR v.currency = requested_currency)
+        AND (requested_min_amount IS NULL OR v.unit_amount >= requested_min_amount)
+        AND (requested_max_amount IS NULL OR v.unit_amount <= requested_max_amount)
+        AND (NOT requested_available OR NOT v.track_inventory OR coalesce(il.on_hand, 0) > 0)
+    )
+  ORDER BY ml.rank DESC, ml.created_at DESC, ml.id
+  LIMIT least(greatest(requested_limit, 1), 50)
+$$;
+REVOKE ALL ON FUNCTION yinne_search_marketplace(text,text,text,text,text,text,bigint,bigint,boolean,integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION yinne_search_marketplace(text,text,text,text,text,text,bigint,bigint,boolean,integer) TO yinne_app;
