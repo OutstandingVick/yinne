@@ -35,5 +35,5 @@ export async function getPublicMarketplaceListing(id:string, environment:"test"|
 export async function createMarketplaceCheckout(id:string,input:MarketplaceCheckoutInput,environment:"test"|"live"="test",origin?:string) {
   const listing=await getPublicMarketplaceListing(id,environment);
   const variant=listing.variants.find(v=>v.id===input.variant_id && v.available); if(!variant) return notFound();
-  return createPublicStoreCheckout(listing.store_slug,{items:[{variant_id:input.variant_id,quantity:input.quantity}],idempotency_key:input.idempotency_key},environment,origin);
+  return createPublicStoreCheckout(listing.store_slug,{items:[{variant_id:input.variant_id,quantity:input.quantity}],idempotency_key:input.idempotency_key},environment,origin,{channel:"marketplace",marketplace_listing_id:id});
 }

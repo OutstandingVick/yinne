@@ -596,6 +596,9 @@ export async function createPublicStoreCheckout(
   input: StorefrontCartInput,
   environment: "test" | "live" = "test",
   origin?: string,
+  attribution: { channel: "storefront" | "marketplace"; marketplace_listing_id?: string } = {
+    channel: "storefront",
+  },
 ) {
   const resolved = await resolvePublicStore(storeSlug, environment);
   const ids = input.items.map((item) => item.variant_id);
@@ -678,7 +681,10 @@ export async function createPublicStoreCheckout(
           }
         : {}),
       metadata: {
-        channel: "storefront",
+        channel: attribution.channel,
+        ...(attribution.marketplace_listing_id
+          ? { marketplace_listing_id: attribution.marketplace_listing_id }
+          : {}),
         store_id: resolved.row.id,
         store_slug: resolved.row.slug,
         catalogue_version: resolved.row.catalogueVersion,
