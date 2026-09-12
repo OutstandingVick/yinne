@@ -72,7 +72,7 @@ export async function transitionMarketplaceListing(context: RequestContext, id: 
         .innerJoin(products,and(eq(products.organizationId,marketplaceProfiles.organizationId),eq(products.id,current.productId)))
         .leftJoin(stores,and(eq(stores.organizationId,marketplaceProfiles.organizationId),eq(stores.environment,marketplaceProfiles.environment)))
         .leftJoin(storeListings,and(eq(storeListings.organizationId,products.organizationId),eq(storeListings.productId,products.id),eq(storeListings.storeId,stores.id)))
-        .leftJoin(providerAccounts,and(eq(providerAccounts.organizationId,marketplaceProfiles.organizationId),eq(providerAccounts.environment,marketplaceProfiles.environment),eq(providerAccounts.status,"active")))
+        .leftJoin(providerAccounts,and(eq(providerAccounts.organizationId,marketplaceProfiles.organizationId),eq(providerAccounts.environment,marketplaceProfiles.environment),eq(providerAccounts.status,"enabled")))
         .leftJoin(variants,and(eq(variants.organizationId,products.organizationId),eq(variants.productId,products.id),eq(variants.status,"active")))
         .leftJoin(inventoryLevels,and(eq(inventoryLevels.organizationId,variants.organizationId),eq(inventoryLevels.variantId,variants.id),eq(inventoryLevels.locationId,stores.defaultLocationId)))
         .where(eq(marketplaceProfiles.id,current.profileId)).limit(1);
