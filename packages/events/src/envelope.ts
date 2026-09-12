@@ -82,6 +82,13 @@ export const domainEventTypes = [
   "capital.profile_calculated",
   "capital.profile_changed",
   "capital.recalculation_requested",
+  "marketplace.profile_updated",
+  "marketplace.listing_created",
+  "marketplace.listing_submitted",
+  "marketplace.listing_approved",
+  "marketplace.listing_rejected",
+  "marketplace.listing_suspended",
+  "marketplace.listing_archived",
 ] as const;
 
 export type DomainEventType = (typeof domainEventTypes)[number];
