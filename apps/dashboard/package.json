@@ -27,6 +27,7 @@
     "@yinne/subscriptions": "workspace:*",
     "@yinne/operations": "workspace:*",
     "@yinne/invoicing": "workspace:*",
+    "@yinne/marketplace": "workspace:*",
     "@yinne/sdk": "workspace:*",
     "@yinne/ui": "workspace:*",
     "@next/env": "15.5.24",
