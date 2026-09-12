@@ -8,5 +8,10 @@ export function GET(request: NextRequest) {
 }
 
 export function PUT(request: NextRequest) {
-  return apiRoute(request, async (context) => ({ profile: await upsertMarketplaceProfile(context, marketplaceProfileSchema.parse(await request.json())) }));
+  return apiRoute(request, async (context) => ({
+    profile: await upsertMarketplaceProfile(
+      context,
+      marketplaceProfileSchema.parse(await request.json()),
+    ),
+  }));
 }

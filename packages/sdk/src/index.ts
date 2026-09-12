@@ -258,8 +258,33 @@ export interface StorefrontProduct {
     availability: "in_stock" | "low_stock" | "out_of_stock";
   }>;
 }
-export interface MarketplaceProfile { id:string; marketplace_id:string; merchant_id:string; public_name:string; slug:string; description:string|null; logo_url:string|null; terms_accepted:boolean; contact_verified:boolean; suspended:boolean; version:number; updated_at:string }
-export interface MarketplaceListing { id:string; product_id:string; category_id:string; status:"draft"|"submitted"|"approved"|"rejected"|"suspended"|"archived"; title:string|null; description:string|null; eligibility:Record<string,unknown>; moderation_reason_code:string|null; moderation_explanation:string|null; version:number; updated_at:string }
+export interface MarketplaceProfile {
+  id: string;
+  marketplace_id: string;
+  merchant_id: string;
+  public_name: string;
+  slug: string;
+  description: string | null;
+  logo_url: string | null;
+  terms_accepted: boolean;
+  contact_verified: boolean;
+  suspended: boolean;
+  version: number;
+  updated_at: string;
+}
+export interface MarketplaceListing {
+  id: string;
+  product_id: string;
+  category_id: string;
+  status: "draft" | "submitted" | "approved" | "rejected" | "suspended" | "archived";
+  title: string | null;
+  description: string | null;
+  eligibility: Record<string, unknown>;
+  moderation_reason_code: string | null;
+  moderation_explanation: string | null;
+  version: number;
+  updated_at: string;
+}
 export interface Location {
   id: string;
   merchant_id: string;
@@ -898,11 +923,29 @@ export class YinneClient {
       }),
   };
   readonly marketplace = {
-    profile: () => this.request<{profile:MarketplaceProfile}>("/v1/marketplace/profile").then(v=>v.profile),
-    updateProfile: (input:Record<string,unknown>) => this.request<{profile:MarketplaceProfile}>("/v1/marketplace/profile",{method:"PUT",body:JSON.stringify(input)}).then(v=>v.profile),
-    listings: () => this.request<{data:MarketplaceListing[]}>("/v1/marketplace/listings").then(v=>v.data),
-    createListing: (input:Record<string,unknown>) => this.request<{listing:MarketplaceListing}>("/v1/marketplace/listings",{method:"POST",body:JSON.stringify(input)}).then(v=>v.listing),
-    submit: (id:string) => this.request<{listing:MarketplaceListing}>(`/v1/marketplace/listings/${id}/submit`,{method:"POST"}).then(v=>v.listing),
-    archive: (id:string) => this.request<{listing:MarketplaceListing}>(`/v1/marketplace/listings/${id}/archive`,{method:"POST"}).then(v=>v.listing),
+    profile: () =>
+      this.request<{ profile: MarketplaceProfile }>("/v1/marketplace/profile").then(
+        (v) => v.profile,
+      ),
+    updateProfile: (input: Record<string, unknown>) =>
+      this.request<{ profile: MarketplaceProfile }>("/v1/marketplace/profile", {
+        method: "PUT",
+        body: JSON.stringify(input),
+      }).then((v) => v.profile),
+    listings: () =>
+      this.request<{ data: MarketplaceListing[] }>("/v1/marketplace/listings").then((v) => v.data),
+    createListing: (input: Record<string, unknown>) =>
+      this.request<{ listing: MarketplaceListing }>("/v1/marketplace/listings", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((v) => v.listing),
+    submit: (id: string) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/submit`, {
+        method: "POST",
+      }).then((v) => v.listing),
+    archive: (id: string) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/archive`, {
+        method: "POST",
+      }).then((v) => v.listing),
   };
 }

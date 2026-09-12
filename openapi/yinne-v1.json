@@ -1329,21 +1329,124 @@
       }
     },
     "/v1/marketplace/profile": {
-      "get": { "operationId": "getMarketplaceProfile", "summary": "Get merchant Marketplace profile", "responses": { "200": { "description": "Marketplace profile" }, "default": { "$ref": "#/components/responses/Error" } } },
-      "put": { "operationId": "updateMarketplaceProfile", "summary": "Opt in or update merchant Marketplace profile", "responses": { "200": { "description": "Updated Marketplace profile" }, "default": { "$ref": "#/components/responses/Error" } } }
+      "get": {
+        "operationId": "getMarketplaceProfile",
+        "summary": "Get merchant Marketplace profile",
+        "responses": {
+          "200": { "description": "Marketplace profile" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "operationId": "updateMarketplaceProfile",
+        "summary": "Opt in or update merchant Marketplace profile",
+        "responses": {
+          "200": { "description": "Updated Marketplace profile" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
     },
     "/v1/marketplace/listings": {
-      "get": { "operationId": "listMarketplaceListings", "summary": "List merchant Marketplace listings", "responses": { "200": { "description": "Listing collection" }, "default": { "$ref": "#/components/responses/Error" } } },
-      "post": { "operationId": "createMarketplaceListing", "summary": "Create a canonical-product Marketplace listing", "responses": { "201": { "description": "Listing created" }, "default": { "$ref": "#/components/responses/Error" } } }
+      "get": {
+        "operationId": "listMarketplaceListings",
+        "summary": "List merchant Marketplace listings",
+        "responses": {
+          "200": { "description": "Listing collection" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "operationId": "createMarketplaceListing",
+        "summary": "Create a canonical-product Marketplace listing",
+        "responses": {
+          "201": { "description": "Listing created" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
     },
-    "/v1/marketplace/listings/{id}/submit": { "post": { "operationId": "submitMarketplaceListing", "summary": "Submit a listing for moderation", "responses": { "200": { "description": "Listing submitted" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/marketplace/listings/{id}/archive": { "post": { "operationId": "archiveMarketplaceListing", "summary": "Archive a merchant listing", "responses": { "200": { "description": "Listing archived" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/marketplace/listings/{id}/approve": { "post": { "operationId": "approveMarketplaceListing", "summary": "Approve an eligible listing with moderation evidence", "responses": { "200": { "description": "Listing approved" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/marketplace/listings/{id}/reject": { "post": { "operationId": "rejectMarketplaceListing", "summary": "Reject a listing with moderation evidence", "responses": { "200": { "description": "Listing rejected" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/marketplace/listings/{id}/suspend": { "post": { "operationId": "suspendMarketplaceListing", "summary": "Suspend a listing with moderation evidence", "responses": { "200": { "description": "Listing suspended" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/public/marketplace": { "get": { "operationId": "searchPublicMarketplace", "security": [], "summary": "Browse and search approved available Marketplace listings", "responses": { "200": { "description": "Safe public listing projections" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/public/marketplace/listings/{id}": { "get": { "operationId": "getPublicMarketplaceListing", "security": [], "summary": "Get an approved public listing projection", "responses": { "200": { "description": "Public Marketplace listing" }, "default": { "$ref": "#/components/responses/Error" } } } },
-    "/v1/public/marketplace/listings/{id}/checkout": { "post": { "operationId": "createMarketplaceCheckout", "security": [], "summary": "Create canonical single-merchant checkout from a listing", "responses": { "201": { "description": "Canonical checkout session" }, "default": { "$ref": "#/components/responses/Error" } } } },
+    "/v1/marketplace/listings/{id}/submit": {
+      "post": {
+        "operationId": "submitMarketplaceListing",
+        "summary": "Submit a listing for moderation",
+        "responses": {
+          "200": { "description": "Listing submitted" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/marketplace/listings/{id}/archive": {
+      "post": {
+        "operationId": "archiveMarketplaceListing",
+        "summary": "Archive a merchant listing",
+        "responses": {
+          "200": { "description": "Listing archived" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/marketplace/listings/{id}/approve": {
+      "post": {
+        "operationId": "approveMarketplaceListing",
+        "summary": "Approve an eligible listing with moderation evidence",
+        "responses": {
+          "200": { "description": "Listing approved" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/marketplace/listings/{id}/reject": {
+      "post": {
+        "operationId": "rejectMarketplaceListing",
+        "summary": "Reject a listing with moderation evidence",
+        "responses": {
+          "200": { "description": "Listing rejected" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/marketplace/listings/{id}/suspend": {
+      "post": {
+        "operationId": "suspendMarketplaceListing",
+        "summary": "Suspend a listing with moderation evidence",
+        "responses": {
+          "200": { "description": "Listing suspended" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/marketplace": {
+      "get": {
+        "operationId": "searchPublicMarketplace",
+        "security": [],
+        "summary": "Browse and search approved available Marketplace listings",
+        "responses": {
+          "200": { "description": "Safe public listing projections" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/marketplace/listings/{id}": {
+      "get": {
+        "operationId": "getPublicMarketplaceListing",
+        "security": [],
+        "summary": "Get an approved public listing projection",
+        "responses": {
+          "200": { "description": "Public Marketplace listing" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/v1/public/marketplace/listings/{id}/checkout": {
+      "post": {
+        "operationId": "createMarketplaceCheckout",
+        "security": [],
+        "summary": "Create canonical single-merchant checkout from a listing",
+        "responses": {
+          "201": { "description": "Canonical checkout session" },
+          "default": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
     "/v1/providers/mock/{organization_id}/{provider_account_id}/webhook": {
       "parameters": [
         {
