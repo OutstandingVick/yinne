@@ -70,12 +70,18 @@ const eventId = fixtureId(3);
 const passwordHash = await hashPassword(password);
 
 const roleIdByKey = new Map(roleKeys.map((key, index) => [key, fixtureId(100 + index)]));
-const establishedPermissionKeys = permissionKeys.filter((key) => key !== "capital:recalculate");
+const reservedPermissionIds = new Map([
+  ["marketplace:read", 296],
+  ["marketplace:manage", 297],
+  ["marketplace:moderate", 298],
+  ["capital:recalculate", 299],
+]);
+const establishedPermissionKeys = permissionKeys.filter((key) => !reservedPermissionIds.has(key));
 const permissionIdByKey = new Map(
   permissionKeys.map((key) => [
     key,
-    key === "capital:recalculate"
-      ? fixtureId(299)
+    reservedPermissionIds.has(key)
+      ? fixtureId(reservedPermissionIds.get(key)!)
       : fixtureId(200 + establishedPermissionKeys.indexOf(key)),
   ]),
 );
