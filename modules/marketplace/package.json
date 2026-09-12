@@ -7,6 +7,7 @@
   "scripts": { "build": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run" },
   "dependencies": {
     "@yinne/application": "workspace:*",
+    "@yinne/auth": "workspace:*",
     "@yinne/contracts": "workspace:*",
     "@yinne/core": "workspace:*",
     "@yinne/database": "workspace:*",

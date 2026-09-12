@@ -298,6 +298,9 @@ importers:
       '@yinne/application':
         specifier: workspace:*
         version: link:../../packages/application
+      '@yinne/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@yinne/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
