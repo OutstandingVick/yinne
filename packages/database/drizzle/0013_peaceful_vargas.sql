@@ -66,6 +66,7 @@ CREATE TABLE "marketplaces" (
 );
 --> statement-breakpoint
 ALTER TABLE "marketplace_categories" ADD CONSTRAINT "marketplace_categories_marketplace_id_marketplaces_id_fk" FOREIGN KEY ("marketplace_id") REFERENCES "public"."marketplaces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "marketplace_profiles_org_id_uidx" ON "marketplace_profiles" USING btree ("organization_id","id");--> statement-breakpoint
 ALTER TABLE "marketplace_listings" ADD CONSTRAINT "marketplace_listings_organization_id_organizations_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organizations"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "marketplace_listings" ADD CONSTRAINT "marketplace_listings_marketplace_id_marketplaces_id_fk" FOREIGN KEY ("marketplace_id") REFERENCES "public"."marketplaces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "marketplace_listings" ADD CONSTRAINT "marketplace_listings_category_id_marketplace_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."marketplace_categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -80,7 +81,7 @@ CREATE UNIQUE INDEX "marketplace_listings_market_product_active_uidx" ON "market
 CREATE INDEX "marketplace_listings_public_idx" ON "marketplace_listings" USING btree ("marketplace_id","environment","status","category_id","rank");--> statement-breakpoint
 CREATE UNIQUE INDEX "marketplace_profiles_market_org_env_uidx" ON "marketplace_profiles" USING btree ("marketplace_id","organization_id","environment");--> statement-breakpoint
 CREATE UNIQUE INDEX "marketplace_profiles_market_env_slug_uidx" ON "marketplace_profiles" USING btree ("marketplace_id","environment","slug");--> statement-breakpoint
-CREATE UNIQUE INDEX "marketplace_profiles_org_id_uidx" ON "marketplace_profiles" USING btree ("organization_id","id");
+-- marketplace_profiles_org_id_uidx is created before the composite listing foreign key.
 --> statement-breakpoint
 GRANT SELECT ON marketplaces, marketplace_categories TO yinne_app;
 GRANT SELECT, INSERT, UPDATE ON marketplace_profiles, marketplace_listings TO yinne_app;
