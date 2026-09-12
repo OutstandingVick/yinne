@@ -293,6 +293,27 @@ importers:
         specifier: 0.44.5
         version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
 
+  modules/marketplace:
+    dependencies:
+      '@yinne/application':
+        specifier: workspace:*
+        version: link:../../packages/application
+      '@yinne/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@yinne/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@yinne/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@yinne/storefront':
+        specifier: workspace:*
+        version: link:../storefront
+      drizzle-orm:
+        specifier: 0.44.5
+        version: 0.44.5(@types/pg@8.23.1)(pg@8.23.0)(postgres@3.4.7)
+
   modules/operations:
     dependencies:
       '@yinne/application':
