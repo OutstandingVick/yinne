@@ -45,6 +45,8 @@ try {
     "subscriptions",
     "subscription_renewals",
     "capital_profiles",
+    "marketplace_profiles",
+    "marketplace_listings",
   ];
   const [result] = await client<{ current_user: string; protected_count: number }[]>`
     select current_user, count(*)::integer as protected_count
