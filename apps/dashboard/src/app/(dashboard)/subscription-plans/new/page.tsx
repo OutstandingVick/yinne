@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Button, PageHeader } from "@yinne/ui";
+import { Button, CoreScreen, PageHeader } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { createPlan, createPrice } from "@yinne/subscriptions";
 import { activeUserContext } from "../../../../lib/context";
@@ -29,12 +29,12 @@ async function create(form: FormData) {
 
 export default function NewPlanPage() {
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Create subscription plan"
         description="Prices are immutable after creation; create a new Price to change terms."
       />
-      <form action={create} className="card form-stack">
+      <form action={create} className="card form-stack module-form">
         <label>
           Plan name
           <input name="name" required maxLength={160} />
@@ -60,6 +60,6 @@ export default function NewPlanPage() {
         </label>
         <Button type="submit">Create plan and price</Button>
       </form>
-    </>
+    </CoreScreen>
   );
 }
