@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button, EmptyState, Input, PageHeader, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, Input, PageHeader, SectionCard, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -16,12 +16,12 @@ export default async function CustomersPage({
     ...(search ? { search } : {}),
   });
   return (
-    <>
+    <CoreScreen>
       <PageHeader
         title="Customers"
         description="Organization-owned customer records. Contact details follow the customers:pii_read permission."
       />
-      <section className="card" style={{ marginBottom: 20 }}>
+      <SectionCard>
         <h2>Add customer</h2>
         <form action={createCustomerAction} className="form form-inline">
           <div className="form-row">
@@ -38,7 +38,7 @@ export default async function CustomersPage({
           </div>
           <Button type="submit">Add customer</Button>
         </form>
-      </section>
+      </SectionCard>
       <form className="filter-bar">
         <Input
           name="search"
@@ -81,6 +81,6 @@ export default async function CustomersPage({
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
