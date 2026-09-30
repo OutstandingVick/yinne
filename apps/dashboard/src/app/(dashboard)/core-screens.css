@@ -1,0 +1,7 @@
+.dashboard-theme .core-screen { display: grid; gap: var(--space-6); min-width: 0; }
+.dashboard-theme .core-screen > :is(.page-header, .filter-bar) { margin-block: 0; }
+.dashboard-theme .core-screen > :is(.card, .notice, .table-wrap, .state-panel) { min-width: 0; }
+.dashboard-theme .core-screen > .page-header { margin-block-end: var(--space-1); }
+.dashboard-theme .core-screen .core-section { min-width: 0; }
+.dashboard-theme .core-screen .core-section > h2 { margin: 0 0 var(--space-4); }
+@media (max-width: 40rem) { .dashboard-theme .core-screen { gap: var(--space-5); } }
