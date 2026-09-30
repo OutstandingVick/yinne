@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Badge, Button, PageHeader, Table } from "@yinne/ui";
+import { ActionGroup, Button, CoreScreen, FinancialAmount, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrder } from "@yinne/commerce";
 import { activeUserContext } from "../../../../../lib/context";
@@ -11,7 +11,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     const order = await getOrder(await activeUserContext(createRequestId()), (await params).id);
     const actions =
       order.financial_status === "unpaid" && order.fulfilment_status === "unfulfilled" ? (
-        <div style={{ display: "flex", gap: 8 }}>
+        <ActionGroup>
           <form action={createPaymentAction}>
             <input type="hidden" name="order_id" value={order.id} />
             <input type="hidden" name="mock_scenario" value="success" />
@@ -23,22 +23,22 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               Cancel order
             </Button>
           </form>
-        </div>
+        </ActionGroup>
       ) : undefined;
     return (
-      <>
+      <CoreScreen>
         <PageHeader
           title={order.number}
           description="Immutable price, product, SKU, and quantity snapshots."
           actions={actions}
         />
-        <p>
-          <Badge tone="warning">{order.financial_status}</Badge>{" "}
-          <Badge tone={order.fulfilment_status === "cancelled" ? "danger" : "info"}>
+        <p className="core-status-line">
+          <StatusBadge tone="warning">{order.financial_status}</StatusBadge>{" "}
+          <StatusBadge tone={order.fulfilment_status === "cancelled" ? "danger" : "info"}>
             {order.fulfilment_status}
-          </Badge>
+          </StatusBadge>
         </p>
-        <Table label="Order items">
+        <Table label="Order items" density="compact">
           <thead>
             <tr>
               <th>Item</th>
@@ -56,23 +56,23 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                   <div className="help">{item.variant_title}</div>
                 </td>
                 <td className="mono">{item.sku}</td>
-                <td>{formatMinorAmount(item.unit_amount, item.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(item.unit_amount, item.currency)}</FinancialAmount></td>
                 <td>{item.quantity}</td>
-                <td>{formatMinorAmount(item.total_amount, item.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(item.total_amount, item.currency)}</FinancialAmount></td>
               </tr>
             ))}
           </tbody>
         </Table>
-        <section className="card" style={{ marginTop: 20 }}>
+        <SectionCard className="core-total-card">
           <span className="label">Order total</span>
-          <h2>{formatMinorAmount(order.total_amount, order.currency)}</h2>
+          <h2><FinancialAmount prominent>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></h2>
           <p>
             {order.financial_status === "unpaid"
               ? "No successful payment has been recorded."
               : "Payment state is reflected in the immutable payment evidence."}
           </p>
-        </section>
-      </>
+        </SectionCard>
+      </CoreScreen>
     );
   } catch {
     notFound();

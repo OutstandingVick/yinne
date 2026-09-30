@@ -1,3 +1,7 @@
+.dashboard-theme .core-status-line { margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.dashboard-theme .core-total-card { background: var(--panel); border-color: var(--border); }
+.dashboard-theme .core-total-card > .label { color: var(--muted); }
+.dashboard-theme .core-total-card > h2 { margin: 8px 0 12px; }
 .dashboard-theme .core-screen .page-header h1 { font-family: var(--font-brand); font-weight: 600; }
 .dashboard-theme .overview-grid { gap: var(--space-5); }
 .dashboard-theme .overview-grid > a { display: block; min-width: 0; }
