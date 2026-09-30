@@ -1,3 +1,4 @@
+export { DetailGrid, DetailItem } from "./detail-grid";
 export { FinancialAmount } from "./financial-amount";
 export { ActionGroup } from "./action-group";
 export { SectionCard } from "./section-card";

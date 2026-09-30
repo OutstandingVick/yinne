@@ -1,3 +1,8 @@
+.dashboard-theme .core-detail-grid { gap: 0; padding: 0; overflow: hidden; }
+.dashboard-theme .core-detail-grid > .detail-item { padding: var(--space-6); min-width: 0; border-inline-end: 1px solid var(--border); border-block-end: 1px solid var(--border); }
+.dashboard-theme .detail-item .label { display: block; color: var(--muted); margin-bottom: var(--space-3); }
+.dashboard-theme .detail-value { font-size: var(--text-body); font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.dashboard-theme .detail-value .financial-amount { font-size: 1.125rem; }
 .dashboard-theme .financial-amount { display: inline-block; color: var(--text); font-family: var(--font-brand); font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em; white-space: nowrap; }
 .dashboard-theme .financial-amount-prominent { font-size: clamp(1.75rem, 3vw, 2.5rem); letter-spacing: -.04em; line-height: 1.15; white-space: normal; }
 .dashboard-theme .core-screen .table-wrap td .financial-amount { font-size: .9375rem; }
