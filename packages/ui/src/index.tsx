@@ -3,7 +3,7 @@ export { FinancialAmount } from "./financial-amount";
 export { ActionGroup } from "./action-group";
 export { SectionCard } from "./section-card";
 export { CoreScreen } from "./core-screen";
-export { FilterBar, DateInput } from "./filters";
+export { FilterBar, FilterForm, DateInput } from "./filters";
 export { Tooltip } from "./tooltip";
 export { Pagination } from "./pagination";
 export { Drawer } from "./drawer";
