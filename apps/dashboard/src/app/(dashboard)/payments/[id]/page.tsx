@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge, Button, Input, PageHeader, Select, Table } from "@yinne/ui";
+import { Button, CoreScreen, FinancialAmount, Input, PageHeader, SectionCard, Select, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getPayment } from "@yinne/payments";
 import { activeUserContext } from "../../../../lib/context";
@@ -10,13 +10,13 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
   try {
     const payment = await getPayment(await activeUserContext(createRequestId()), (await params).id);
     return (
-      <>
+      <CoreScreen>
         <PageHeader
           title={`Payment ${payment.id.slice(0, 18)}…`}
           description="Canonical state, provider attempts, immutable transactions, and refunds."
         />
-        <p>
-          <Badge
+        <p className="core-status-line">
+          <StatusBadge
             tone={
               payment.status === "succeeded"
                 ? "success"
@@ -26,22 +26,22 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             }
           >
             {payment.status}
-          </Badge>{" "}
-          <Badge tone="warning">{payment.environment}</Badge>
+          </StatusBadge>{" "}
+          <StatusBadge tone="warning">{payment.environment}</StatusBadge>
         </p>
-        <section className="card">
+        <SectionCard className="core-total-card">
           <span className="label">Amount</span>
-          <h2>{formatMinorAmount(payment.amount, payment.currency)}</h2>
+          <h2><FinancialAmount prominent>{formatMinorAmount(payment.amount, payment.currency)}</FinancialAmount></h2>
           <p>
             Order:{" "}
             <Link href={`/commerce/orders/${payment.order_id}`} className="mono">
               {payment.order_id}
             </Link>
           </p>
-          <p>Refunded: {formatMinorAmount(payment.refunded_amount, payment.currency)}</p>
-        </section>
+          <p>Refunded: <FinancialAmount>{formatMinorAmount(payment.refunded_amount, payment.currency)}</FinancialAmount></p>
+        </SectionCard>
         {["succeeded", "partially_refunded"].includes(payment.status) ? (
-          <section className="card" style={{ marginTop: 20 }}>
+          <SectionCard>
             <h2>Create refund</h2>
             <form action={createRefundAction} className="form form-inline">
               <input type="hidden" name="payment_id" value={payment.id} />
@@ -62,7 +62,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
               </div>
               <Button type="submit">Create refund</Button>
             </form>
-          </section>
+          </SectionCard>
         ) : null}
         <h2>Attempts</h2>
         <Table label="Payment attempts">
@@ -153,7 +153,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             ))}
           </tbody>
         </Table>
-      </>
+      </CoreScreen>
     );
   } catch {
     notFound();
