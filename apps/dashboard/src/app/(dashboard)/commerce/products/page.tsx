@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, CoreScreen, EmptyState, Input, PageHeader, SectionCard, Select, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, FilterForm, FinancialAmount, Input, PageHeader, SearchField, SectionCard, Select, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listProducts } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -51,9 +51,9 @@ export default async function ProductsPage({
           <Button type="submit">Add draft product</Button>
         </form>
       </SectionCard>
-      <form className="filter-bar">
-        <Input name="search" defaultValue={query.search} placeholder="Search product or slug" />
-        <Select name="status" defaultValue={query.status ?? ""}>
+      <FilterForm>
+        <SearchField label="Search product or slug" name="search" defaultValue={query.search} placeholder="Search product or slug" />
+        <Select aria-label="All statuses" name="status" defaultValue={query.status ?? ""}>
           <option value="">All statuses</option>
           <option value="draft">Draft</option>
           <option value="active">Active</option>
@@ -62,14 +62,14 @@ export default async function ProductsPage({
         <Button type="submit" className="button-secondary">
           Filter
         </Button>
-      </form>
+      </FilterForm>
       {!products.data.length ? (
         <EmptyState
           title="No products"
           description="Add a product and variant to build the catalogue."
         />
       ) : (
-        <Table label="Products">
+        <Table label="Products" density="compact">
           <thead>
             <tr>
               <th>Product</th>
@@ -88,7 +88,7 @@ export default async function ProductsPage({
                   <div className="help">{product.slug}</div>
                 </td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       product.status === "active"
                         ? "success"
@@ -98,16 +98,17 @@ export default async function ProductsPage({
                     }
                   >
                     {product.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>{product.variants.length}</td>
                 <td>
-                  {product.variants[0]
+                  {product.variants[0] ? <FinancialAmount>{
+                    product.variants[0]
                     ? formatMinorAmount(
                         product.variants[0].unit_amount,
                         product.variants[0].currency,
                       )
-                    : "—"}
+                    : "—"}</FinancialAmount> : "—"}
                 </td>
               </tr>
             ))}
