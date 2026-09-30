@@ -109,10 +109,9 @@ export default async function CapitalPage() {
           </details>
         ))}
       </SectionCard>
-      <section className="panel" style={{ marginTop: 20 }}>
+      <SectionCard className="capital-history">
         <h2>Profile history</h2>
-        <div className="table-wrap">
-          <table aria-label="Capital profile history">
+        <Table label="Capital profile history" density="compact">
             <thead>
               <tr>
                 <th>Calculated</th>
@@ -131,9 +130,8 @@ export default async function CapitalPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
-      </section>
+        </Table>
+      </SectionCard>
       <section className="notice" style={{ marginTop: 20 }}>
         <strong>Limitations</strong>
         <ul>
