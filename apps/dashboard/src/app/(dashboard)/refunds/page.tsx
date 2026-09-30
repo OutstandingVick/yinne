@@ -1,4 +1,4 @@
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listRefunds } from "@yinne/payments";
 import { activeUserContext } from "../../../lib/context";
@@ -6,7 +6,7 @@ import { formatMinorAmount } from "../../../lib/money";
 export default async function RefundsPage() {
   const rows = await listRefunds(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Refunds"
         description="Full and partial reversal requests with provider-neutral lifecycle evidence."
@@ -14,7 +14,7 @@ export default async function RefundsPage() {
       {!rows.data.length ? (
         <EmptyState title="No refunds" description="Create a refund from a succeeded payment." />
       ) : (
-        <Table label="Refunds">
+        <Table label="Refunds" density="compact">
           <thead>
             <tr>
               <th>ID</th>
@@ -30,9 +30,9 @@ export default async function RefundsPage() {
               <tr key={row.id}>
                 <td className="mono">{row.id.slice(0, 16)}…</td>
                 <td className="mono">{row.payment_id.slice(0, 16)}…</td>
-                <td>{formatMinorAmount(row.amount, row.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       row.status === "succeeded"
                         ? "success"
@@ -42,7 +42,7 @@ export default async function RefundsPage() {
                     }
                   >
                     {row.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>{row.reason}</td>
                 <td>{new Date(row.created_at).toLocaleString("en-NG")}</td>
@@ -51,6 +51,6 @@ export default async function RefundsPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
