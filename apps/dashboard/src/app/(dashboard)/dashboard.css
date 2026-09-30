@@ -1,3 +1,7 @@
+.dashboard-theme .filter-bar { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 16px; margin-bottom: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-card); }
+.dashboard-theme .filter-bar > :is(label, .form-row, .search-field) { flex: 1 1 160px; min-width: 0; }
+.dashboard-theme .date-control { min-width: 0; }
+.dashboard-theme .date-control input { min-width: 0; max-width: 100%; }
 .dashboard-theme .tooltip { position: relative; display: inline-flex; max-width: 100%; }
 .dashboard-theme .tooltip-trigger { font: inherit; background: transparent; border: 0; color: inherit; padding: 8px; min-height: 40px; cursor: help; text-decoration: underline dotted; text-underline-offset: 4px; }
 .dashboard-theme .tooltip-content { position: absolute; inset-inline-start: 0; top: 100%; z-index: 30; width: max-content; max-width: min(220px, calc(100vw - 40px)); padding: 8px 12px; border-radius: var(--radius-sm); background: var(--nav-surface); color: white; font-size: var(--text-caption); box-shadow: var(--shadow-overlay); }

@@ -1,3 +1,4 @@
+export { FilterBar, DateInput } from "./filters";
 export { Tooltip } from "./tooltip";
 export { Pagination } from "./pagination";
 export { Drawer } from "./drawer";
