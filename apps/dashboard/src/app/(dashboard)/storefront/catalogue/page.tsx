@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache";
-import { Badge, Button, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listStoreListings, publishStoreProduct, unpublishStoreProduct } from "@yinne/storefront";
 import { activeUserContext } from "../../../../lib/context";
@@ -22,7 +22,7 @@ async function changePublication(formData: FormData) {
 export default async function StoreCataloguePage() {
   const rows = await listStoreListings(await activeUserContext(createRequestId()));
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Store catalogue"
         description="Choose which canonical active products customers can discover."
@@ -33,7 +33,7 @@ export default async function StoreCataloguePage() {
           description="Create products in Commerce before publishing a Store."
         />
       ) : (
-        <Table label="Store catalogue">
+        <Table label="Store catalogue" density="compact">
           <thead>
             <tr>
               <th>Product</th>
@@ -48,9 +48,9 @@ export default async function StoreCataloguePage() {
                 <td>{row.name}</td>
                 <td>{row.product_status}</td>
                 <td>
-                  <Badge tone={row.publication_status === "published" ? "success" : "warning"}>
+                  <StatusBadge tone={row.publication_status === "published" ? "success" : "warning"}>
                     {row.publication_status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>
                   <form action={changePublication}>
@@ -74,6 +74,6 @@ export default async function StoreCataloguePage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
