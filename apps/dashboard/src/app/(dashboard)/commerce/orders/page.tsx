@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, CoreScreen, EmptyState, Input, PageHeader, SectionCard, Select, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, FilterForm, FinancialAmount, Input, PageHeader, SearchField, SectionCard, Select, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrderCreationOptions, listOrders } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -77,9 +77,9 @@ export default async function OrdersPage({
           <Button type="submit">Create unpaid order</Button>
         </form>
       </SectionCard>
-      <form className="filter-bar">
-        <Input name="search" defaultValue={query.search} placeholder="Search order or customer" />
-        <Select name="location_id" defaultValue={query.location_id ?? ""}>
+      <FilterForm>
+        <SearchField label="Search order or customer" name="search" defaultValue={query.search} placeholder="Search order or customer" />
+        <Select aria-label="All locations" name="location_id" defaultValue={query.location_id ?? ""}>
           <option value="">All locations</option>
           {options.locations.map((location) => (
             <option value={location.id} key={location.id}>
@@ -87,7 +87,7 @@ export default async function OrdersPage({
             </option>
           ))}
         </Select>
-        <Select name="fulfilment_status" defaultValue={query.fulfilment_status ?? ""}>
+        <Select aria-label="All states" name="fulfilment_status" defaultValue={query.fulfilment_status ?? ""}>
           <option value="">All states</option>
           <option value="unfulfilled">Unfulfilled</option>
           <option value="cancelled">Cancelled</option>
@@ -95,11 +95,11 @@ export default async function OrdersPage({
         <Button type="submit" className="button-secondary">
           Filter
         </Button>
-      </form>
+      </FilterForm>
       {!orders.data.length ? (
         <EmptyState title="No orders" description="Create the first unpaid commercial order." />
       ) : (
-        <Table label="Orders">
+        <Table label="Orders" density="compact">
           <thead>
             <tr>
               <th>Order</th>
@@ -119,13 +119,13 @@ export default async function OrdersPage({
                   </Link>
                 </td>
                 <td>
-                  <Badge tone="warning">{order.financial_status}</Badge>{" "}
-                  <Badge tone={order.fulfilment_status === "cancelled" ? "danger" : "info"}>
+                  <StatusBadge tone="warning">{order.financial_status}</StatusBadge>{" "}
+                  <StatusBadge tone={order.fulfilment_status === "cancelled" ? "danger" : "info"}>
                     {order.fulfilment_status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>{order.items.length}</td>
-                <td>{formatMinorAmount(order.total_amount, order.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></td>
                 <td>{new Date(order.created_at).toLocaleDateString("en-NG")}</td>
                 <td>
                   {order.financial_status === "unpaid" &&
