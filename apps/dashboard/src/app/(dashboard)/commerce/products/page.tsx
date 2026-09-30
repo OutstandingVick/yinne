@@ -1,5 +1,18 @@
 import Link from "next/link";
-import { Button, CoreScreen, EmptyState, FilterForm, FinancialAmount, Input, PageHeader, SearchField, SectionCard, Select, StatusBadge, Table } from "@yinne/ui";
+import {
+  Button,
+  CoreScreen,
+  EmptyState,
+  FilterForm,
+  FinancialAmount,
+  Input,
+  PageHeader,
+  SearchField,
+  SectionCard,
+  Select,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listProducts } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -52,7 +65,12 @@ export default async function ProductsPage({
         </form>
       </SectionCard>
       <FilterForm>
-        <SearchField label="Search product or slug" name="search" defaultValue={query.search} placeholder="Search product or slug" />
+        <SearchField
+          label="Search"
+          name="search"
+          defaultValue={query.search}
+          placeholder="Search product or slug"
+        />
         <Select aria-label="All statuses" name="status" defaultValue={query.status ?? ""}>
           <option value="">All statuses</option>
           <option value="draft">Draft</option>
@@ -102,10 +120,16 @@ export default async function ProductsPage({
                 </td>
                 <td>{product.variants.length}</td>
                 <td>
-                  {product.variants[0] ? <FinancialAmount>{formatMinorAmount(
+                  {product.variants[0] ? (
+                    <FinancialAmount>
+                      {formatMinorAmount(
                         product.variants[0].unit_amount,
                         product.variants[0].currency,
-                      )}</FinancialAmount> : "—"}
+                      )}
+                    </FinancialAmount>
+                  ) : (
+                    "—"
+                  )}
                 </td>
               </tr>
             ))}

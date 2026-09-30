@@ -1,5 +1,13 @@
 import { notFound } from "next/navigation";
-import { ActionGroup, Button, CoreScreen, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
+import {
+  ActionGroup,
+  Button,
+  CoreScreen,
+  FinancialAmount,
+  PageHeader,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getProduct } from "@yinne/commerce";
 import { activeUserContext } from "../../../../../lib/context";
@@ -60,7 +68,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               <tr key={variant.id}>
                 <td className="mono">{variant.sku}</td>
                 <td>{variant.title}</td>
-                <td><FinancialAmount>{formatMinorAmount(variant.unit_amount, variant.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>
+                    {formatMinorAmount(variant.unit_amount, variant.currency)}
+                  </FinancialAmount>
+                </td>
                 <td>{variant.track_inventory ? "Tracked" : "Not tracked"}</td>
                 <td>
                   <StatusBadge tone={variant.status === "active" ? "success" : "danger"}>

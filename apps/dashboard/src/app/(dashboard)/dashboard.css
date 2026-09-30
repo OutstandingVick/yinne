@@ -288,7 +288,7 @@ body:has(.dashboard-theme dialog[open]) {
 .dashboard-theme .status-badge {
   gap: 6px;
 }
-.dashboard-theme .status-badge > span {
+.dashboard-theme .status-badge > [aria-hidden="true"] {
   font-size: 12px;
   font-weight: 700;
 }

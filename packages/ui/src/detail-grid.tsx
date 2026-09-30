@@ -5,5 +5,10 @@ export function DetailGrid({ className = "", ...props }: HTMLAttributes<HTMLElem
 }
 
 export function DetailItem({ label, children }: { label: string; children: ReactNode }) {
-  return <div className="detail-item"><span className="label">{label}</span><div className="detail-value">{children}</div></div>;
+  return (
+    <div className="detail-item">
+      <span className="label">{label}</span>
+      <div className="detail-value">{children}</div>
+    </div>
+  );
 }

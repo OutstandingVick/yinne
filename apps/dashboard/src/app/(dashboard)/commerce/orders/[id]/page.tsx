@@ -1,5 +1,14 @@
 import { notFound } from "next/navigation";
-import { ActionGroup, Button, CoreScreen, FinancialAmount, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
+import {
+  ActionGroup,
+  Button,
+  CoreScreen,
+  FinancialAmount,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrder } from "@yinne/commerce";
 import { activeUserContext } from "../../../../../lib/context";
@@ -56,16 +65,28 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                   <div className="help">{item.variant_title}</div>
                 </td>
                 <td className="mono">{item.sku}</td>
-                <td><FinancialAmount>{formatMinorAmount(item.unit_amount, item.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>
+                    {formatMinorAmount(item.unit_amount, item.currency)}
+                  </FinancialAmount>
+                </td>
                 <td>{item.quantity}</td>
-                <td><FinancialAmount>{formatMinorAmount(item.total_amount, item.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>
+                    {formatMinorAmount(item.total_amount, item.currency)}
+                  </FinancialAmount>
+                </td>
               </tr>
             ))}
           </tbody>
         </Table>
         <SectionCard className="core-total-card">
           <span className="label">Order total</span>
-          <h2><FinancialAmount prominent>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></h2>
+          <h2>
+            <FinancialAmount prominent>
+              {formatMinorAmount(order.total_amount, order.currency)}
+            </FinancialAmount>
+          </h2>
           <p>
             {order.financial_status === "unpaid"
               ? "No successful payment has been recorded."

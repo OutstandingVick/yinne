@@ -1,5 +1,18 @@
 import Link from "next/link";
-import { Button, CoreScreen, EmptyState, FilterForm, FinancialAmount, Input, PageHeader, SearchField, SectionCard, Select, StatusBadge, Table } from "@yinne/ui";
+import {
+  Button,
+  CoreScreen,
+  EmptyState,
+  FilterForm,
+  FinancialAmount,
+  Input,
+  PageHeader,
+  SearchField,
+  SectionCard,
+  Select,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrderCreationOptions, listOrders } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -78,8 +91,17 @@ export default async function OrdersPage({
         </form>
       </SectionCard>
       <FilterForm>
-        <SearchField label="Search order or customer" name="search" defaultValue={query.search} placeholder="Search order or customer" />
-        <Select aria-label="All locations" name="location_id" defaultValue={query.location_id ?? ""}>
+        <SearchField
+          label="Search"
+          name="search"
+          defaultValue={query.search}
+          placeholder="Search order or customer"
+        />
+        <Select
+          aria-label="All locations"
+          name="location_id"
+          defaultValue={query.location_id ?? ""}
+        >
           <option value="">All locations</option>
           {options.locations.map((location) => (
             <option value={location.id} key={location.id}>
@@ -87,7 +109,11 @@ export default async function OrdersPage({
             </option>
           ))}
         </Select>
-        <Select aria-label="All states" name="fulfilment_status" defaultValue={query.fulfilment_status ?? ""}>
+        <Select
+          aria-label="All states"
+          name="fulfilment_status"
+          defaultValue={query.fulfilment_status ?? ""}
+        >
           <option value="">All states</option>
           <option value="unfulfilled">Unfulfilled</option>
           <option value="cancelled">Cancelled</option>
@@ -125,7 +151,11 @@ export default async function OrdersPage({
                   </StatusBadge>
                 </td>
                 <td>{order.items.length}</td>
-                <td><FinancialAmount>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>
+                    {formatMinorAmount(order.total_amount, order.currency)}
+                  </FinancialAmount>
+                </td>
                 <td>{new Date(order.created_at).toLocaleDateString("en-NG")}</td>
                 <td>
                   {order.financial_status === "unpaid" &&

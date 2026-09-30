@@ -32,9 +32,13 @@ export default async function TransactionsPage() {
               <tr key={row.id}>
                 <td className="mono">{row.id.slice(0, 16)}…</td>
                 <td>
-                  <StatusBadge tone={row.kind === "charge" ? "success" : "warning"}>{row.kind}</StatusBadge>
+                  <StatusBadge tone={row.kind === "charge" ? "success" : "warning"}>
+                    {row.kind}
+                  </StatusBadge>
                 </td>
-                <td><FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount>
+                </td>
                 <td className="mono">{row.provider_reference}</td>
                 <td>{new Date(row.occurred_at).toLocaleString("en-NG")}</td>
               </tr>

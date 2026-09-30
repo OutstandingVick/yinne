@@ -38,7 +38,11 @@ export default async function PaymentsPage() {
                   </Link>
                 </td>
                 <td className="mono">{payment.order_id.slice(0, 14)}…</td>
-                <td><FinancialAmount>{formatMinorAmount(payment.amount, payment.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>
+                    {formatMinorAmount(payment.amount, payment.currency)}
+                  </FinancialAmount>
+                </td>
                 <td>
                   <StatusBadge
                     tone={

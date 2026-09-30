@@ -71,7 +71,13 @@ export default async function AnalyticsOverviewPage() {
       />
       <div className="card-grid analytics-kpi-grid">
         {cards.map(([name, value, description]) => (
-          <MetricCard key={name} label={name} value={value} description={description} status={<Badge tone="success">Live</Badge>} />
+          <MetricCard
+            key={name}
+            label={name}
+            value={value}
+            description={description}
+            status={<Badge tone="success">Live</Badge>}
+          />
         ))}
       </div>
       <section className="notice">

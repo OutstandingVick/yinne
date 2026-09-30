@@ -20,7 +20,7 @@ export function StatusBadge({
   return (
     <span className={`badge badge-${tone} status-badge`}>
       <span aria-hidden="true">{symbols[tone]}</span>
-      {children}
+      <span className="status-badge-label">{children}</span>
     </span>
   );
 }
