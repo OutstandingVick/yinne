@@ -1,6 +1,6 @@
 import { capitalProfileHistory, currentCapitalProfile } from "@yinne/capital";
 import { createRequestId } from "@yinne/core";
-import { CoreScreen, MetricCard, PageHeader, SectionCard, StatusBadge } from "@yinne/ui";
+import { CoreScreen, MetricCard, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
 import { activeUserContext } from "../../../lib/context";
 
 function title(value: string) {
@@ -68,10 +68,9 @@ export default async function CapitalPage() {
           )}
         </SectionCard>
       </div>
-      <section className="panel" style={{ marginTop: 20 }}>
+      <SectionCard className="capital-dimensions">
         <h2>Dimension breakdown</h2>
-        <div className="table-wrap">
-          <table aria-label="Capital dimensions">
+        <Table label="Capital dimensions" density="compact">
             <thead>
               <tr>
                 <th>Dimension</th>
@@ -84,15 +83,14 @@ export default async function CapitalPage() {
               {profile.dimensions.map((item) => (
                 <tr key={item.key}>
                   <td>{item.label}</td>
-                  <td>{item.score.toFixed(0)}</td>
+                  <td>{item.score.toFixed(0)}<meter className="capital-score-meter" min="0" max="100" value={item.score} aria-label={`${item.label} score`} /></td>
                   <td>{item.effective_weight.toFixed(1)}%</td>
                   <td>{item.contribution.toFixed(1)}</td>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
-      </section>
+        </Table>
+      </SectionCard>
       <section className="panel" style={{ marginTop: 20 }}>
         <h2>Signal explanations</h2>
         {profile.signals.map((signal) => (
