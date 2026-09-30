@@ -1,4 +1,4 @@
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listProviderAccounts } from "@yinne/payments";
 import { activeUserContext } from "../../../../lib/context";
@@ -7,7 +7,7 @@ export default async function ProvidersPage() {
     limit: 50,
   });
   return (
-    <>
+    <CoreScreen className="operations-screen">
       <PageHeader
         title="Providers"
         description="Organization payment execution configuration. Mock Provider is test-only and needs no credentials."
@@ -18,7 +18,7 @@ export default async function ProvidersPage() {
           description="Run the repeatable seed to install the test Mock Provider account."
         />
       ) : (
-        <Table label="Provider accounts">
+        <Table label="Provider accounts" density="compact">
           <thead>
             <tr>
               <th>Provider</th>
@@ -35,11 +35,11 @@ export default async function ProvidersPage() {
                 <td>{row.provider}</td>
                 <td>{row.label}</td>
                 <td>
-                  <Badge tone="warning">{row.environment}</Badge>
+                  <StatusBadge tone={row.environment === "test" ? "warning" : "info"}>{row.environment}</StatusBadge>
                 </td>
-                <td>{row.capabilities.join(", ")}</td>
+                <td className="provider-capabilities">{row.capabilities.join(", ")}</td>
                 <td>
-                  <Badge tone={row.status === "enabled" ? "success" : "danger"}>{row.status}</Badge>
+                  <StatusBadge tone={row.status === "enabled" ? "success" : "danger"}>{row.status}</StatusBadge>
                 </td>
                 <td>{row.is_default ? "Yes" : "No"}</td>
               </tr>
@@ -47,6 +47,6 @@ export default async function ProvidersPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
