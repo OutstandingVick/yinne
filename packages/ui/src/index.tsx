@@ -127,9 +127,17 @@ export function LoadingState() {
   );
 }
 
-export function Table({ children, label }: { children: ReactNode; label: string }) {
+export function Table({
+  children,
+  label,
+  density = "default",
+}: {
+  children: ReactNode;
+  label: string;
+  density?: "default" | "compact";
+}) {
   return (
-    <div className="table-wrap" role="region" aria-label={label} tabIndex={0}>
+    <div className={`table-wrap table-${density}`} role="region" aria-label={label} tabIndex={0}>
       <table aria-label={label}>{children}</table>
     </div>
   );

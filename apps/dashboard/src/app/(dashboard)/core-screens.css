@@ -1,3 +1,11 @@
+.dashboard-theme .core-screen .table-wrap { box-shadow: var(--shadow-card); }
+.dashboard-theme .core-screen .table-compact :is(th, td) { padding-block: 11px; padding-inline: 16px; }
+.dashboard-theme .core-screen .table-wrap :is(th, td) { line-height: 1.5; }
+.dashboard-theme .core-screen .table-wrap td:first-child { font-weight: 600; }
+.dashboard-theme .core-screen .table-wrap td:first-child .help { font-weight: 400; margin-top: 4px; }
+.dashboard-theme .core-screen .table-wrap td .badge + .badge { margin-inline-start: 4px; }
+.dashboard-theme .core-screen .table-wrap tbody tr:focus-within { background: var(--info); }
+.dashboard-theme .core-screen .table-wrap th { white-space: nowrap; }
 .dashboard-theme .core-screen { display: grid; gap: var(--space-6); min-width: 0; }
 .dashboard-theme .core-screen > :is(.page-header, .filter-bar) { margin-block: 0; }
 .dashboard-theme .core-screen > :is(.card, .notice, .table-wrap, .state-panel) { min-width: 0; }
