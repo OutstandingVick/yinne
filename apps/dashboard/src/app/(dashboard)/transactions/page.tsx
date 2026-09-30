@@ -1,4 +1,4 @@
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listTransactions } from "@yinne/payments";
 import { activeUserContext } from "../../../lib/context";
@@ -6,7 +6,7 @@ import { formatMinorAmount } from "../../../lib/money";
 export default async function TransactionsPage() {
   const rows = await listTransactions(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen>
       <PageHeader
         title="Transactions"
         description="Append-only operational evidence. These records are not ledger balances."
@@ -17,7 +17,7 @@ export default async function TransactionsPage() {
           description="A succeeded charge or refund creates one immutable transaction."
         />
       ) : (
-        <Table label="Transactions">
+        <Table label="Transactions" density="compact">
           <thead>
             <tr>
               <th>ID</th>
@@ -32,9 +32,9 @@ export default async function TransactionsPage() {
               <tr key={row.id}>
                 <td className="mono">{row.id.slice(0, 16)}…</td>
                 <td>
-                  <Badge tone={row.kind === "charge" ? "success" : "warning"}>{row.kind}</Badge>
+                  <StatusBadge tone={row.kind === "charge" ? "success" : "warning"}>{row.kind}</StatusBadge>
                 </td>
-                <td>{formatMinorAmount(row.amount, row.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></td>
                 <td className="mono">{row.provider_reference}</td>
                 <td>{new Date(row.occurred_at).toLocaleString("en-NG")}</td>
               </tr>
@@ -42,6 +42,6 @@ export default async function TransactionsPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
