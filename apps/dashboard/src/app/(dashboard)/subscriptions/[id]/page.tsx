@@ -1,5 +1,5 @@
 import { revalidatePath } from "next/cache";
-import { Badge, Button, PageHeader } from "@yinne/ui";
+import { ActionGroup, Button, CoreScreen, DetailGrid, DetailItem, FinancialAmount, PageHeader, StatusBadge } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import {
   cancelSubscription,
@@ -26,40 +26,28 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const subscription = await getSubscription(await activeUserContext(createRequestId()), id);
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title={`Subscription ${id.slice(0, 8)}`}
         description="Renewals generate canonical Invoices and execute through Payments Core."
       />
-      <section className="card detail-grid">
-        <div>
-          <span className="label">Status</span>
-          <p>
-            <Badge tone={subscription.status === "active" ? "success" : "warning"}>
+      <DetailGrid className="module-summary">
+        <DetailItem label="Status">
+            <StatusBadge tone={subscription.status === "active" ? "success" : "warning"}>
               {subscription.status}
-            </Badge>
-          </p>
-        </div>
-        <div>
-          <span className="label">Price snapshot</span>
-          <p>
-            {formatMinorAmount(subscription.unit_amount, subscription.currency)} /{" "}
+            </StatusBadge>
+        </DetailItem>
+        <DetailItem label="Price snapshot">
+            <FinancialAmount>{formatMinorAmount(subscription.unit_amount, subscription.currency)}</FinancialAmount> /{" "}
             {subscription.interval}
-          </p>
-        </div>
-        <div>
-          <span className="label">Current period</span>
-          <p>
+        </DetailItem>
+        <DetailItem label="Current period">
             {new Date(subscription.current_period_start).toLocaleDateString()} –{" "}
             {new Date(subscription.current_period_end).toLocaleDateString()}
-          </p>
-        </div>
-        <div>
-          <span className="label">Retry count</span>
-          <p>{subscription.retry_count}</p>
-        </div>
-      </section>
-      <div className="action-row">
+        </DetailItem>
+        <DetailItem label="Retry count">{subscription.retry_count}</DetailItem>
+      </DetailGrid>
+      <ActionGroup className="module-actions">
         {["active", "trialing", "past_due"].includes(subscription.status) ? (
           <form action={action.bind(null, id, "pause")}>
             <Button type="submit" className="button-secondary">
@@ -91,7 +79,7 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
             </form>
           </>
         ) : null}
-      </div>
-    </>
+      </ActionGroup>
+    </CoreScreen>
   );
 }
