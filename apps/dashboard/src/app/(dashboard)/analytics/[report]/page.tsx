@@ -104,8 +104,8 @@ export default async function AnalyticsReportPage({
         {new Date(result.meta.to).toLocaleDateString()}) · refreshed{" "}
         {new Date(result.meta.freshness.as_of).toLocaleString()}
       </section>
-      <div style={{ marginTop: 20 }}>
-        <Table label={definition.title}>
+      <section className="report-table">
+        <Table label={definition.title} density="compact">
           <thead>
             <tr>
               <th>Metric</th>
@@ -121,8 +121,8 @@ export default async function AnalyticsReportPage({
             ))}
           </tbody>
         </Table>
-      </div>
-      <p className="muted" style={{ marginTop: 16 }}>
+      </section>
+      <p className="muted">
         Definitions come from the canonical metric catalogue. Monetary maps remain separated by ISO
         currency; undefined ratios are shown as not comparable.
       </p>
