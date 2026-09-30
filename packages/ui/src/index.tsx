@@ -1,3 +1,4 @@
+export { StatusBadge, type StatusTone } from "./status-badge";
 export { Card, MetricCard } from "./card";
 export { SearchField } from "./search-field";
 import type {

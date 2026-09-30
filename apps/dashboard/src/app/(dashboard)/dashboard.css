@@ -1,3 +1,10 @@
+.dashboard-theme .badge { font-size: .6875rem; line-height: 1.4; padding: 5px 9px; border-radius: var(--radius-sm); background: var(--surface-hover); color: var(--muted); font-weight: 700; white-space: nowrap; }
+.dashboard-theme .badge-success { background: var(--success); color: var(--success-text); }
+.dashboard-theme .badge-warning { background: var(--warning); color: var(--warning-text); }
+.dashboard-theme .badge-danger { background: var(--danger); color: var(--danger-text); }
+.dashboard-theme .badge-info { background: var(--info); color: var(--info-text); }
+.dashboard-theme .status-badge { gap: 6px; }
+.dashboard-theme .status-badge > span { font-size: 12px; font-weight: 700; }
 .dashboard-theme .table-wrap { border-color: var(--border); border-radius: var(--radius-panel); max-width: 100%; scrollbar-width: thin; scrollbar-color: var(--control-border) var(--panel); }
 .dashboard-theme table { min-width: 640px; }
 .dashboard-theme :is(th, td) { padding: 16px 20px; border-color: var(--border); font-size: var(--text-small); text-align: start; }
