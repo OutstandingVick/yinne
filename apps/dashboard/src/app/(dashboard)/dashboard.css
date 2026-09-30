@@ -1,3 +1,18 @@
+.dashboard-theme .state-panel { border: 1px dashed var(--control-border); border-radius: var(--radius-panel); padding: clamp(24px, 5vw, 48px); background: var(--panel); }
+.dashboard-theme .state-panel h2 { margin: 0 0 10px; }
+.dashboard-theme .state-panel p { max-width: 55ch; margin: 0 auto 20px; line-height: 1.65; }
+.dashboard-theme .state-error { border-color: var(--danger-text); background: var(--danger); }
+.dashboard-theme .state-error h2 { color: var(--danger-text); }
+.dashboard-theme .loading { min-height: 180px; border-radius: var(--radius-panel); background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; }
+.dashboard-theme .loading::after { content: ''; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--action); border-radius: 50%; }
+.dashboard-theme .notice { border-inline-start: 3px solid var(--action); background: var(--info); color: var(--text); padding: 16px 20px; border-radius: var(--radius-control); line-height: 1.65; }
+.dashboard-theme .secret-panel { border-color: var(--warning-text); background: var(--warning); border-radius: var(--radius-card); }
+.dashboard-theme .error-banner { color: var(--danger-text); background: var(--danger); border-radius: var(--radius-control); }
+@media (prefers-reduced-motion: no-preference) {
+  .dashboard-theme .loading::after { animation: yinne-spin 1s linear infinite; }
+  .dashboard-theme :is(.button, .nav-link, .card) { transition: background-color 120ms, border-color 120ms, color 120ms; }
+}
+@keyframes yinne-spin { to { transform: rotate(360deg); } }
 .dashboard-theme .ui-drawer { margin-block: 0; margin-inline: auto 0; height: 100dvh; max-height: 100dvh; width: min(480px, calc(100vw - 16px)); border-radius: var(--radius-panel) 0 0 var(--radius-panel); }
 .dashboard-theme .ui-drawer .modal-header { position: sticky; top: 0; background: var(--panel); z-index: 1; }
 .dashboard-theme .ui-drawer .modal-actions { position: sticky; bottom: 0; background: var(--panel); }
