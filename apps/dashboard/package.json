@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node ../../tooling/scripts/with-root-env.mjs next dev",
-    "dev:e2e": "node ../../tooling/scripts/with-root-env.mjs next dev --port 3010",
+    "dev:e2e": "YINNE_NEXT_DIST_DIR=.next-e2e node ../../tooling/scripts/with-root-env.mjs next dev --port 3010",
     "build": "node ../../tooling/scripts/with-root-env.mjs next build",
     "start": "node ../../tooling/scripts/with-root-env.mjs next start",
     "typecheck": "tsc --noEmit",

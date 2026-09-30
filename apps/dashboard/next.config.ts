@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 import { loadEnvConfig } from "@next/env";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 loadEnvConfig(path.resolve(process.cwd(), "../.."));
 
@@ -60,4 +61,13 @@ const config: NextConfig = {
   },
 };
 
-export default config;
+export default function nextConfig(phase: string): NextConfig {
+  return {
+    ...config,
+    // Development, E2E, and production must not overwrite each other's webpack output.
+    distDir:
+      phase === PHASE_DEVELOPMENT_SERVER
+        ? (process.env.YINNE_NEXT_DIST_DIR ?? ".next-dev")
+        : ".next",
+  };
+}
