@@ -12,9 +12,11 @@ function classes(...values: Array<string | undefined | false>): string {
 export function Button({
   className,
   type = "button",
+  variant,
+  size,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button type={type} className={classes("button", className)} {...props} />;
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "ghost"; size?: "small" | "default" }) {
+  return <button type={type} className={classes("button", variant && `button-${variant}`, size && `button-${size}`, className)} {...props} />;
 }
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {

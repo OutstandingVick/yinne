@@ -1,3 +1,17 @@
+.dashboard-theme .button { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 42px; padding: 10px 16px; border: 1px solid transparent; border-radius: var(--radius-control); background: var(--action); color: white; font-size: var(--text-small); font-weight: 700; line-height: 1.4; text-align: center; }
+.dashboard-theme .button-secondary { background: var(--panel); border-color: var(--control-border); color: var(--text); }
+.dashboard-theme .button-ghost { background: transparent; color: var(--text); }
+.dashboard-theme .button-danger { background: var(--danger-text); color: white; }
+.dashboard-theme .button-small { min-height: 36px; padding: 7px 12px; }
+.dashboard-theme .button:disabled { opacity: .5; cursor: not-allowed; }
+@media (hover: hover) {
+  .dashboard-theme .button:not(:disabled):hover { background: var(--action-hover); }
+  .dashboard-theme .button-secondary:not(:disabled):hover, .dashboard-theme .button-ghost:not(:disabled):hover { background: var(--surface-hover); }
+  .dashboard-theme .button-danger:not(:disabled):hover { background: #831e1a; }
+}
+.dashboard-theme :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.dashboard-theme .sidebar :focus-visible { outline-color: var(--highlight); }
+@media (forced-colors: active) { .dashboard-theme :focus-visible { outline-color: Highlight; } }
 .dashboard-theme .page-header { gap: 24px; margin-bottom: 28px; align-items: flex-start; flex-wrap: wrap; }
 .dashboard-theme .page-header > div { min-width: 0; }
 .dashboard-theme .page-header h1 { font-family: var(--font-ui); font-size: var(--text-title); font-weight: 600; line-height: 1.2; letter-spacing: -.04em; margin-bottom: 10px; text-wrap: balance; }
