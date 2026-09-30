@@ -9,7 +9,7 @@ const initial: ActionState = { ok: false };
 export function InviteForm() {
   const [state, action, pending] = useActionState(inviteMemberAction, initial);
   return (
-    <form className="form" action={action}>
+    <form className="form admin-form" action={action}>
       <div className="form-row">
         <label htmlFor="invite-email">Email</label>
         <Input id="invite-email" name="email" type="email" required />
