@@ -1,3 +1,6 @@
+.dashboard-theme .financial-amount { display: inline-block; color: var(--text); font-family: var(--font-brand); font-size: 1rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em; white-space: nowrap; }
+.dashboard-theme .financial-amount-prominent { font-size: clamp(1.75rem, 3vw, 2.5rem); letter-spacing: -.04em; line-height: 1.15; white-space: normal; }
+.dashboard-theme .core-screen .table-wrap td .financial-amount { font-size: .9375rem; }
 .dashboard-theme .core-screen .table-wrap { box-shadow: var(--shadow-card); }
 .dashboard-theme .core-screen .table-compact :is(th, td) { padding-block: 11px; padding-inline: 16px; }
 .dashboard-theme .core-screen .table-wrap :is(th, td) { line-height: 1.5; }

@@ -1,3 +1,4 @@
+export { FinancialAmount } from "./financial-amount";
 export { ActionGroup } from "./action-group";
 export { SectionCard } from "./section-card";
 export { CoreScreen } from "./core-screen";
