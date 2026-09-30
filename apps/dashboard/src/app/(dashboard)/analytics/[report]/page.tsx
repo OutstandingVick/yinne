@@ -9,7 +9,7 @@ import {
   subscriptionsReport,
 } from "@yinne/analytics";
 import { createRequestId } from "@yinne/core";
-import { Badge, PageHeader, Table } from "@yinne/ui";
+import { Badge, CoreScreen, PageHeader, Table } from "@yinne/ui";
 import { activeUserContext } from "../../../../lib/context";
 
 const reports = {
@@ -96,7 +96,7 @@ export default async function AnalyticsReportPage({
   };
   const rows = Object.entries(result).filter(([key]) => key !== "meta");
   return (
-    <>
+    <CoreScreen className="intelligence-screen">
       <PageHeader title={definition.title} description={definition.description} />
       <section className="notice">
         <Badge tone="success">Live</Badge> <strong>{result.meta.formula_version}</strong> ·{" "}
@@ -126,6 +126,6 @@ export default async function AnalyticsReportPage({
         Definitions come from the canonical metric catalogue. Monetary maps remain separated by ISO
         currency; undefined ratios are shown as not comparable.
       </p>
-    </>
+    </CoreScreen>
   );
 }
