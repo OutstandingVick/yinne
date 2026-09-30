@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listPayments } from "@yinne/payments";
 import { activeUserContext } from "../../../lib/context";
@@ -7,7 +7,7 @@ import { formatMinorAmount } from "../../../lib/money";
 export default async function PaymentsPage() {
   const rows = await listPayments(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen>
       <PageHeader
         title="Payments"
         description="Canonical payment intents executed through provider-neutral attempts."
@@ -18,7 +18,7 @@ export default async function PaymentsPage() {
           description="Open an unpaid order and execute it with the deterministic Mock Provider."
         />
       ) : (
-        <Table label="Payments">
+        <Table label="Payments" density="compact">
           <thead>
             <tr>
               <th>Payment</th>
@@ -38,9 +38,9 @@ export default async function PaymentsPage() {
                   </Link>
                 </td>
                 <td className="mono">{payment.order_id.slice(0, 14)}…</td>
-                <td>{formatMinorAmount(payment.amount, payment.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(payment.amount, payment.currency)}</FinancialAmount></td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       payment.status === "succeeded"
                         ? "success"
@@ -50,10 +50,10 @@ export default async function PaymentsPage() {
                     }
                   >
                     {payment.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>
-                  <Badge tone="warning">{payment.environment}</Badge>
+                  <StatusBadge tone="warning">{payment.environment}</StatusBadge>
                 </td>
                 <td>{new Date(payment.created_at).toLocaleString("en-NG")}</td>
               </tr>
@@ -61,6 +61,6 @@ export default async function PaymentsPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
