@@ -1,3 +1,4 @@
+export { Dropdown } from "./dropdown";
 export { Tabs } from "./tabs";
 export { StatusBadge, type StatusTone } from "./status-badge";
 export { Card, MetricCard } from "./card";
