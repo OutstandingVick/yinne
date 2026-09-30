@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, EmptyState, Input, PageHeader, Select, Table } from "@yinne/ui";
+import { Badge, Button, CoreScreen, EmptyState, Input, PageHeader, SectionCard, Select, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listProducts } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -16,12 +16,12 @@ export default async function ProductsPage({
     ...query,
   });
   return (
-    <>
+    <CoreScreen>
       <PageHeader
         title="Products"
         description="Canonical catalogue and server-trusted variant prices."
       />
-      <section className="card" style={{ marginBottom: 20 }}>
+      <SectionCard>
         <h2>Add product</h2>
         <form action={createProductAction} className="form form-inline">
           <div className="form-row">
@@ -50,7 +50,7 @@ export default async function ProductsPage({
           </div>
           <Button type="submit">Add draft product</Button>
         </form>
-      </section>
+      </SectionCard>
       <form className="filter-bar">
         <Input name="search" defaultValue={query.search} placeholder="Search product or slug" />
         <Select name="status" defaultValue={query.status ?? ""}>
@@ -114,6 +114,6 @@ export default async function ProductsPage({
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
