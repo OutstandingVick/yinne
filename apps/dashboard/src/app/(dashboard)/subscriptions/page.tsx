@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listSubscriptions } from "@yinne/subscriptions";
 import { formatMinorAmount } from "../../../lib/money";
@@ -7,7 +7,7 @@ import { activeUserContext } from "../../../lib/context";
 export default async function SubscriptionsPage() {
   const rows = await listSubscriptions(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Subscriptions"
         description="Canonical recurring revenue lifecycle and renewal state."
@@ -23,7 +23,7 @@ export default async function SubscriptionsPage() {
           description="Subscribe a Customer to an active recurring Price."
         />
       ) : (
-        <Table label="Subscriptions">
+        <Table label="Subscriptions" density="compact">
           <thead>
             <tr>
               <th>Subscription</th>
@@ -39,10 +39,10 @@ export default async function SubscriptionsPage() {
                   <Link href={`/subscriptions/${row.id}`}>{row.id.slice(0, 8)}</Link>
                 </td>
                 <td>
-                  {formatMinorAmount(row.unit_amount, row.currency)} / {row.interval}
+                  <FinancialAmount>{formatMinorAmount(row.unit_amount, row.currency)}</FinancialAmount> / {row.interval}
                 </td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       row.status === "active"
                         ? "success"
@@ -52,7 +52,7 @@ export default async function SubscriptionsPage() {
                     }
                   >
                     {row.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>
                   {row.next_billing_at ? new Date(row.next_billing_at).toLocaleDateString() : "—"}
@@ -62,6 +62,6 @@ export default async function SubscriptionsPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
