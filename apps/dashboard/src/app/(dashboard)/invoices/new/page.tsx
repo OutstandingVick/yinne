@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Button, PageHeader } from "@yinne/ui";
+import { Button, CoreScreen, PageHeader } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { createInvoiceSchema } from "@yinne/contracts";
 import { createInvoice } from "@yinne/invoicing";
@@ -35,12 +35,12 @@ export default async function NewInvoicePage() {
     withTenantTransaction(context.tenant, (tx) => tx.select().from(merchants).limit(20)),
   ]);
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Create invoice"
         description="Amounts are integer minor units and totals are derived on the server."
       />
-      <form action={create} className="card form-grid">
+      <form action={create} className="card form-grid module-form">
         <label>
           Merchant
           <select name="merchant_id" required>
@@ -91,10 +91,10 @@ export default async function NewInvoicePage() {
           Unit amount (minor units)
           <input name="unit_amount" inputMode="numeric" pattern="[1-9][0-9]*" required />
         </label>
-        <div className="full">
+        <div className="full form-actions">
           <Button type="submit">Save draft</Button>
         </div>
       </form>
-    </>
+    </CoreScreen>
   );
 }
