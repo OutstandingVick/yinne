@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, MetricCard, PageHeader } from "@yinne/ui";
+import { Badge, CoreScreen, MetricCard, PageHeader } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers, listInventoryLevels, listOrders, listProducts } from "@yinne/commerce";
 import { activeUserContext } from "../../lib/context";
@@ -36,12 +36,12 @@ export default async function HomePage() {
     ],
   ] as const;
   return (
-    <>
+    <CoreScreen className="overview-screen">
       <PageHeader
         title="Commerce overview"
         description="Live test-mode data from the tenant-isolated commerce system."
       />
-      <div className="card-grid">
+      <div className="card-grid overview-grid">
         {cards.map(([name, value, href, description]) => (
           <Link href={href} key={name}>
             <MetricCard
@@ -57,10 +57,10 @@ export default async function HomePage() {
           </Link>
         ))}
       </div>
-      <section className="notice" style={{ marginTop: 20 }}>
+      <section className="notice">
         <strong>Payments are not active.</strong> Orders created in this phase remain unpaid, and
         stock is not decremented until a future payment-success transaction.
       </section>
-    </>
+    </CoreScreen>
   );
 }

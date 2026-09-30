@@ -1,3 +1,11 @@
+.dashboard-theme .core-screen .page-header h1 { font-family: var(--font-brand); font-weight: 600; }
+.dashboard-theme .overview-grid { gap: var(--space-5); }
+.dashboard-theme .overview-grid > a { display: block; min-width: 0; }
+.dashboard-theme .overview-grid .metric-card { min-height: 216px; display: flex; flex-direction: column; align-items: flex-start; }
+.dashboard-theme .overview-grid .metric-value { margin-block: var(--space-6) var(--space-3); }
+.dashboard-theme .overview-grid .metric-card p { margin-block-start: var(--space-2); }
+.dashboard-theme .overview-screen > .notice { background: var(--accent-surface); border-inline-start-color: var(--action); }
+@media (max-width: 40rem) { .dashboard-theme .overview-grid .metric-card { min-height: 0; } }
 .dashboard-theme .core-filter-form { align-items: end; gap: var(--space-3); }
 .dashboard-theme .core-filter-form .search-field { flex: 2 1 240px; }
 .dashboard-theme .core-filter-form > .form-row { flex: 1 1 160px; min-width: 0; }
