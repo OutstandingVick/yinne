@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listEmployees } from "@yinne/operations";
 import { activeUserContext } from "../../../../lib/context";
 export default async function EmployeesPage() {
   const rows = await listEmployees(await activeUserContext(createRequestId()));
   return (
-    <>
+    <CoreScreen className="operations-screen">
       <PageHeader
         title="Employees"
         description="Organization members with operational profiles and centrally scoped roles."
@@ -14,7 +14,7 @@ export default async function EmployeesPage() {
       {!rows.length ? (
         <EmptyState title="No employees" description="Invite members from Team." />
       ) : (
-        <Table label="Employees">
+        <Table label="Employees" density="compact">
           <thead>
             <tr>
               <th>Name</th>
@@ -31,9 +31,9 @@ export default async function EmployeesPage() {
                   <small>{row.email}</small>
                 </td>
                 <td>
-                  <Badge tone={row.status === "active" ? "success" : "warning"}>{row.status}</Badge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>{row.status}</StatusBadge>
                 </td>
-                <td>
+                <td className="scope-cell">
                   {row.assignments
                     .filter((a) => a.scope_type === "location")
                     .map((a) => a.location_name)
@@ -45,6 +45,6 @@ export default async function EmployeesPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
