@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, EmptyState, Input, PageHeader, Select, Table } from "@yinne/ui";
+import { Badge, Button, CoreScreen, EmptyState, Input, PageHeader, SectionCard, Select, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrderCreationOptions, listOrders } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -17,16 +17,16 @@ export default async function OrdersPage({
     getOrderCreationOptions(context),
   ]);
   return (
-    <>
+    <CoreScreen>
       <PageHeader
         title="Orders"
         description="Commercial records only. Phase 2 orders are unpaid; no action here can mark one paid or fulfilled."
       />
-      <div className="notice" style={{ marginBottom: 20 }}>
+      <div className="notice">
         <strong>Payment boundary:</strong> creating an order validates stock but does not reserve or
         decrement it. Payment success will own that atomic stock change in Payments Core.
       </div>
-      <section className="card" style={{ marginBottom: 20 }}>
+      <SectionCard>
         <h2>Create unpaid order</h2>
         <form action={createOrderAction} className="form form-inline">
           <div className="form-row">
@@ -76,7 +76,7 @@ export default async function OrdersPage({
           <input type="hidden" name="currency" value="NGN" />
           <Button type="submit">Create unpaid order</Button>
         </form>
-      </section>
+      </SectionCard>
       <form className="filter-bar">
         <Input name="search" defaultValue={query.search} placeholder="Search order or customer" />
         <Select name="location_id" defaultValue={query.location_id ?? ""}>
@@ -145,6 +145,6 @@ export default async function OrdersPage({
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
