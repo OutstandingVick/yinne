@@ -11,3 +11,27 @@
 @media (hover: hover) { .dashboard-theme .nav-link:hover { background: var(--nav-hover); } .dashboard-theme .nav-link[aria-current='page']:hover { background: var(--action-hover); } }
 .dashboard-theme .content { width: 100%; max-width: 1536px; margin-inline: auto; padding: clamp(24px, 3vw, 44px); }
 .dashboard-theme .main { min-width: 0; }
+.dashboard-theme .topbar { height: auto; min-height: 88px; background: var(--surface); padding: 20px clamp(24px, 3vw, 44px); border-bottom: 1px solid var(--border); gap: 16px; flex-wrap: wrap; }
+.dashboard-theme .organization-switcher { margin-inline-start: auto; margin-left: auto; gap: 10px; flex-wrap: wrap; }
+.dashboard-theme .organization-switcher select { background: var(--panel); border-color: var(--control-border); min-height: 40px; max-width: 240px; border-radius: var(--radius-control); }
+.dashboard-theme .account-email { color: var(--muted); font-size: var(--text-small); overflow-wrap: anywhere; }
+.dashboard-theme .menu-toggle { display: none; }
+.dashboard-theme .skip-link { position: fixed; inset-block-start: 8px; inset-inline-start: 8px; z-index: 100; padding: 12px 16px; background: var(--panel); color: var(--action); transform: translateY(-150%); border-radius: var(--radius-control); }
+.dashboard-theme .skip-link:focus { transform: translateY(0); }
+.dashboard-theme .navigation-drawer { padding: 0; border: 0; margin: 0; width: min(320px, 90vw); max-width: 90vw; height: 100dvh; max-height: 100dvh; background: var(--nav-surface); color: var(--nav-text); overscroll-behavior: contain; }
+.dashboard-theme .navigation-drawer::backdrop { background: rgb(0 0 0 / 45%); }
+.dashboard-theme .navigation-drawer .sidebar { display: block; width: 100%; height: 100%; position: relative; padding-top: 56px; }
+.dashboard-theme .drawer-close { position: absolute; inset-inline-end: 12px; top: 8px; width: 44px; height: 44px; border: 1px solid #555; border-radius: var(--radius-control); color: white; background: var(--nav-hover); font-size: 24px; cursor: pointer; }
+@media (max-width: 69.999rem) {
+  .dashboard-theme .shell { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-theme .desktop-sidebar { display: none; }
+  .dashboard-theme .menu-toggle { display: inline-flex; align-items: center; justify-content: center; }
+}
+@media (max-width: 40rem) {
+  .dashboard-theme .topbar { padding: 16px; gap: 12px; }
+  .dashboard-theme .organization-switcher { order: 3; flex-basis: 100%; margin: 0; }
+  .dashboard-theme .organization-switcher label { flex-basis: 100%; }
+  .dashboard-theme .organization-switcher select { flex: 1; min-width: 0; max-width: none; }
+  .dashboard-theme .account-email { flex: 1; }
+  .dashboard-theme .content { padding: 24px 16px; }
+}
