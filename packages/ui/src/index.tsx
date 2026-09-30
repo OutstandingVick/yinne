@@ -1,3 +1,4 @@
+export { SectionCard } from "./section-card";
 export { CoreScreen } from "./core-screen";
 export { FilterBar, DateInput } from "./filters";
 export { Tooltip } from "./tooltip";

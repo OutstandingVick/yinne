@@ -4,4 +4,7 @@
 .dashboard-theme .core-screen > .page-header { margin-block-end: var(--space-1); }
 .dashboard-theme .core-screen .core-section { min-width: 0; }
 .dashboard-theme .core-screen .core-section > h2 { margin: 0 0 var(--space-4); }
+.dashboard-theme .core-section-card { padding: clamp(20px, 2.4vw, 28px); }
+.dashboard-theme .core-section-card > h2:first-child { margin: 0 0 var(--space-6); }
+.dashboard-theme .core-section-card > p:last-child { margin-block-end: 0; }
 @media (max-width: 40rem) { .dashboard-theme .core-screen { gap: var(--space-5); } }
