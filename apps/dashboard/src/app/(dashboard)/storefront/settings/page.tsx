@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { Button, PageHeader } from "@yinne/ui";
+import { Button, CoreScreen, PageHeader } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { updateStoreSchema } from "@yinne/contracts";
 import { getStore, updateStore } from "@yinne/storefront";
@@ -30,12 +30,12 @@ async function saveStore(formData: FormData) {
 export default async function StoreSettingsPage() {
   const store = await getStore(await activeUserContext(createRequestId()));
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Store settings"
         description="Safe public identity and contact settings. Custom code and domains are not supported."
       />
-      <form action={saveStore} className="card form-grid">
+      <form action={saveStore} className="card form-grid module-form">
         <label>
           Public name
           <input name="public_name" defaultValue={store.public_name} required maxLength={160} />
@@ -65,10 +65,10 @@ export default async function StoreSettingsPage() {
           Contact phone
           <input name="contact_phone" defaultValue={store.contact_phone ?? ""} />
         </label>
-        <div className="full">
+        <div className="full form-actions">
           <Button type="submit">Save store</Button>
         </div>
       </form>
-    </>
+    </CoreScreen>
   );
 }
