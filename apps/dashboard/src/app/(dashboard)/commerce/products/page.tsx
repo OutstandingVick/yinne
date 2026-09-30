@@ -102,13 +102,10 @@ export default async function ProductsPage({
                 </td>
                 <td>{product.variants.length}</td>
                 <td>
-                  {product.variants[0] ? <FinancialAmount>{
-                    product.variants[0]
-                    ? formatMinorAmount(
+                  {product.variants[0] ? <FinancialAmount>{formatMinorAmount(
                         product.variants[0].unit_amount,
                         product.variants[0].currency,
-                      )
-                    : "—"}</FinancialAmount> : "—"}
+                      )}</FinancialAmount> : "—"}
                 </td>
               </tr>
             ))}
