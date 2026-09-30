@@ -91,7 +91,7 @@ export default async function CapitalPage() {
             </tbody>
         </Table>
       </SectionCard>
-      <section className="panel" style={{ marginTop: 20 }}>
+      <SectionCard className="capital-signals">
         <h2>Signal explanations</h2>
         {profile.signals.map((signal) => (
           <details key={signal.key}>
@@ -108,7 +108,7 @@ export default async function CapitalPage() {
             </p>
           </details>
         ))}
-      </section>
+      </SectionCard>
       <section className="panel" style={{ marginTop: 20 }}>
         <h2>Profile history</h2>
         <div className="table-wrap">
