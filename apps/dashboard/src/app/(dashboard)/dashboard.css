@@ -1,3 +1,10 @@
+.dashboard-theme .card-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: var(--space-5); }
+.dashboard-theme .card { border: 1px solid var(--border); border-radius: var(--radius-panel); padding: var(--space-6); box-shadow: var(--shadow-card); min-width: 0; }
+.dashboard-theme .card p { font-size: var(--text-body); line-height: 1.65; margin-bottom: 0; }
+.dashboard-theme .metric-card { height: 100%; }
+.dashboard-theme .metric-card .metric-value { font-family: var(--font-brand); font-size: 2.5rem; line-height: 1.1; letter-spacing: -.04em; font-weight: 500; font-variant-numeric: tabular-nums; margin: 24px 0 14px; }
+.dashboard-theme .metric-card strong { font-size: var(--text-body); font-weight: 700; }
+@media (hover: hover) { .dashboard-theme a:hover > .metric-card, .dashboard-theme a.card:hover { border-color: var(--action); } }
 .dashboard-theme .input { background: var(--panel); border: 1px solid var(--control-border); border-radius: var(--radius-control); min-height: 44px; padding: 10px 12px; font-size: var(--text-body); }
 .dashboard-theme .input::placeholder { color: var(--muted); opacity: 1; }
 .dashboard-theme .input:disabled { background: var(--surface-hover); color: var(--muted); cursor: not-allowed; }
