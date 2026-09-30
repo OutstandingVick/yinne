@@ -1,0 +1,87 @@
+.dashboard-theme .module-screen {
+  min-width: 0;
+}
+.dashboard-theme .module-screen .module-summary {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+}
+.dashboard-theme .module-screen .module-summary .detail-value {
+  overflow-wrap: anywhere;
+}
+.dashboard-theme .module-screen .module-summary .detail-item:has(.financial-amount) {
+  background: var(--panel);
+}
+.dashboard-theme .module-screen .module-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--space-5);
+  align-items: end;
+  max-width: 900px;
+}
+.dashboard-theme .module-screen .module-form > .full,
+.dashboard-theme .module-screen .module-form > .error-banner {
+  grid-column: 1 / -1;
+}
+.dashboard-theme .module-screen .module-form > label {
+  min-width: 0;
+}
+.dashboard-theme .module-screen .module-form :is(input, select, textarea) {
+  width: 100%;
+}
+.dashboard-theme .module-screen .module-form > button[type="submit"] {
+  justify-self: start;
+}
+.dashboard-theme .module-screen .module-form .form-actions {
+  display: flex;
+  justify-content: flex-start;
+  padding-block-start: var(--space-2);
+}
+.dashboard-theme .module-screen .module-form-compact {
+  max-width: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+.dashboard-theme .module-screen .module-form-compact > button[type="submit"] {
+  min-height: 42px;
+}
+.dashboard-theme .module-screen .module-table td {
+  vertical-align: middle;
+}
+.dashboard-theme .module-screen .module-table .mono {
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}
+.dashboard-theme .module-screen .module-table form {
+  margin: 0;
+}
+.dashboard-theme .module-screen .module-table td a {
+  text-underline-offset: 3px;
+}
+.dashboard-theme .module-screen .module-actions {
+  padding-block: var(--space-2);
+}
+.dashboard-theme .module-screen .module-public-url {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.dashboard-theme .module-screen .module-total {
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-theme .module-screen .module-quantity {
+  font-family: var(--font-brand);
+  font-size: 1.125rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-theme .module-screen .module-quantity-low {
+  color: var(--warning-text);
+}
+.dashboard-theme .module-screen .module-quantity-empty {
+  color: var(--danger-text);
+}
+@media (max-width: 40rem) {
+  .dashboard-theme .module-screen .module-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-theme .module-screen .module-form > button[type="submit"] {
+    justify-self: stretch;
+  }
+}

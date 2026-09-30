@@ -5,6 +5,7 @@ import "./fonts.css";
 import "./tokens.css";
 import "./dashboard.css";
 import "./core-screens.css";
+import "./module-screens.css";
 import { redirect } from "next/navigation";
 import { Badge, Button } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
