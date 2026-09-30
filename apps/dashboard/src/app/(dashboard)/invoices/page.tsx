@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listInvoices } from "@yinne/invoicing";
 import { formatMinorAmount } from "../../../lib/money";
@@ -7,7 +7,7 @@ import { activeUserContext } from "../../../lib/context";
 export default async function InvoicesPage() {
   const rows = await listInvoices(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Invoices"
         description="Customer receivables collected through canonical Checkout and Payments."
@@ -20,7 +20,7 @@ export default async function InvoicesPage() {
       {!rows.data.length ? (
         <EmptyState title="No invoices" description="Create a draft Invoice to bill a Customer." />
       ) : (
-        <Table label="Invoices">
+        <Table label="Invoices" density="compact">
           <thead>
             <tr>
               <th>Invoice</th>
@@ -35,9 +35,9 @@ export default async function InvoicesPage() {
                 <td>
                   <Link href={`/invoices/${row.id}`}>{row.invoice_number ?? "Draft"}</Link>
                 </td>
-                <td>{formatMinorAmount(row.total_amount, row.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(row.total_amount, row.currency)}</FinancialAmount></td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       row.status === "paid"
                         ? "success"
@@ -47,7 +47,7 @@ export default async function InvoicesPage() {
                     }
                   >
                     {row.display_status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>{row.due_at ? new Date(row.due_at).toLocaleDateString() : "On receipt"}</td>
               </tr>
@@ -55,6 +55,6 @@ export default async function InvoicesPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
