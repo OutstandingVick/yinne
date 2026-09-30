@@ -1,6 +1,6 @@
 import { capitalProfileHistory, currentCapitalProfile } from "@yinne/capital";
 import { createRequestId } from "@yinne/core";
-import { Badge, PageHeader } from "@yinne/ui";
+import { Badge, CoreScreen, PageHeader } from "@yinne/ui";
 import { activeUserContext } from "../../../lib/context";
 
 function title(value: string) {
@@ -15,7 +15,7 @@ export default async function CapitalPage() {
   ]);
   if (!profile)
     return (
-      <>
+      <CoreScreen className="intelligence-screen">
         <PageHeader
           title="Capital"
           description="Explainable merchant intelligence derived from canonical Analytics."
@@ -24,10 +24,10 @@ export default async function CapitalPage() {
           <strong>No Capital Profile yet.</strong> An authorized financial administrator can request
           the first worker-backed calculation through the Capital API.
         </section>
-      </>
+      </CoreScreen>
     );
   return (
-    <>
+    <CoreScreen className="intelligence-screen">
       <PageHeader
         title="Capital"
         description="Observed business stability—not a credit decision, approval, or financing offer."
@@ -173,6 +173,6 @@ export default async function CapitalPage() {
           ))}
         </ul>
       </section>
-    </>
+    </CoreScreen>
   );
 }
