@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Badge, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, FinancialAmount, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getCheckoutSession } from "@yinne/checkout";
 import { activeUserContext } from "../../../../../lib/context";
@@ -12,18 +12,18 @@ export default async function CheckoutDetail({ params }: { params: Promise<{ id:
     notFound();
   }
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title={`Checkout ${row.id.slice(0, 12)}`}
         description="The quote, customer association, Order, and Payment remain separate canonical records."
       />
       <div className="detail-grid">
-        <section className="panel">
+        <SectionCard>
           <h2>Status</h2>
-          <Badge tone={row.status === "completed" ? "success" : "warning"}>{row.status}</Badge>
+          <StatusBadge tone={row.status === "completed" ? "success" : "warning"}>{row.status}</StatusBadge>
           <dl>
             <dt>Total</dt>
-            <dd>{formatMinorAmount(row.amount, row.currency)}</dd>
+            <dd><FinancialAmount prominent>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></dd>
             <dt>Order</dt>
             <dd className="mono">{row.order_id ?? "Not created"}</dd>
             <dt>Payment</dt>
@@ -31,9 +31,9 @@ export default async function CheckoutDetail({ params }: { params: Promise<{ id:
             <dt>Expires</dt>
             <dd>{new Date(row.expires_at).toLocaleString("en-NG")}</dd>
           </dl>
-        </section>
+        </SectionCard>
       </div>
-      <Table label="Quote items">
+      <Table label="Quote items" density="compact">
         <thead>
           <tr>
             <th>Description</th>
@@ -46,11 +46,11 @@ export default async function CheckoutDetail({ params }: { params: Promise<{ id:
             <tr key={item.id}>
               <td>{item.description}</td>
               <td>{item.quantity}</td>
-              <td>{formatMinorAmount(item.total_amount, item.currency)}</td>
+              <td><FinancialAmount>{formatMinorAmount(item.total_amount, item.currency)}</FinancialAmount></td>
             </tr>
           ))}
         </tbody>
       </Table>
-    </>
+    </CoreScreen>
   );
 }
