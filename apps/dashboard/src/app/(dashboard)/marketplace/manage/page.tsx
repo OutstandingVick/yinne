@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge } from "@yinne/ui";
+import { CoreScreen, SectionCard, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getMarketplaceProfile, listMarketplaceListings } from "@yinne/marketplace";
 import { activeUserContext } from "../../../../lib/context";
@@ -14,7 +14,7 @@ export default async function MarketplaceManagePage() {
   }
   const listings = profile ? await listMarketplaceListings(context) : [];
   return (
-    <div className="stack">
+    <CoreScreen className="module-screen">
       <header className="page-header">
         <div>
           <p className="eyebrow">Optional sales channel</p>
@@ -26,33 +26,32 @@ export default async function MarketplaceManagePage() {
         </Link>
       </header>
       {!profile ? (
-        <section className="panel">
+        <SectionCard>
           <h2>Marketplace is not enabled</h2>
           <p>
             Accept the Marketplace terms and verify your merchant contact through the API to opt in.
           </p>
-        </section>
+        </SectionCard>
       ) : (
         <>
-          <section className="panel">
+          <SectionCard>
             <div className="detail-row">
               <div>
                 <span>Public merchant</span>
                 <strong>{profile.public_name}</strong>
               </div>
-              <Badge tone={profile.suspended ? "danger" : "success"}>
+              <StatusBadge tone={profile.suspended ? "danger" : "success"}>
                 {profile.suspended ? "Suspended" : "Enabled"}
-              </Badge>
+              </StatusBadge>
             </div>
             <p>{profile.description}</p>
-          </section>
-          <section className="panel">
+          </SectionCard>
+          <SectionCard>
             <h2>Listings</h2>
             {!listings.length ? (
               <p>No listings yet.</p>
             ) : (
-              <div className="table-wrap">
-                <table>
+              <Table label="Marketplace listings" density="compact">
                   <thead>
                     <tr>
                       <th>Product</th>
@@ -66,7 +65,7 @@ export default async function MarketplaceManagePage() {
                       <tr key={l.id}>
                         <td>{l.title ?? l.product_id}</td>
                         <td>
-                          <Badge>{l.status}</Badge>
+                          <StatusBadge tone={l.status === "approved" ? "success" : "neutral"}>{l.status}</StatusBadge>
                         </td>
                         <td>
                           {Object.keys(l.eligibility).length ? "Evaluated" : "Pending submission"}
@@ -81,12 +80,11 @@ export default async function MarketplaceManagePage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
-              </div>
+              </Table>
             )}
-          </section>
+          </SectionCard>
         </>
       )}
-    </div>
+    </CoreScreen>
   );
 }
