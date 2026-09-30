@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Button, SectionCard } from "@yinne/ui";
 export function NewLinkForm({
   options,
 }: {
@@ -67,14 +68,14 @@ export function NewLinkForm({
   }
   if (created)
     return (
-      <section className="panel">
+      <SectionCard className="module-public-url">
         <h2>Payment Link created</h2>
         <p>Copy this URL now. For security, the capability token is shown only once.</p>
         <input readOnly value={created} onFocus={(event) => event.currentTarget.select()} />
-      </section>
+      </SectionCard>
     );
   return (
-    <form onSubmit={(event) => void submit(event)} className="form-grid">
+    <form onSubmit={(event) => void submit(event)} className="card form-grid module-form">
       <label>
         Name
         <input name="name" required maxLength={160} />
@@ -152,7 +153,7 @@ export function NewLinkForm({
           {error}
         </p>
       ) : null}
-      <button type="submit">Create Payment Link</button>
+      <Button type="submit">Create Payment Link</Button>
     </form>
   );
 }
