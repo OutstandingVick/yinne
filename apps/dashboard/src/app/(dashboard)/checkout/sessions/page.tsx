@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCheckoutSessions } from "@yinne/checkout";
 import { activeUserContext } from "../../../../lib/context";
@@ -9,7 +9,7 @@ export default async function CheckoutSessionsPage() {
     limit: 100,
   });
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Checkout Sessions"
         description="Expiring customer interactions connected to canonical orders and payments."
@@ -20,7 +20,7 @@ export default async function CheckoutSessionsPage() {
           description="Create one through the API or open a Payment Link."
         />
       ) : (
-        <Table label="Checkout Sessions">
+        <Table label="Checkout Sessions" density="compact">
           <thead>
             <tr>
               <th>Session</th>
@@ -38,9 +38,9 @@ export default async function CheckoutSessionsPage() {
                     {row.id.slice(0, 18)}…
                   </Link>
                 </td>
-                <td>{formatMinorAmount(row.amount, row.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       row.status === "completed"
                         ? "success"
@@ -52,7 +52,7 @@ export default async function CheckoutSessionsPage() {
                     }
                   >
                     {row.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>{row.payment_link_id ? "Payment Link" : "Direct"}</td>
                 <td>{new Date(row.expires_at).toLocaleString("en-NG")}</td>
@@ -61,6 +61,6 @@ export default async function CheckoutSessionsPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
