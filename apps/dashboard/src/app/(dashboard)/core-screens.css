@@ -1,3 +1,12 @@
+.dashboard-theme .analytics-kpi-grid .metric-card { min-height: 224px; display: flex; flex-direction: column; align-items: flex-start; }
+.dashboard-theme .analytics-kpi-grid .metric-value { margin-block: var(--space-6) var(--space-3); overflow-wrap: anywhere; }
+.dashboard-theme .analytics-kpi-grid .metric-value .financial-amount { font-size: inherit; }
+.dashboard-theme .analytics-kpi-grid .money-values { display: block; }
+.dashboard-theme .analytics-kpi-grid .money-values + .money-values { margin-block-start: 4px; }
+.dashboard-theme .analytics-report-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+.dashboard-theme .analytics-report-grid a.card { display: flex; flex-direction: column; gap: 8px; min-height: 132px; }
+.dashboard-theme .analytics-report-grid a.card p { margin: 0; }
+@media (max-width: 40rem) { .dashboard-theme .analytics-kpi-grid .metric-card { min-height: 0; } }
 .dashboard-theme .core-status-line { margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .dashboard-theme .core-total-card { background: var(--panel); border-color: var(--border); }
 .dashboard-theme .core-total-card > .label { color: var(--muted); }

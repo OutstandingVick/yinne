@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { overviewReport } from "@yinne/analytics";
 import { createRequestId } from "@yinne/core";
-import { Badge, PageHeader } from "@yinne/ui";
+import { Badge, CoreScreen, FinancialAmount, MetricCard, PageHeader } from "@yinne/ui";
 import { activeUserContext } from "../../../lib/context";
 import { formatMinorAmount } from "../../../lib/money";
 
@@ -23,8 +23,8 @@ function MoneyValues({ values }: { values: Record<string, string> }) {
   return (
     <>
       {entries.map(([currency, amount]) => (
-        <span key={currency} style={{ display: "block" }}>
-          {formatMinorAmount(amount, currency)}
+        <span key={currency} className="money-values">
+          <FinancialAmount>{formatMinorAmount(amount, currency)}</FinancialAmount>
         </span>
       ))}
     </>
@@ -64,28 +64,23 @@ export default async function AnalyticsOverviewPage() {
     ["Products", "/analytics/products"],
   ] as const;
   return (
-    <>
+    <CoreScreen className="analytics-overview-screen">
       <PageHeader
         title="Analytics"
         description="Canonical business metrics for the last 30 days, calculated from committed operational facts."
       />
-      <div className="card-grid">
+      <div className="card-grid analytics-kpi-grid">
         {cards.map(([name, value, description]) => (
-          <div className="card" key={name}>
-            <Badge tone="success">Live</Badge>
-            <h2 style={{ marginTop: 14 }}>{value}</h2>
-            <strong>{name}</strong>
-            <p>{description}</p>
-          </div>
+          <MetricCard key={name} label={name} value={value} description={description} status={<Badge tone="success">Live</Badge>} />
         ))}
       </div>
-      <section className="notice" style={{ marginTop: 20 }}>
+      <section className="notice">
         <strong>Reporting context:</strong> {report.meta.timezone} · [
         {new Date(report.meta.from).toLocaleDateString()},{" "}
         {new Date(report.meta.to).toLocaleDateString()}) · formula {report.meta.formula_version} ·
         live as of {new Date(report.meta.freshness.as_of).toLocaleString()}.
       </section>
-      <div className="card-grid" style={{ marginTop: 20 }}>
+      <div className="card-grid analytics-report-grid">
         {sections.map(([name, href]) => (
           <Link className="card" href={href} key={name}>
             <strong>{name}</strong>
@@ -93,6 +88,6 @@ export default async function AnalyticsOverviewPage() {
           </Link>
         ))}
       </div>
-    </>
+    </CoreScreen>
   );
 }
