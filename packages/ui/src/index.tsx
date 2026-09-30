@@ -1,3 +1,4 @@
+export { Modal, type ModalProps } from "./modal";
 export { Dropdown } from "./dropdown";
 export { Tabs } from "./tabs";
 export { StatusBadge, type StatusTone } from "./status-badge";

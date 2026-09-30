@@ -1,3 +1,10 @@
+.dashboard-theme .ui-modal { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--panel); color: var(--text); box-shadow: var(--shadow-overlay); overscroll-behavior: contain; }
+.dashboard-theme .ui-modal::backdrop { background: rgb(0 0 0 / 45%); }
+.dashboard-theme .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.dashboard-theme .modal-header h2 { margin: 0; font-size: 1.125rem; }
+.dashboard-theme .modal-body { padding: 24px; overflow-wrap: anywhere; }
+.dashboard-theme .modal-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--border); }
+body:has(.dashboard-theme dialog[open]) { overflow: hidden; }
 .dashboard-theme .dropdown { position: relative; width: fit-content; max-width: 100%; }
 .dashboard-theme .dropdown summary { list-style: none; }
 .dashboard-theme .dropdown summary::-webkit-details-marker { display: none; }
