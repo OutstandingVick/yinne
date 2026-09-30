@@ -1,4 +1,4 @@
-import { Button, Input, PageHeader } from "@yinne/ui";
+import { Button, CoreScreen, Input, PageHeader, SectionCard } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrganization } from "@yinne/organizations/services";
 import { activeUserContext } from "../../../../lib/context";
@@ -8,13 +8,13 @@ export default async function OrganizationPage() {
   const context = await activeUserContext(createRequestId());
   const organization = await getOrganization(context);
   return (
-    <>
+    <CoreScreen className="operations-screen">
       <PageHeader
         title="Organization"
         description="The organization is the security and data tenant. Merchant brands remain separate operational profiles."
       />
-      <section className="card">
-        <form className="form" action={updateOrganizationAction}>
+      <SectionCard>
+        <form className="form admin-form" action={updateOrganizationAction}>
           <div className="form-row">
             <label htmlFor="name">Organization name</label>
             <Input id="name" name="name" required minLength={2} defaultValue={organization.name} />
@@ -35,7 +35,7 @@ export default async function OrganizationPage() {
           </div>
           <Button type="submit">Save organization</Button>
         </form>
-      </section>
-    </>
+      </SectionCard>
+    </CoreScreen>
   );
 }
