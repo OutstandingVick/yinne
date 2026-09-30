@@ -38,7 +38,9 @@ export default async function CheckoutSessionsPage() {
                     {row.id.slice(0, 18)}…
                   </Link>
                 </td>
-                <td><FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount>
+                </td>
                 <td>
                   <StatusBadge
                     tone={

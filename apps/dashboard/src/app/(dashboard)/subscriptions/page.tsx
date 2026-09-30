@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { Button, CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
+import {
+  Button,
+  CoreScreen,
+  EmptyState,
+  FinancialAmount,
+  PageHeader,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listSubscriptions } from "@yinne/subscriptions";
 import { formatMinorAmount } from "../../../lib/money";
@@ -39,7 +47,10 @@ export default async function SubscriptionsPage() {
                   <Link href={`/subscriptions/${row.id}`}>{row.id.slice(0, 8)}</Link>
                 </td>
                 <td>
-                  <FinancialAmount>{formatMinorAmount(row.unit_amount, row.currency)}</FinancialAmount> / {row.interval}
+                  <FinancialAmount>
+                    {formatMinorAmount(row.unit_amount, row.currency)}
+                  </FinancialAmount>{" "}
+                  / {row.interval}
                 </td>
                 <td>
                   <StatusBadge

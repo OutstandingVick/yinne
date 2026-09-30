@@ -1,4 +1,11 @@
-import { CoreScreen, FinancialAmount, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
+import {
+  CoreScreen,
+  FinancialAmount,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getPlan } from "@yinne/subscriptions";
 import { formatMinorAmount } from "../../../../lib/money";
@@ -12,7 +19,9 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
         description={plan.description ?? "Recurring commercial offering"}
       />
       <SectionCard>
-        <StatusBadge tone={plan.status === "active" ? "success" : "neutral"}>{plan.status}</StatusBadge>
+        <StatusBadge tone={plan.status === "active" ? "success" : "neutral"}>
+          {plan.status}
+        </StatusBadge>
       </SectionCard>
       <Table label="Recurring Prices" density="compact">
         <thead>
@@ -25,7 +34,11 @@ export default async function PlanPage({ params }: { params: Promise<{ id: strin
         <tbody>
           {plan.prices.map((price) => (
             <tr key={price.id}>
-              <td><FinancialAmount>{formatMinorAmount(price.unit_amount, price.currency)}</FinancialAmount></td>
+              <td>
+                <FinancialAmount>
+                  {formatMinorAmount(price.unit_amount, price.currency)}
+                </FinancialAmount>
+              </td>
               <td>
                 Every {price.interval_count} {price.interval}
               </td>

@@ -38,7 +38,9 @@ export default async function PlansPage() {
                   <Link href={`/subscription-plans/${row.id}`}>{row.name}</Link>
                 </td>
                 <td>
-                  <StatusBadge tone={row.status === "active" ? "success" : "neutral"}>{row.status}</StatusBadge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "neutral"}>
+                    {row.status}
+                  </StatusBadge>
                 </td>
                 <td>{new Date(row.created_at).toLocaleDateString()}</td>
               </tr>

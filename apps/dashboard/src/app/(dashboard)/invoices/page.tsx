@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { Button, CoreScreen, EmptyState, FinancialAmount, PageHeader, StatusBadge, Table } from "@yinne/ui";
+import {
+  Button,
+  CoreScreen,
+  EmptyState,
+  FinancialAmount,
+  PageHeader,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listInvoices } from "@yinne/invoicing";
 import { formatMinorAmount } from "../../../lib/money";
@@ -35,7 +43,11 @@ export default async function InvoicesPage() {
                 <td>
                   <Link href={`/invoices/${row.id}`}>{row.invoice_number ?? "Draft"}</Link>
                 </td>
-                <td><FinancialAmount>{formatMinorAmount(row.total_amount, row.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>
+                    {formatMinorAmount(row.total_amount, row.currency)}
+                  </FinancialAmount>
+                </td>
                 <td>
                   <StatusBadge
                     tone={

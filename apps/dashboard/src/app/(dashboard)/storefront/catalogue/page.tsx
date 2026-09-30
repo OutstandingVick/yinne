@@ -48,7 +48,9 @@ export default async function StoreCataloguePage() {
                 <td>{row.name}</td>
                 <td>{row.product_status}</td>
                 <td>
-                  <StatusBadge tone={row.publication_status === "published" ? "success" : "warning"}>
+                  <StatusBadge
+                    tone={row.publication_status === "published" ? "success" : "warning"}
+                  >
                     {row.publication_status}
                   </StatusBadge>
                 </td>

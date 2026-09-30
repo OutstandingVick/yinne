@@ -1,4 +1,14 @@
-import { Button, CoreScreen, EmptyState, FilterForm, Input, PageHeader, SectionCard, Select, Table } from "@yinne/ui";
+import {
+  Button,
+  CoreScreen,
+  EmptyState,
+  FilterForm,
+  Input,
+  PageHeader,
+  SectionCard,
+  Select,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getOrderCreationOptions, listInventoryLevels } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -22,7 +32,10 @@ export default async function InventoryPage({
       />
       <SectionCard>
         <h2>Adjust stock</h2>
-        <form action={adjustInventoryAction} className="form form-inline module-form module-form-compact">
+        <form
+          action={adjustInventoryAction}
+          className="form form-inline module-form module-form-compact"
+        >
           <div className="form-row">
             <label htmlFor="inventory-variant">Variant</label>
             <Select id="inventory-variant" name="variant_id" required>
@@ -68,7 +81,11 @@ export default async function InventoryPage({
           defaultValue={query.search}
           placeholder="Search product, SKU, or location"
         />
-        <Select aria-label="All locations" name="location_id" defaultValue={query.location_id ?? ""}>
+        <Select
+          aria-label="All locations"
+          name="location_id"
+          defaultValue={query.location_id ?? ""}
+        >
           <option value="">All locations</option>
           {options.locations.map((location) => (
             <option value={location.id} key={location.id}>
@@ -105,7 +122,11 @@ export default async function InventoryPage({
                   </div>
                 </td>
                 <td>{level.location_name}</td>
-                <td className={`module-quantity${Number(level.on_hand) === 0 ? " module-quantity-empty" : ""}`}>{level.on_hand}</td>
+                <td
+                  className={`module-quantity${Number(level.on_hand) === 0 ? " module-quantity-empty" : ""}`}
+                >
+                  {level.on_hand}
+                </td>
                 <td>{level.version}</td>
               </tr>
             ))}

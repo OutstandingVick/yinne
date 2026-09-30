@@ -38,7 +38,9 @@ export default async function PaymentLinksPage() {
                 <td>{row.name}</td>
                 <td>{row.kind}</td>
                 <td>
-                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>{row.status}</StatusBadge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>
+                    {row.status}
+                  </StatusBadge>
                 </td>
                 <td>{row.currency}</td>
                 <td>

@@ -1,5 +1,14 @@
 import { revalidatePath } from "next/cache";
-import { ActionGroup, Button, CoreScreen, DetailGrid, DetailItem, FinancialAmount, PageHeader, StatusBadge } from "@yinne/ui";
+import {
+  ActionGroup,
+  Button,
+  CoreScreen,
+  DetailGrid,
+  DetailItem,
+  FinancialAmount,
+  PageHeader,
+  StatusBadge,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import {
   cancelSubscription,
@@ -33,17 +42,19 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
       />
       <DetailGrid className="module-summary">
         <DetailItem label="Status">
-            <StatusBadge tone={subscription.status === "active" ? "success" : "warning"}>
-              {subscription.status}
-            </StatusBadge>
+          <StatusBadge tone={subscription.status === "active" ? "success" : "warning"}>
+            {subscription.status}
+          </StatusBadge>
         </DetailItem>
         <DetailItem label="Price snapshot">
-            <FinancialAmount>{formatMinorAmount(subscription.unit_amount, subscription.currency)}</FinancialAmount> /{" "}
-            {subscription.interval}
+          <FinancialAmount>
+            {formatMinorAmount(subscription.unit_amount, subscription.currency)}
+          </FinancialAmount>{" "}
+          / {subscription.interval}
         </DetailItem>
         <DetailItem label="Current period">
-            {new Date(subscription.current_period_start).toLocaleDateString()} –{" "}
-            {new Date(subscription.current_period_end).toLocaleDateString()}
+          {new Date(subscription.current_period_start).toLocaleDateString()} –{" "}
+          {new Date(subscription.current_period_end).toLocaleDateString()}
         </DetailItem>
         <DetailItem label="Retry count">{subscription.retry_count}</DetailItem>
       </DetailGrid>

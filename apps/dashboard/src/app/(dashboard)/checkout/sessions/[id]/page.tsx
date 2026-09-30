@@ -1,5 +1,12 @@
 import { notFound } from "next/navigation";
-import { CoreScreen, FinancialAmount, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
+import {
+  CoreScreen,
+  FinancialAmount,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { getCheckoutSession } from "@yinne/checkout";
 import { activeUserContext } from "../../../../../lib/context";
@@ -20,10 +27,16 @@ export default async function CheckoutDetail({ params }: { params: Promise<{ id:
       <div className="detail-grid">
         <SectionCard>
           <h2>Status</h2>
-          <StatusBadge tone={row.status === "completed" ? "success" : "warning"}>{row.status}</StatusBadge>
+          <StatusBadge tone={row.status === "completed" ? "success" : "warning"}>
+            {row.status}
+          </StatusBadge>
           <dl>
             <dt>Total</dt>
-            <dd><FinancialAmount prominent>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></dd>
+            <dd>
+              <FinancialAmount prominent>
+                {formatMinorAmount(row.amount, row.currency)}
+              </FinancialAmount>
+            </dd>
             <dt>Order</dt>
             <dd className="mono">{row.order_id ?? "Not created"}</dd>
             <dt>Payment</dt>
@@ -46,7 +59,11 @@ export default async function CheckoutDetail({ params }: { params: Promise<{ id:
             <tr key={item.id}>
               <td>{item.description}</td>
               <td>{item.quantity}</td>
-              <td><FinancialAmount>{formatMinorAmount(item.total_amount, item.currency)}</FinancialAmount></td>
+              <td>
+                <FinancialAmount>
+                  {formatMinorAmount(item.total_amount, item.currency)}
+                </FinancialAmount>
+              </td>
             </tr>
           ))}
         </tbody>

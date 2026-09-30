@@ -30,7 +30,9 @@ export default async function RefundsPage() {
               <tr key={row.id}>
                 <td className="mono">{row.id.slice(0, 16)}…</td>
                 <td className="mono">{row.payment_id.slice(0, 16)}…</td>
-                <td><FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount></td>
+                <td>
+                  <FinancialAmount>{formatMinorAmount(row.amount, row.currency)}</FinancialAmount>
+                </td>
                 <td>
                   <StatusBadge
                     tone={

@@ -52,34 +52,36 @@ export default async function MarketplaceManagePage() {
               <p>No listings yet.</p>
             ) : (
               <Table label="Marketplace listings" density="compact">
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Status</th>
-                      <th>Eligibility</th>
-                      <th>Public</th>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Status</th>
+                    <th>Eligibility</th>
+                    <th>Public</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {listings.map((l) => (
+                    <tr key={l.id}>
+                      <td>{l.title ?? l.product_id}</td>
+                      <td>
+                        <StatusBadge tone={l.status === "approved" ? "success" : "neutral"}>
+                          {l.status}
+                        </StatusBadge>
+                      </td>
+                      <td>
+                        {Object.keys(l.eligibility).length ? "Evaluated" : "Pending submission"}
+                      </td>
+                      <td>
+                        {l.status === "approved" ? (
+                          <Link href={`/marketplace/listings/${l.id}`}>View</Link>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {listings.map((l) => (
-                      <tr key={l.id}>
-                        <td>{l.title ?? l.product_id}</td>
-                        <td>
-                          <StatusBadge tone={l.status === "approved" ? "success" : "neutral"}>{l.status}</StatusBadge>
-                        </td>
-                        <td>
-                          {Object.keys(l.eligibility).length ? "Evaluated" : "Pending submission"}
-                        </td>
-                        <td>
-                          {l.status === "approved" ? (
-                            <Link href={`/marketplace/listings/${l.id}`}>View</Link>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  ))}
+                </tbody>
               </Table>
             )}
           </SectionCard>
