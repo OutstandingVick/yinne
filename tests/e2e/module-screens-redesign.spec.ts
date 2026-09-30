@@ -48,4 +48,34 @@ test("commerce and payments modules retain their content and responsive containm
   await page.goto("/payment-links");
   await page.getByRole("link", { name: "Create Payment Link" }).click();
   await expect(page.getByRole("heading", { name: "Create Payment Link" })).toBeVisible();
+
+  await page.setViewportSize({ width: 320, height: 900 });
+  for (const [list, detail, table] of [
+    ["/checkout/sessions", "Checkout Sessions", "Quote items"],
+    ["/invoices", "Invoices", "Invoice items"],
+    ["/subscription-plans", "Subscription Plans", "Recurring Prices"],
+  ] as const) {
+    await page.goto(list);
+    await page
+      .getByRole("table", { name: detail })
+      .getByRole("row")
+      .nth(1)
+      .getByRole("link")
+      .click();
+    await expect(page.getByRole("table", { name: table })).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    ).toBe(true);
+  }
+  await page.goto("/subscriptions");
+  await page
+    .getByRole("table", { name: "Subscriptions" })
+    .getByRole("row")
+    .nth(1)
+    .getByRole("link")
+    .click();
+  await expect(page.locator(".module-summary")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
 });
