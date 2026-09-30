@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, Button, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listPlans } from "@yinne/subscriptions";
 import { activeUserContext } from "../../../lib/context";
@@ -7,7 +7,7 @@ import { activeUserContext } from "../../../lib/context";
 export default async function PlansPage() {
   const rows = await listPlans(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Subscription Plans"
         description="Stable recurring offerings with immutable monthly or annual Prices."
@@ -23,7 +23,7 @@ export default async function PlansPage() {
           description="Create a Plan and an immutable Price to begin."
         />
       ) : (
-        <Table label="Subscription Plans">
+        <Table label="Subscription Plans" density="compact">
           <thead>
             <tr>
               <th>Name</th>
@@ -38,7 +38,7 @@ export default async function PlansPage() {
                   <Link href={`/subscription-plans/${row.id}`}>{row.name}</Link>
                 </td>
                 <td>
-                  <Badge tone={row.status === "active" ? "success" : "neutral"}>{row.status}</Badge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "neutral"}>{row.status}</StatusBadge>
                 </td>
                 <td>{new Date(row.created_at).toLocaleDateString()}</td>
               </tr>
@@ -46,6 +46,6 @@ export default async function PlansPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
