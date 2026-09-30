@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, PageHeader } from "@yinne/ui";
+import { Badge, MetricCard, PageHeader } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers, listInventoryLevels, listOrders, listProducts } from "@yinne/commerce";
 import { activeUserContext } from "../../lib/context";
@@ -43,13 +43,10 @@ export default async function HomePage() {
       />
       <div className="card-grid">
         {cards.map(([name, value, href, description]) => (
-          <Link href={href} className="card" key={name}>
-            <Badge tone={value === null ? "neutral" : "success"}>
+          <Link href={href} key={name}>
+            <MetricCard label={name} value={value ?? "—"} description={description} status={<Badge tone={value === null ? "neutral" : "success"}>
               {value === null ? "Restricted" : "Active"}
-            </Badge>
-            <h2 style={{ marginTop: 14 }}>{value ?? "—"}</h2>
-            <strong>{name}</strong>
-            <p>{description}</p>
+            </Badge>} />
           </Link>
         ))}
       </div>
