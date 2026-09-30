@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Button, PageHeader } from "@yinne/ui";
+import { Button, CoreScreen, PageHeader } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers } from "@yinne/commerce";
 import { listLocations } from "@yinne/operations";
@@ -40,12 +40,12 @@ export default async function NewSubscriptionPage() {
     listPrices(context, { limit: 100, status: "active" }),
   ]);
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Create subscription"
         description="Test mode simulates unattended renewal; no card or production mandate is stored."
       />
-      <form action={create} className="card form-stack">
+      <form action={create} className="card form-stack module-form">
         <label>
           Customer
           <select name="customer_id" required>
@@ -87,6 +87,6 @@ export default async function NewSubscriptionPage() {
         </label>
         <Button type="submit">Create subscription</Button>
       </form>
-    </>
+    </CoreScreen>
   );
 }
