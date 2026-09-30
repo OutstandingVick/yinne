@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Badge, Button, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listPaymentLinks } from "@yinne/checkout";
 import { activeUserContext } from "../../../lib/context";
 export default async function PaymentLinksPage() {
   const rows = await listPaymentLinks(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen className="module-screen">
       <PageHeader
         title="Payment Links"
         description="Reusable public configurations that create a fresh Checkout Session per submission."
@@ -22,7 +22,7 @@ export default async function PaymentLinksPage() {
           description="Create a fixed, flexible, or product-backed link."
         />
       ) : (
-        <Table label="Payment Links">
+        <Table label="Payment Links" density="compact">
           <thead>
             <tr>
               <th>Name</th>
@@ -38,7 +38,7 @@ export default async function PaymentLinksPage() {
                 <td>{row.name}</td>
                 <td>{row.kind}</td>
                 <td>
-                  <Badge tone={row.status === "active" ? "success" : "warning"}>{row.status}</Badge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>{row.status}</StatusBadge>
                 </td>
                 <td>{row.currency}</td>
                 <td>
@@ -50,6 +50,6 @@ export default async function PaymentLinksPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
