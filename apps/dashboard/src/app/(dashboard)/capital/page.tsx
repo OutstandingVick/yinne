@@ -132,7 +132,7 @@ export default async function CapitalPage() {
             </tbody>
         </Table>
       </SectionCard>
-      <section className="notice" style={{ marginTop: 20 }}>
+      <section className="notice">
         <strong>Limitations</strong>
         <ul>
           {profile.limitations.map((item) => (
