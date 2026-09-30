@@ -9,7 +9,7 @@ import {
   subscriptionsReport,
 } from "@yinne/analytics";
 import { createRequestId } from "@yinne/core";
-import { Badge, CoreScreen, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { activeUserContext } from "../../../../lib/context";
 
 const reports = {
@@ -98,8 +98,8 @@ export default async function AnalyticsReportPage({
   return (
     <CoreScreen className="intelligence-screen">
       <PageHeader title={definition.title} description={definition.description} />
-      <section className="notice">
-        <Badge tone="success">Live</Badge> <strong>{result.meta.formula_version}</strong> ·{" "}
+      <section className="notice report-context">
+        <StatusBadge tone="success">Live</StatusBadge> <strong>{result.meta.formula_version}</strong> ·{" "}
         {result.meta.timezone} · [{new Date(result.meta.from).toLocaleDateString()},{" "}
         {new Date(result.meta.to).toLocaleDateString()}) · refreshed{" "}
         {new Date(result.meta.freshness.as_of).toLocaleString()}
