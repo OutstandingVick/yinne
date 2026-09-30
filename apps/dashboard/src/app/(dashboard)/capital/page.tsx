@@ -1,6 +1,6 @@
 import { capitalProfileHistory, currentCapitalProfile } from "@yinne/capital";
 import { createRequestId } from "@yinne/core";
-import { Badge, CoreScreen, PageHeader } from "@yinne/ui";
+import { CoreScreen, MetricCard, PageHeader, StatusBadge } from "@yinne/ui";
 import { activeUserContext } from "../../../lib/context";
 
 function title(value: string) {
@@ -36,40 +36,11 @@ export default async function CapitalPage() {
         <strong>Important:</strong> This profile only reflects activity Yinne can observe. It is not
         lender underwriting and does not guarantee financing.
       </section>
-      <div className="card-grid" style={{ marginTop: 20 }}>
-        <div className="card">
-          <Badge tone={profile.status === "scored" ? "success" : "warning"}>
-            {title(profile.status)}
-          </Badge>
-          <h2>{profile.score ?? "—"}</h2>
-          <strong>Capital Score</strong>
-          <p>{profile.band ? title(profile.band) : "Insufficient data—not poor performance"}</p>
-        </div>
-        <div className="card">
-          <strong>Data sufficiency</strong>
-          <h2>{title(profile.data_sufficiency)}</h2>
-          <p>{profile.missing_requirements.join(" · ") || "Scoring requirements are met."}</p>
-        </div>
-        <div className="card">
-          <strong>Last updated</strong>
-          <h2>{new Date(profile.calculated_at).toLocaleDateString()}</h2>
-          <p>
-            {profile.model_version} · {profile.currency}
-          </p>
-        </div>
-        <div className="card">
-          <strong>Score change</strong>
-          <h2>
-            {profile.score_change
-              ? `${profile.score_change.delta >= 0 ? "+" : ""}${profile.score_change.delta}`
-              : "—"}
-          </h2>
-          <p>
-            {profile.score_change
-              ? "Since the previous comparable snapshot"
-              : "No comparable prior snapshot"}
-          </p>
-        </div>
+      <div className="card-grid capital-kpis">
+        <MetricCard label="Capital Score" value={profile.score ?? "—"} description={profile.band ? title(profile.band) : "Insufficient data—not poor performance"} status={<StatusBadge tone={profile.status === "scored" ? "success" : "warning"}>{title(profile.status)}</StatusBadge>} />
+        <MetricCard label="Data sufficiency" value={title(profile.data_sufficiency)} description={profile.missing_requirements.join(" · ") || "Scoring requirements are met."} />
+        <MetricCard label="Last updated" value={new Date(profile.calculated_at).toLocaleDateString()} description={`${profile.model_version} · ${profile.currency}`} />
+        <MetricCard label="Score change" value={profile.score_change ? `${profile.score_change.delta >= 0 ? "+" : ""}${profile.score_change.delta}` : "—"} description={profile.score_change ? "Since the previous comparable snapshot" : "No comparable prior snapshot"} />
       </div>
       <div className="split" style={{ marginTop: 20 }}>
         <section className="panel">
