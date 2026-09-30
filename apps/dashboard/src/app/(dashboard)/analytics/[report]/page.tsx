@@ -99,8 +99,9 @@ export default async function AnalyticsReportPage({
     <CoreScreen className="intelligence-screen">
       <PageHeader title={definition.title} description={definition.description} />
       <section className="notice report-context">
-        <StatusBadge tone="success">Live</StatusBadge> <strong>{result.meta.formula_version}</strong> ·{" "}
-        {result.meta.timezone} · [{new Date(result.meta.from).toLocaleDateString()},{" "}
+        <StatusBadge tone="success">Live</StatusBadge>{" "}
+        <strong>{result.meta.formula_version}</strong> · {result.meta.timezone} · [
+        {new Date(result.meta.from).toLocaleDateString()},{" "}
         {new Date(result.meta.to).toLocaleDateString()}) · refreshed{" "}
         {new Date(result.meta.freshness.as_of).toLocaleString()}
       </section>

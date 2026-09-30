@@ -31,7 +31,9 @@ export default async function EmployeesPage() {
                   <small>{row.email}</small>
                 </td>
                 <td>
-                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>{row.status}</StatusBadge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>
+                    {row.status}
+                  </StatusBadge>
                 </td>
                 <td className="scope-cell">
                   {row.assignments

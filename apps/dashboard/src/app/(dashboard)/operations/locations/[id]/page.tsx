@@ -12,9 +12,9 @@ export default async function LocationPage({ params }: { params: Promise<{ id: s
       />
       <DetailGrid>
         <DetailItem label="Status">
-            <StatusBadge tone={location.status === "active" ? "success" : "warning"}>
-              {location.status}
-            </StatusBadge>
+          <StatusBadge tone={location.status === "active" ? "success" : "warning"}>
+            {location.status}
+          </StatusBadge>
         </DetailItem>
         <DetailItem label="Code">{location.code}</DetailItem>
         <DetailItem label="Type">{location.type}</DetailItem>

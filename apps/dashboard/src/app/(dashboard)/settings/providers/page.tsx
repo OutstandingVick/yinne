@@ -35,11 +35,15 @@ export default async function ProvidersPage() {
                 <td>{row.provider}</td>
                 <td>{row.label}</td>
                 <td>
-                  <StatusBadge tone={row.environment === "test" ? "warning" : "info"}>{row.environment}</StatusBadge>
+                  <StatusBadge tone={row.environment === "test" ? "warning" : "info"}>
+                    {row.environment}
+                  </StatusBadge>
                 </td>
                 <td className="provider-capabilities">{row.capabilities.join(", ")}</td>
                 <td>
-                  <StatusBadge tone={row.status === "enabled" ? "success" : "danger"}>{row.status}</StatusBadge>
+                  <StatusBadge tone={row.status === "enabled" ? "success" : "danger"}>
+                    {row.status}
+                  </StatusBadge>
                 </td>
                 <td>{row.is_default ? "Yes" : "No"}</td>
               </tr>

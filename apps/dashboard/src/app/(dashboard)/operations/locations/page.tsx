@@ -36,7 +36,9 @@ export default async function LocationsPage() {
                 <td>{row.code}</td>
                 <td>{row.type}</td>
                 <td>
-                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>{row.status}</StatusBadge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>
+                    {row.status}
+                  </StatusBadge>
                 </td>
                 <td>{row.timezone}</td>
               </tr>

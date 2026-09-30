@@ -8,7 +8,9 @@ export default async function EmployeePage({ params }: { params: Promise<{ id: s
     <CoreScreen className="operations-screen">
       <PageHeader title={employee.name} description={employee.email} />
       <SectionCard>
-        <StatusBadge tone={employee.status === "active" ? "success" : "warning"}>{employee.status}</StatusBadge>
+        <StatusBadge tone={employee.status === "active" ? "success" : "warning"}>
+          {employee.status}
+        </StatusBadge>
         <h2>Access</h2>
         <ul className="access-list">
           {employee.assignments.map((a) => (
