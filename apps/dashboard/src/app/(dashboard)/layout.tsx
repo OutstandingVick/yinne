@@ -1,4 +1,9 @@
-import Link from "next/link";
+import Image from "next/image";
+import { NavLink } from "./nav-link";
+import { DashboardShell } from "./shell";
+import "./fonts.css";
+import "./tokens.css";
+import "./dashboard.css";
 import { redirect } from "next/navigation";
 import { Badge, Button } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
@@ -48,12 +53,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const organization = await getOrganization(context);
   const memberships = await listUserOrganizations(session.user.id);
   return (
-    <>
+    <div className="dashboard-theme">
       <div className="test-banner">TEST MODE · No real financial execution is available</div>
-      <div className="shell">
-        <aside className="sidebar">
+      <DashboardShell sidebar={<>
           <div className="brand">
-            <span className="brand-mark">Y</span> Yinne
+            <Image src="/brand/yinne-logo.svg" alt="Yinne" width={130} height={27} priority />
           </div>
           <div className="org-chip">
             <strong>{organization.name}</strong>
@@ -65,26 +69,24 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <nav aria-label="Primary">
             <div className="nav-label">Workspace</div>
             {workspaceNav.map(([label, href]) => (
-              <Link className="nav-link" href={href} key={label}>
+              <NavLink href={href} key={label}>
                 {label}
-              </Link>
+              </NavLink>
             ))}
             <div className="nav-label">Intelligence</div>
             {intelligenceNav.map(([label, href]) => (
-              <Link className="nav-link" href={href} key={label}>
+              <NavLink href={href} key={label}>
                 {label}
-              </Link>
+              </NavLink>
             ))}
             <div className="nav-label">Platform</div>
             {platformNav.map(([label, href]) => (
-              <Link className="nav-link" href={href} key={label}>
+              <NavLink href={href} key={label}>
                 {label}
-              </Link>
+              </NavLink>
             ))}
           </nav>
-        </aside>
-        <div className="main">
-          <header className="topbar">
+        </>} topbar={<>
             <Badge tone="warning">Test</Badge>
             <form action={switchOrganizationAction} className="organization-switcher">
               <label htmlFor="active-organization">Organization</label>
@@ -103,7 +105,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 Switch
               </Button>
             </form>
-            <span>{session.user.email}</span>
+            <span className="account-email">{session.user.email}</span>
             <form
               action={async () => {
                 "use server";
@@ -114,10 +116,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 Sign out
               </Button>
             </form>
-          </header>
-          <main className="content">{children}</main>
-        </div>
-      </div>
-    </>
+          </>}>
+          {children}
+      </DashboardShell>
+    </div>
   );
 }
