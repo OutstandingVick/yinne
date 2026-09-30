@@ -1,6 +1,6 @@
 import { capitalProfileHistory, currentCapitalProfile } from "@yinne/capital";
 import { createRequestId } from "@yinne/core";
-import { CoreScreen, MetricCard, PageHeader, StatusBadge } from "@yinne/ui";
+import { CoreScreen, MetricCard, PageHeader, SectionCard, StatusBadge } from "@yinne/ui";
 import { activeUserContext } from "../../../lib/context";
 
 function title(value: string) {
@@ -42,8 +42,8 @@ export default async function CapitalPage() {
         <MetricCard label="Last updated" value={new Date(profile.calculated_at).toLocaleDateString()} description={`${profile.model_version} · ${profile.currency}`} />
         <MetricCard label="Score change" value={profile.score_change ? `${profile.score_change.delta >= 0 ? "+" : ""}${profile.score_change.delta}` : "—"} description={profile.score_change ? "Since the previous comparable snapshot" : "No comparable prior snapshot"} />
       </div>
-      <div className="split" style={{ marginTop: 20 }}>
-        <section className="panel">
+      <div className="split capital-explanations">
+        <SectionCard>
           <h2>Strengths</h2>
           {profile.strengths.length ? (
             <ul>
@@ -54,8 +54,8 @@ export default async function CapitalPage() {
           ) : (
             <p>No strengths are asserted until sufficient evidence exists.</p>
           )}
-        </section>
-        <section className="panel">
+        </SectionCard>
+        <SectionCard>
           <h2>Watch areas</h2>
           {profile.watch_areas.length ? (
             <ul>
@@ -66,7 +66,7 @@ export default async function CapitalPage() {
           ) : (
             <p>No watch areas under the current rules.</p>
           )}
-        </section>
+        </SectionCard>
       </div>
       <section className="panel" style={{ marginTop: 20 }}>
         <h2>Dimension breakdown</h2>
