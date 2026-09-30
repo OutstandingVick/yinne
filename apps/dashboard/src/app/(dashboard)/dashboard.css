@@ -1,3 +1,11 @@
+.dashboard-theme .table-wrap { border-color: var(--border); border-radius: var(--radius-panel); max-width: 100%; scrollbar-width: thin; scrollbar-color: var(--control-border) var(--panel); }
+.dashboard-theme table { min-width: 640px; }
+.dashboard-theme :is(th, td) { padding: 16px 20px; border-color: var(--border); font-size: var(--text-small); text-align: start; }
+.dashboard-theme th { background: #fafafa; font-size: var(--text-caption); color: var(--muted); font-weight: 600; letter-spacing: .045em; }
+.dashboard-theme td { font-variant-numeric: tabular-nums; }
+.dashboard-theme td a { color: var(--action); text-decoration: underline; text-underline-offset: 3px; }
+.dashboard-theme td .button { text-decoration: none; }
+@media (hover: hover) { .dashboard-theme tbody tr:hover { background: var(--surface-hover); } }
 .dashboard-theme .card-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: var(--space-5); }
 .dashboard-theme .card { border: 1px solid var(--border); border-radius: var(--radius-panel); padding: var(--space-6); box-shadow: var(--shadow-card); min-width: 0; }
 .dashboard-theme .card p { font-size: var(--text-body); line-height: 1.65; margin-bottom: 0; }

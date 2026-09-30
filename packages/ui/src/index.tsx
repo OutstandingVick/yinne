@@ -104,7 +104,7 @@ export function LoadingState() {
 
 export function Table({ children, label }: { children: ReactNode; label: string }) {
   return (
-    <div className="table-wrap">
+    <div className="table-wrap" role="region" aria-label={label} tabIndex={0}>
       <table aria-label={label}>{children}</table>
     </div>
   );
