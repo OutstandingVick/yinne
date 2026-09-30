@@ -44,9 +44,16 @@ export default async function HomePage() {
       <div className="card-grid">
         {cards.map(([name, value, href, description]) => (
           <Link href={href} key={name}>
-            <MetricCard label={name} value={value ?? "—"} description={description} status={<Badge tone={value === null ? "neutral" : "success"}>
-              {value === null ? "Restricted" : "Active"}
-            </Badge>} />
+            <MetricCard
+              label={name}
+              value={value ?? "—"}
+              description={description}
+              status={
+                <Badge tone={value === null ? "neutral" : "success"}>
+                  {value === null ? "Restricted" : "Active"}
+                </Badge>
+              }
+            />
           </Link>
         ))}
       </div>

@@ -55,38 +55,43 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="dashboard-theme">
       <div className="test-banner">TEST MODE · No real financial execution is available</div>
-      <DashboardShell sidebar={<>
-          <div className="brand">
-            <Image src="/brand/yinne-logo.svg" alt="Yinne" width={130} height={27} priority />
-          </div>
-          <div className="org-chip">
-            <strong>{organization.name}</strong>
-            <br />
-            <span>
-              {organization.defaultCurrency} · {organization.timezone}
-            </span>
-          </div>
-          <nav aria-label="Primary">
-            <div className="nav-label">Workspace</div>
-            {workspaceNav.map(([label, href]) => (
-              <NavLink href={href} key={label}>
-                {label}
-              </NavLink>
-            ))}
-            <div className="nav-label">Intelligence</div>
-            {intelligenceNav.map(([label, href]) => (
-              <NavLink href={href} key={label}>
-                {label}
-              </NavLink>
-            ))}
-            <div className="nav-label">Platform</div>
-            {platformNav.map(([label, href]) => (
-              <NavLink href={href} key={label}>
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-        </>} topbar={<>
+      <DashboardShell
+        sidebar={
+          <>
+            <div className="brand">
+              <Image src="/brand/yinne-logo.svg" alt="Yinne" width={130} height={27} priority />
+            </div>
+            <div className="org-chip">
+              <strong>{organization.name}</strong>
+              <br />
+              <span>
+                {organization.defaultCurrency} · {organization.timezone}
+              </span>
+            </div>
+            <nav aria-label="Primary">
+              <div className="nav-label">Workspace</div>
+              {workspaceNav.map(([label, href]) => (
+                <NavLink href={href} key={label}>
+                  {label}
+                </NavLink>
+              ))}
+              <div className="nav-label">Intelligence</div>
+              {intelligenceNav.map(([label, href]) => (
+                <NavLink href={href} key={label}>
+                  {label}
+                </NavLink>
+              ))}
+              <div className="nav-label">Platform</div>
+              {platformNav.map(([label, href]) => (
+                <NavLink href={href} key={label}>
+                  {label}
+                </NavLink>
+              ))}
+            </nav>
+          </>
+        }
+        topbar={
+          <>
             <Badge tone="warning">Test</Badge>
             <form action={switchOrganizationAction} className="organization-switcher">
               <label htmlFor="active-organization">Organization</label>
@@ -116,8 +121,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 Sign out
               </Button>
             </form>
-          </>}>
-          {children}
+          </>
+        }
+      >
+        {children}
       </DashboardShell>
     </div>
   );

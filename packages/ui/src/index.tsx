@@ -25,8 +25,22 @@ export function Button({
   variant,
   size,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "danger" | "ghost"; size?: "small" | "default" }) {
-  return <button type={type} className={classes("button", variant && `button-${variant}`, size && `button-${size}`, className)} {...props} />;
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: "primary" | "secondary" | "danger" | "ghost";
+  size?: "small" | "default";
+}) {
+  return (
+    <button
+      type={type}
+      className={classes(
+        "button",
+        variant && `button-${variant}`,
+        size && `button-${size}`,
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
