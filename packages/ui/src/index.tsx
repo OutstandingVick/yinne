@@ -1,3 +1,4 @@
+export { Pagination } from "./pagination";
 export { Drawer } from "./drawer";
 export { Modal, type ModalProps } from "./modal";
 export { Dropdown } from "./dropdown";

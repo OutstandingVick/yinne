@@ -1,3 +1,5 @@
+.dashboard-theme .pagination { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 12px; margin-block-start: 20px; }
+.dashboard-theme .pagination-summary { color: var(--muted); font-size: var(--text-small); font-variant-numeric: tabular-nums; }
 .dashboard-theme .state-panel { border: 1px dashed var(--control-border); border-radius: var(--radius-panel); padding: clamp(24px, 5vw, 48px); background: var(--panel); }
 .dashboard-theme .state-panel h2 { margin: 0 0 10px; }
 .dashboard-theme .state-panel p { max-width: 55ch; margin: 0 auto 20px; line-height: 1.65; }
