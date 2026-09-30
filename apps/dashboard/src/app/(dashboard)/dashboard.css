@@ -1,3 +1,6 @@
+.dashboard-theme .tooltip { position: relative; display: inline-flex; max-width: 100%; }
+.dashboard-theme .tooltip-trigger { font: inherit; background: transparent; border: 0; color: inherit; padding: 8px; min-height: 40px; cursor: help; text-decoration: underline dotted; text-underline-offset: 4px; }
+.dashboard-theme .tooltip-content { position: absolute; inset-inline-start: 0; top: 100%; z-index: 30; width: max-content; max-width: min(220px, calc(100vw - 40px)); padding: 8px 12px; border-radius: var(--radius-sm); background: var(--nav-surface); color: white; font-size: var(--text-caption); box-shadow: var(--shadow-overlay); }
 .dashboard-theme .pagination { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 12px; margin-block-start: 20px; }
 .dashboard-theme .pagination-summary { color: var(--muted); font-size: var(--text-small); font-variant-numeric: tabular-nums; }
 .dashboard-theme .state-panel { border: 1px dashed var(--control-border); border-radius: var(--radius-panel); padding: clamp(24px, 5vw, 48px); background: var(--panel); }

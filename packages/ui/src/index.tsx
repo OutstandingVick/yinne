@@ -1,3 +1,4 @@
+export { Tooltip } from "./tooltip";
 export { Pagination } from "./pagination";
 export { Drawer } from "./drawer";
 export { Modal, type ModalProps } from "./modal";
