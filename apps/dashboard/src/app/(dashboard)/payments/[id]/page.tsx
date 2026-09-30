@@ -64,8 +64,9 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             </form>
           </SectionCard>
         ) : null}
+        <section className="core-section">
         <h2>Attempts</h2>
-        <Table label="Payment attempts">
+        <Table label="Payment attempts" density="compact">
           <thead>
             <tr>
               <th>ID</th>
@@ -81,7 +82,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
                 <td className="mono">{attempt.id.slice(0, 16)}…</td>
                 <td>{attempt.provider}</td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       attempt.status === "succeeded"
                         ? "success"
@@ -91,7 +92,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
                     }
                   >
                     {attempt.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td className="mono">{attempt.provider_reference ?? "—"}</td>
                 <td>{attempt.failure_code ?? "—"}</td>
@@ -99,8 +100,10 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             ))}
           </tbody>
         </Table>
+        </section>
+        <section className="core-section">
         <h2>Transactions</h2>
-        <Table label="Transactions">
+        <Table label="Transactions" density="compact">
           <thead>
             <tr>
               <th>Kind</th>
@@ -113,15 +116,17 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             {payment.transactions.map((transaction) => (
               <tr key={transaction.id}>
                 <td>{transaction.kind}</td>
-                <td>{formatMinorAmount(transaction.amount, transaction.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(transaction.amount, transaction.currency)}</FinancialAmount></td>
                 <td className="mono">{transaction.provider_reference}</td>
                 <td>{new Date(transaction.occurred_at).toLocaleString("en-NG")}</td>
               </tr>
             ))}
           </tbody>
         </Table>
+        </section>
+        <section className="core-section">
         <h2>Refunds</h2>
-        <Table label="Refunds">
+        <Table label="Refunds" density="compact">
           <thead>
             <tr>
               <th>ID</th>
@@ -134,9 +139,9 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
             {payment.refunds.map((refund) => (
               <tr key={refund.id}>
                 <td className="mono">{refund.id.slice(0, 16)}…</td>
-                <td>{formatMinorAmount(refund.amount, refund.currency)}</td>
+                <td><FinancialAmount>{formatMinorAmount(refund.amount, refund.currency)}</FinancialAmount></td>
                 <td>
-                  <Badge
+                  <StatusBadge
                     tone={
                       refund.status === "succeeded"
                         ? "success"
@@ -146,13 +151,14 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
                     }
                   >
                     {refund.status}
-                  </Badge>
+                  </StatusBadge>
                 </td>
                 <td>{refund.reason}</td>
               </tr>
             ))}
           </tbody>
         </Table>
+        </section>
       </CoreScreen>
     );
   } catch {
