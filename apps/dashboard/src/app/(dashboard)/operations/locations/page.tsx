@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Badge, EmptyState, PageHeader, Table } from "@yinne/ui";
+import { CoreScreen, EmptyState, PageHeader, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listLocations } from "@yinne/operations";
 import { activeUserContext } from "../../../../lib/context";
 export default async function LocationsPage() {
   const rows = await listLocations(await activeUserContext(createRequestId()), { limit: 100 });
   return (
-    <>
+    <CoreScreen className="operations-screen">
       <PageHeader
         title="Locations"
         description="Canonical operational nodes for inventory, orders, staff scope, Storefront, and Invoices."
@@ -17,7 +17,7 @@ export default async function LocationsPage() {
           description="Create an operational Location through the API."
         />
       ) : (
-        <Table label="Locations">
+        <Table label="Locations" density="compact">
           <thead>
             <tr>
               <th>Name</th>
@@ -36,7 +36,7 @@ export default async function LocationsPage() {
                 <td>{row.code}</td>
                 <td>{row.type}</td>
                 <td>
-                  <Badge tone={row.status === "active" ? "success" : "warning"}>{row.status}</Badge>
+                  <StatusBadge tone={row.status === "active" ? "success" : "warning"}>{row.status}</StatusBadge>
                 </td>
                 <td>{row.timezone}</td>
               </tr>
@@ -44,6 +44,6 @@ export default async function LocationsPage() {
           </tbody>
         </Table>
       )}
-    </>
+    </CoreScreen>
   );
 }
