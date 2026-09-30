@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button, CoreScreen, EmptyState, Input, PageHeader, SectionCard, Table } from "@yinne/ui";
+import { Button, CoreScreen, EmptyState, FilterForm, Input, PageHeader, SearchField, SectionCard, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers } from "@yinne/commerce";
 import { activeUserContext } from "../../../../lib/context";
@@ -39,24 +39,24 @@ export default async function CustomersPage({
           <Button type="submit">Add customer</Button>
         </form>
       </SectionCard>
-      <form className="filter-bar">
-        <Input
+      <FilterForm>
+        <SearchField
+          label="Search customers"
           name="search"
           defaultValue={search}
           placeholder="Search name, email, or reference"
-          aria-label="Search customers"
         />
         <Button type="submit" className="button-secondary">
           Search
         </Button>
-      </form>
+      </FilterForm>
       {!customers.data.length ? (
         <EmptyState
           title="No customers yet"
           description="Add the first customer to begin an order."
         />
       ) : (
-        <Table label="Customers">
+        <Table label="Customers" density="compact">
           <thead>
             <tr>
               <th>Name</th>
