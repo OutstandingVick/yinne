@@ -44,3 +44,10 @@ test("canary stays a small accent on the featured summary", async ({ page }) => 
     "rgb(23, 23, 23)",
   );
 });
+
+test("sidebar is near-black with neutral inactive navigation", async ({ page }) => {
+  const sidebar = page.locator(".home-shell .desktop-sidebar");
+  await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
+  const inactiveIcon = sidebar.locator('.nav-link:not([aria-current="page"]) svg').first();
+  await expect(inactiveIcon).toHaveCSS("color", "rgb(235, 235, 235)");
+});
