@@ -73,3 +73,15 @@ test("supporting metric and activity cards stay white", async ({ page }) => {
     "rgb(255, 255, 255)",
   );
 });
+
+test("mobile navigation keeps the same dark and cobalt hierarchy", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  const drawer = page.getByRole("dialog", { name: "Navigation" });
+  await expect(drawer).toBeVisible();
+  await expect(drawer).toHaveCSS("background-color", "rgb(23, 23, 23)");
+  await expect(drawer.locator('.nav-link[aria-current="page"]')).toHaveCSS(
+    "background-color",
+    "rgb(36, 87, 255)",
+  );
+});
