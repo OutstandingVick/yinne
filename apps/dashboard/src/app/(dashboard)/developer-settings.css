@@ -1,0 +1,31 @@
+.dashboard-theme .developer-screen,
+.dashboard-theme .settings-screen {
+  min-width: 0;
+}
+.dashboard-theme .developer-screen .technical-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.dashboard-theme .developer-screen .technical-primary {
+  display: block;
+  font-weight: 650;
+  line-height: 1.5;
+}
+.dashboard-theme .developer-screen .technical-secondary {
+  display: block;
+  margin-block-start: var(--space-1);
+  color: var(--muted);
+  line-height: 1.5;
+}
+.dashboard-theme .developer-screen .technical-table td {
+  vertical-align: top;
+}
+.dashboard-theme .developer-screen .technical-table form {
+  margin: 0;
+}
+.dashboard-theme .developer-screen .technical-table .badge {
+  white-space: nowrap;
+}
