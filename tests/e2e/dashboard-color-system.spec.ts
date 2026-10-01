@@ -124,3 +124,9 @@ test("shared shell palette carries through to Payments", async ({ page }) => {
     "rgb(245, 247, 73)",
   );
 });
+
+test("secondary action stays white with near-black text", async ({ page }) => {
+  const action = page.locator(".overview-actions .button-secondary");
+  await expect(action).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(action).toHaveCSS("color", "rgb(23, 23, 23)");
+});
