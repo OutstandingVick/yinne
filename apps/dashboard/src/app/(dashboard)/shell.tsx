@@ -30,7 +30,7 @@ export function DashboardShell({
       <a className="skip-link" href="#dashboard-content">
         Skip to content
       </a>
-      <div className="shell">
+      <div className={`shell${pathname === "/" ? " home-shell" : ""}`}>
         <aside className="sidebar desktop-sidebar">{sidebar}</aside>
         <div className="main">
           <header className="topbar">
