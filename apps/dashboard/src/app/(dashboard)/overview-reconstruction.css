@@ -77,3 +77,22 @@
   line-height: 1.5;
   color: var(--muted);
 }
+.dashboard-theme .overview-metrics .overview-featured-metric .metric-card {
+  min-height: 178px;
+  padding: 24px;
+  background: var(--action);
+  border-color: var(--action);
+  color: white;
+  box-shadow: 0 16px 28px rgb(36 87 255 / 14%);
+}
+.dashboard-theme .overview-featured-metric .metric-card .metric-value {
+  font-size: clamp(2.8rem, 4vw, 4rem);
+  color: white;
+}
+.dashboard-theme .overview-featured-metric .metric-card p {
+  color: rgb(255 255 255 / 82%);
+}
+.dashboard-theme .overview-featured-metric .metric-card .badge {
+  background: rgb(255 255 255 / 16%);
+  color: white;
+}
