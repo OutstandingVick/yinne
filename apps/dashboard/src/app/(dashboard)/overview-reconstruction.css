@@ -274,12 +274,12 @@
 }
 .dashboard-theme .home-shell .nav-label {
   margin-block: 26px 8px;
-  color: var(--muted);
+  color: var(--nav-muted);
   font-size: 0.6875rem;
   letter-spacing: 0.1em;
 }
 .dashboard-theme .home-shell .nav-link {
-  color: #464646;
+  color: var(--nav-text);
   border-radius: var(--radius-control);
   padding-inline: 12px;
 }
