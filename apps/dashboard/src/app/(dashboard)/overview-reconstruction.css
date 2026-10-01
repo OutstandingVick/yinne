@@ -255,14 +255,9 @@
 }
 .dashboard-theme .home-shell .brand {
   margin: 4px 12px 34px;
-  width: fit-content;
-  padding: 10px 12px;
-  border-radius: var(--radius-control);
-  background: var(--panel);
 }
 .dashboard-theme .home-shell .brand img {
   width: 138px;
-  filter: none;
 }
 .dashboard-theme .home-shell .org-chip {
   background: var(--nav-hover);
