@@ -96,3 +96,39 @@
   background: rgb(255 255 255 / 16%);
   color: white;
 }
+.dashboard-theme .overview-recent-orders {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 2vw, 30px);
+  border-radius: var(--radius-panel);
+}
+.dashboard-theme .overview-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-block-end: 20px;
+}
+.dashboard-theme .overview-section-heading h2 {
+  margin: 4px 0 0;
+  font-family: var(--font-brand);
+  font-size: 1.25rem;
+  letter-spacing: -0.035em;
+}
+.dashboard-theme .overview-eyebrow {
+  color: var(--muted);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.dashboard-theme .overview-text-link {
+  flex: 0 0 auto;
+  color: var(--action);
+  font-size: var(--text-small);
+  font-weight: 700;
+  text-decoration: none;
+}
+.dashboard-theme .overview-text-link span {
+  margin-inline-start: 4px;
+}
