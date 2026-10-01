@@ -306,3 +306,20 @@
   border-color: var(--border);
   box-shadow: var(--shadow-card);
 }
+.dashboard-theme:has(.home-shell) .test-banner {
+  padding-block: 6px;
+  background: var(--brand-vanilla);
+  color: var(--text);
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+.dashboard-theme .home-shell .account-email {
+  max-width: 25ch;
+  overflow-wrap: anywhere;
+}
+.dashboard-theme .home-shell .topbar > form:last-child .button {
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
