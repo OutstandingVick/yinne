@@ -248,9 +248,9 @@
   color: var(--text);
 }
 .dashboard-theme .home-shell .sidebar {
-  background: #f9fafc;
-  color: var(--text);
-  border-inline-end: 1px solid var(--border);
+  background: var(--nav-surface);
+  color: var(--nav-text);
+  border-inline-end: 1px solid var(--nav-border);
   padding: 30px 16px;
 }
 .dashboard-theme .home-shell .brand {
