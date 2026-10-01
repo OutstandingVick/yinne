@@ -1,0 +1,29 @@
+import { expect, test } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  const password = process.env.YINNE_SEED_PASSWORD;
+  if (!password) throw new Error("YINNE_SEED_PASSWORD is required.");
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill("owner@acme.test");
+  await page.getByLabel("Password").fill(password);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+});
+
+test("brand palette tokens stay mapped to the approved colors", async ({ page }) => {
+  const palette = await page.locator(".dashboard-theme").evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return Object.fromEntries(
+      ["--brand-blue", "--brand-yellow", "--brand-vanilla", "--brand-black"].map((token) => [
+        token,
+        styles.getPropertyValue(token).trim().toLowerCase(),
+      ]),
+    );
+  });
+  expect(palette).toEqual({
+    "--brand-blue": "#2457ff",
+    "--brand-yellow": "#f5f749",
+    "--brand-vanilla": "#f6f5ae",
+    "--brand-black": "#171717",
+  });
+});
