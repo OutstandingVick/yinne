@@ -1,8 +1,8 @@
-import { PageHeader } from "@yinne/ui";
+import { CoreScreen, PageHeader, SectionCard } from "@yinne/ui";
 import { providerCapabilities } from "@yinne/payments";
 export default function MockProviderPage() {
   return (
-    <>
+    <CoreScreen className="developer-screen">
       <PageHeader
         title="Deterministic Mock Provider"
         description="A deliberate provider adapter for safe, repeatable test-mode payment lifecycles."
@@ -11,7 +11,7 @@ export default function MockProviderPage() {
         <strong>Test-only:</strong> Mock Provider cannot be configured in live mode and never
         contacts an external payment API.
       </div>
-      <section className="card" style={{ marginTop: 20 }}>
+      <SectionCard className="developer-provider-guide">
         <h2>Capabilities</h2>
         <p>{providerCapabilities.join(" · ")}</p>
         <h2>Payment scenarios</h2>
@@ -40,7 +40,7 @@ export default function MockProviderPage() {
           Provider references derive from attempt/refund IDs. Duplicate signed event IDs are
           acknowledged without repeating financial side effects.
         </p>
-      </section>
-    </>
+      </SectionCard>
+    </CoreScreen>
   );
 }
