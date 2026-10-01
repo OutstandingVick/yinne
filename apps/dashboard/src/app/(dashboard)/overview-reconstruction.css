@@ -323,3 +323,26 @@
   border-color: var(--border);
   box-shadow: var(--shadow-card);
 }
+@media (max-width: 70rem) {
+  .dashboard-theme .overview-primary {
+    grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+  }
+  .dashboard-theme .home-shell .content {
+    padding: clamp(24px, 3vw, 36px);
+  }
+}
+@media (max-width: 48rem) {
+  .dashboard-theme .overview-primary,
+  .dashboard-theme .overview-secondary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-theme .overview-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .dashboard-theme .overview-metrics .overview-featured-metric {
+    grid-column: 1 / -1;
+  }
+  .dashboard-theme .overview-metrics > a:last-child {
+    grid-column: auto;
+  }
+}
