@@ -1,4 +1,4 @@
-import { Badge, Button, CoreScreen, PageHeader, SectionCard, Table } from "@yinne/ui";
+import { Button, CoreScreen, PageHeader, SectionCard, StatusBadge, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listApiKeys } from "@yinne/organizations/services";
 import { activeUserContext } from "../../../../lib/context";
@@ -34,22 +34,21 @@ export default async function ApiKeysPage() {
           {keys.map((key) => (
             <tr key={key.id}>
               <td>
-                <strong>{key.name}</strong>
-                <br />
-                <span className="mono">{key.prefix}</span>
+                <strong className="technical-primary">{key.name}</strong>
+                <span className="technical-secondary technical-value">{key.prefix}</span>
               </td>
               <td>
-                <Badge tone="warning">{key.environment}</Badge>
+                <StatusBadge tone={key.environment === "test" ? "warning" : "info"}>{key.environment}</StatusBadge>
               </td>
               <td>
                 {key.scopes.map((scope) => (
-                  <div className="mono" key={scope}>
+                  <div className="technical-value" key={scope}>
                     {scope}
                   </div>
                 ))}
               </td>
               <td>
-                <Badge tone={key.status === "active" ? "success" : "danger"}>{key.status}</Badge>
+                <StatusBadge tone={key.status === "active" ? "success" : "danger"}>{key.status}</StatusBadge>
               </td>
               <td>{key.lastUsedAt?.toISOString() ?? "Never"}</td>
               <td>
