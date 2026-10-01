@@ -1,8 +1,19 @@
 import Link from "next/link";
-import { Badge, CoreScreen, MetricCard, PageHeader } from "@yinne/ui";
+import {
+  Badge,
+  CoreScreen,
+  EmptyState,
+  FinancialAmount,
+  MetricCard,
+  PageHeader,
+  SectionCard,
+  StatusBadge,
+  Table,
+} from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers, listInventoryLevels, listOrders, listProducts } from "@yinne/commerce";
 import { activeUserContext } from "../../lib/context";
+import { formatMinorAmount } from "../../lib/money";
 
 export default async function HomePage() {
   const context = await activeUserContext(createRequestId());
@@ -18,6 +29,12 @@ export default async function HomePage() {
   const orders = ordersResult.status === "fulfilled" ? ordersResult.value.data : null;
   const cards = [
     [
+      "Orders",
+      orders?.length ?? null,
+      "/commerce/orders",
+      "Unpaid commercial records; payments remain a later capability.",
+    ],
+    [
       "Customers",
       customers?.length ?? null,
       "/commerce/customers",
@@ -29,12 +46,6 @@ export default async function HomePage() {
       inventory?.length ?? null,
       "/commerce/inventory",
       "Tracked stock positions across fulfilment locations.",
-    ],
-    [
-      "Orders",
-      orders?.length ?? null,
-      "/commerce/orders",
-      "Unpaid commercial records; payments remain a later capability.",
     ],
   ] as const;
   return (
@@ -53,21 +64,60 @@ export default async function HomePage() {
           </div>
         }
       />
-      <div className="card-grid overview-grid">
-        {cards.map(([name, value, href, description]) => (
-          <Link href={href} key={name}>
-            <MetricCard
-              label={name}
-              value={value ?? "—"}
-              description={description}
-              status={
-                <Badge tone={value === null ? "neutral" : "success"}>
-                  {value === null ? "Restricted" : "Active"}
-                </Badge>
-              }
-            />
-          </Link>
-        ))}
+      <div className="overview-primary">
+        <div className="overview-metrics" aria-label="Commerce summary">
+          {cards.map(([name, value, href, description]) => (
+            <Link href={href} key={name} className={name === "Orders" ? "overview-featured-metric" : ""}>
+              <MetricCard
+                label={name}
+                value={value ?? "—"}
+                description={description}
+                status={
+                  <Badge tone={value === null ? "neutral" : "success"}>
+                    {value === null ? "Restricted" : "Active"}
+                  </Badge>
+                }
+              />
+            </Link>
+          ))}
+        </div>
+        <SectionCard className="overview-recent-orders">
+          <div className="overview-section-heading">
+            <div>
+              <span className="overview-eyebrow">Commerce activity</span>
+              <h2>Recent orders</h2>
+            </div>
+            <Link href="/commerce/orders" className="overview-text-link">
+              View orders <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+          {orders === null ? (
+            <EmptyState title="Orders unavailable" description="Open Orders to inspect this data." />
+          ) : orders.length === 0 ? (
+            <EmptyState title="No orders" description="Create the first unpaid commercial order." />
+          ) : (
+            <Table label="Recent orders" density="compact">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.slice(0, 5).map((order) => (
+                  <tr key={order.id}>
+                    <td><Link href={`/commerce/orders/${order.id}`}>{order.number}</Link></td>
+                    <td><FinancialAmount>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></td>
+                    <td><StatusBadge tone="warning">{order.financial_status}</StatusBadge></td>
+                    <td>{new Date(order.created_at).toLocaleDateString("en-NG")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          )}
+        </SectionCard>
       </div>
       <section className="notice">
         <strong>Payments are not active.</strong> Orders created in this phase remain unpaid, and
