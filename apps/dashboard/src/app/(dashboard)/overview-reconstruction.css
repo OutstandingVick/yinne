@@ -302,8 +302,8 @@
 }
 @media (hover: hover) {
   .dashboard-theme .home-shell .nav-link:not([aria-current="page"]):hover {
-    background: var(--info);
-    color: var(--action);
+    background: var(--nav-hover);
+    color: white;
   }
 }
 .dashboard-theme .home-shell .topbar {
