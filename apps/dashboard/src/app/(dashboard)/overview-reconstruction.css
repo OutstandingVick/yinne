@@ -132,3 +132,31 @@
 .dashboard-theme .overview-text-link span {
   margin-inline-start: 4px;
 }
+.dashboard-theme .overview-recent-orders .table-wrap {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  margin-block: auto;
+}
+.dashboard-theme .overview-recent-orders table {
+  min-width: 560px;
+}
+.dashboard-theme .overview-recent-orders th {
+  background: transparent;
+  padding-block: 10px;
+}
+.dashboard-theme .overview-recent-orders td {
+  padding-block: 17px;
+}
+.dashboard-theme .overview-recent-orders td:first-child a {
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+.dashboard-theme .overview-recent-orders td .financial-amount {
+  font-weight: 700;
+}
+.dashboard-theme .overview-recent-orders .state-panel {
+  margin-block: auto;
+}
