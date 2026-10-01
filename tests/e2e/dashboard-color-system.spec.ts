@@ -85,3 +85,9 @@ test("mobile navigation keeps the same dark and cobalt hierarchy", async ({ page
     "rgb(36, 87, 255)",
   );
 });
+
+test("brand mark keeps its cobalt artwork on a white shell tile", async ({ page }) => {
+  const brand = page.locator(".home-shell .desktop-sidebar .brand");
+  await expect(brand).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(brand.locator("img")).toHaveCSS("filter", "none");
+});
