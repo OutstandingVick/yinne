@@ -29,6 +29,8 @@
   --nav-text: #ebebeb;
   --nav-muted: #b3b3b3;
   --nav-hover: #2c2c2c;
+  --nav-border: #444444;
+  --nav-scroll-thumb: #555555;
   --font-ui: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-brand: "Space Grotesk", var(--font-ui);
   --font-editorial: "Plus Jakarta Sans", var(--font-ui);
