@@ -25,6 +25,9 @@
   --info-text: #204bd4;
   --accent-surface: var(--brand-vanilla);
   --highlight: var(--brand-yellow);
+  --summary-surface: var(--brand-vanilla);
+  --summary-text: var(--brand-black);
+  --accent-text: var(--brand-black);
   --nav-surface: var(--brand-black);
   --nav-text: #ebebeb;
   --nav-muted: #b3b3b3;
