@@ -97,3 +97,9 @@ test("test-mode marker uses a compact canary badge", async ({ page }) => {
   await expect(badge).toHaveCSS("background-color", "rgb(245, 247, 73)");
   await expect(badge).toHaveCSS("color", "rgb(23, 23, 23)");
 });
+
+test("overview notice uses a white surface and neutral stripe", async ({ page }) => {
+  const notice = page.locator(".overview-screen > .notice");
+  await expect(notice).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(notice).toHaveCSS("border-left-color", "rgb(23, 23, 23)");
+});
