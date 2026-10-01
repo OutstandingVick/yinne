@@ -572,7 +572,7 @@ body:has(.dashboard-theme dialog[open]) {
 .dashboard-theme .brand img {
   width: 130px;
   height: auto;
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 .dashboard-theme .org-chip {
   margin: 0 0 24px;
