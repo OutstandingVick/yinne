@@ -309,7 +309,7 @@ body:has(.dashboard-theme dialog[open]) {
   text-align: start;
 }
 .dashboard-theme th {
-  background: #fafafa;
+  background: var(--table-heading-surface);
   font-size: var(--text-caption);
   color: var(--muted);
   font-weight: 600;
@@ -478,7 +478,7 @@ body:has(.dashboard-theme dialog[open]) {
     background: var(--surface-hover);
   }
   .dashboard-theme .button-danger:not(:disabled):hover {
-    background: #831e1a;
+    background: var(--danger-hover);
   }
 }
 .dashboard-theme :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
