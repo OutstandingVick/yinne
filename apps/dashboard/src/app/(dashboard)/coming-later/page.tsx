@@ -1,4 +1,4 @@
-import { EmptyState, PageHeader } from "@yinne/ui";
+import { CoreScreen, EmptyState, PageHeader } from "@yinne/ui";
 
 export default async function ComingLater({
   searchParams,
@@ -7,7 +7,7 @@ export default async function ComingLater({
 }) {
   const { area = "This module" } = await searchParams;
   return (
-    <>
+    <CoreScreen>
       <PageHeader
         title={area}
         description="This navigation boundary is reserved by the approved information architecture."
@@ -16,6 +16,6 @@ export default async function ComingLater({
         title="Not available in this release"
         description="Phase 1 establishes the trustworthy platform foundation. No fake data or simulated product behavior is shown here."
       />
-    </>
+    </CoreScreen>
   );
 }
