@@ -38,6 +38,12 @@ test("developer and settings screens retain content, controls, and narrow-width 
           fullPage: true,
         });
       }
+      if (width === 1440 && (title === "API keys" || title === "Team")) {
+        await page.screenshot({
+          path: `test-results/phase5-${title.toLowerCase().replaceAll(" ", "-")}-1440.png`,
+          fullPage: true,
+        });
+      }
     }
   }
 
