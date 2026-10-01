@@ -264,6 +264,18 @@
   color: white;
   box-shadow: 0 6px 16px rgb(36 87 255 / 17%);
 }
+.dashboard-theme .home-shell .nav-link svg {
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: var(--radius-control);
+  background: var(--info);
+  color: var(--action);
+}
+.dashboard-theme .home-shell .nav-link[aria-current="page"] svg {
+  background: rgb(255 255 255 / 16%);
+  color: white;
+}
 @media (hover: hover) {
   .dashboard-theme .home-shell .nav-link:not([aria-current="page"]):hover {
     background: var(--info);
