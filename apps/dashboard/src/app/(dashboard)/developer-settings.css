@@ -69,6 +69,21 @@
   background: var(--panel);
   line-height: 1.6;
 }
+.dashboard-theme .developer-screen .developer-provider-guide {
+  max-width: 900px;
+}
+.dashboard-theme .developer-screen .developer-provider-guide h2:not(:first-child) {
+  margin-block-start: var(--space-6);
+}
+.dashboard-theme .developer-screen .developer-provider-guide ul {
+  display: grid;
+  gap: var(--space-2);
+  padding-inline-start: var(--space-5);
+}
+.dashboard-theme .developer-screen .developer-provider-guide code {
+  font-size: var(--text-caption);
+  overflow-wrap: anywhere;
+}
 @media (max-width: 40rem) {
   .dashboard-theme .developer-screen .developer-form {
     grid-template-columns: minmax(0, 1fr);
