@@ -101,8 +101,8 @@
   border-radius: 50%;
 }
 .dashboard-theme .notice {
-  border-inline-start: 3px solid var(--action);
-  background: var(--info);
+  border-inline-start: 3px solid var(--brand-black);
+  background: var(--accent-surface);
   color: var(--text);
   padding: 16px 20px;
   border-radius: var(--radius-control);
