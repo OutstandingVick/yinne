@@ -91,3 +91,9 @@ test("brand mark keeps its cobalt artwork on a white shell tile", async ({ page 
   await expect(brand).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(brand.locator("img")).toHaveCSS("filter", "none");
 });
+
+test("test-mode marker uses a compact canary badge", async ({ page }) => {
+  const badge = page.locator(".home-shell .topbar > .badge");
+  await expect(badge).toHaveCSS("background-color", "rgb(245, 247, 73)");
+  await expect(badge).toHaveCSS("color", "rgb(23, 23, 23)");
+});
