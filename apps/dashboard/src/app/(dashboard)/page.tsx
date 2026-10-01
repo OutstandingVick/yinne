@@ -120,7 +120,7 @@ export default async function HomePage() {
                 </tr>
               </thead>
               <tbody>
-                {orders.slice(0, 5).map((order) => (
+                {orders.slice(0, 8).map((order) => (
                   <tr key={order.id}>
                     <td>
                       <Link href={`/commerce/orders/${order.id}`}>{order.number}</Link>

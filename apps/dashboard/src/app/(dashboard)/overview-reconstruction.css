@@ -137,7 +137,7 @@
   border-radius: 0;
   box-shadow: none;
   background: transparent;
-  margin-block: auto;
+  margin-block: 0;
 }
 .dashboard-theme .overview-recent-orders table {
   min-width: 560px;
