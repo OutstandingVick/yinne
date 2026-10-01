@@ -6,31 +6,33 @@ import { activeUserContext } from "../../lib/context";
 
 export default async function HomePage() {
   const context = await activeUserContext(createRequestId());
-  const results = await Promise.allSettled([
+  const [customersResult, productsResult, inventoryResult, ordersResult] = await Promise.allSettled([
     listCustomers(context, { limit: 100 }),
     listProducts(context, { limit: 100 }),
     listInventoryLevels(context, { limit: 100 }),
     listOrders(context, { limit: 100 }),
   ]);
-  const count = (index: number) =>
-    results[index]?.status === "fulfilled" ? results[index].value.data.length : null;
+  const customers = customersResult.status === "fulfilled" ? customersResult.value.data : null;
+  const products = productsResult.status === "fulfilled" ? productsResult.value.data : null;
+  const inventory = inventoryResult.status === "fulfilled" ? inventoryResult.value.data : null;
+  const orders = ordersResult.status === "fulfilled" ? ordersResult.value.data : null;
   const cards = [
     [
       "Customers",
-      count(0),
+      customers?.length ?? null,
       "/commerce/customers",
       "People and organizations purchasing from Acme.",
     ],
-    ["Products", count(1), "/commerce/products", "Catalogue products with trusted variant prices."],
+    ["Products", products?.length ?? null, "/commerce/products", "Catalogue products with trusted variant prices."],
     [
       "Inventory levels",
-      count(2),
+      inventory?.length ?? null,
       "/commerce/inventory",
       "Tracked stock positions across fulfilment locations.",
     ],
     [
       "Orders",
-      count(3),
+      orders?.length ?? null,
       "/commerce/orders",
       "Unpaid commercial records; payments remain a later capability.",
     ],
