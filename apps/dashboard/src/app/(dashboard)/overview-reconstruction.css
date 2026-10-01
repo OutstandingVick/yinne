@@ -227,3 +227,24 @@
 .dashboard-theme .overview-screen > .notice strong {
   color: var(--text);
 }
+.dashboard-theme .home-shell .sidebar {
+  background: #f9fafc;
+  color: var(--text);
+  border-inline-end: 1px solid var(--border);
+  padding: 30px 16px;
+}
+.dashboard-theme .home-shell .brand {
+  margin: 4px 12px 34px;
+}
+.dashboard-theme .home-shell .brand img {
+  width: 138px;
+  filter: none;
+}
+.dashboard-theme .home-shell .org-chip {
+  background: var(--panel);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
+.dashboard-theme .home-shell .org-chip span {
+  color: var(--muted);
+}
