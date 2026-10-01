@@ -110,7 +110,19 @@ export default async function HomePage() {
                   <tr key={order.id}>
                     <td><Link href={`/commerce/orders/${order.id}`}>{order.number}</Link></td>
                     <td><FinancialAmount>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></td>
-                    <td><StatusBadge tone="warning">{order.financial_status}</StatusBadge></td>
+                    <td>
+                      <StatusBadge
+                        tone={
+                          order.financial_status === "paid"
+                            ? "success"
+                            : order.financial_status === "refunded"
+                              ? "info"
+                              : "warning"
+                        }
+                      >
+                        {order.financial_status}
+                      </StatusBadge>
+                    </td>
                     <td>{new Date(order.created_at).toLocaleDateString("en-NG")}</td>
                   </tr>
                 ))}
