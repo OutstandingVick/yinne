@@ -2,6 +2,16 @@
 .dashboard-theme .settings-screen {
   min-width: 0;
 }
+.dashboard-theme .settings-screen .settings-profile-card {
+  max-width: 720px;
+}
+.dashboard-theme .settings-screen .technical-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--text-caption);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  user-select: text;
+}
 .dashboard-theme .developer-screen .technical-value {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: var(--text-caption);
