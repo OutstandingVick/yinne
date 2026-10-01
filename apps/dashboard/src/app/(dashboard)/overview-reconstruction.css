@@ -1,1 +1,28 @@
 /* Corrective visual composition is deliberately scoped to the Commerce Overview. */
+.dashboard-theme .home-shell .content {
+  max-width: 1680px;
+  padding: clamp(28px, 3vw, 52px);
+}
+.dashboard-theme .overview-screen {
+  gap: clamp(20px, 2vw, 32px);
+}
+.dashboard-theme .overview-screen > .page-header {
+  align-items: flex-end;
+  gap: 24px;
+}
+.dashboard-theme .overview-screen .page-header h1 {
+  font-size: clamp(2rem, 3.1vw, 3rem);
+  letter-spacing: -0.055em;
+}
+.dashboard-theme .overview-screen .page-header p {
+  max-width: 52ch;
+  color: var(--muted);
+}
+.dashboard-theme .overview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dashboard-theme .overview-actions .button {
+  min-width: 112px;
+}
