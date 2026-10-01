@@ -42,6 +42,16 @@ export default async function HomePage() {
       <PageHeader
         title="Commerce overview"
         description="Live test-mode data from the tenant-isolated commerce system."
+        actions={
+          <div className="overview-actions">
+            <Link className="button button-secondary" href="/analytics">
+              Analytics
+            </Link>
+            <Link className="button" href="/commerce/orders">
+              Orders
+            </Link>
+          </div>
+        }
       />
       <div className="card-grid overview-grid">
         {cards.map(([name, value, href, description]) => (
