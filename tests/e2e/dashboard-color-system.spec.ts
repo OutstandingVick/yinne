@@ -27,3 +27,9 @@ test("brand palette tokens stay mapped to the approved colors", async ({ page })
     "--brand-black": "#171717",
   });
 });
+
+test("featured commerce summary is vanilla with near-black values", async ({ page }) => {
+  const hero = page.locator(".overview-featured-metric .metric-card");
+  await expect(hero).toHaveCSS("background-color", "rgb(246, 245, 174)");
+  await expect(hero.locator(".metric-value")).toHaveCSS("color", "rgb(23, 23, 23)");
+});
