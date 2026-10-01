@@ -35,7 +35,7 @@ export default async function TeamPage() {
                 <span className="help">{member.email}</span>
               </td>
               <td>{member.role ?? "Unassigned"}</td>
-              <td>
+              <td className="scope-cell">
                 {member.scopeType ?? "—"}
                 <br />
                 <span className="mono">{member.scopeId ?? ""}</span>
