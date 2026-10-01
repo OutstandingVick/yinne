@@ -637,6 +637,10 @@ body:has(.dashboard-theme dialog[open]) {
   gap: 16px;
   flex-wrap: wrap;
 }
+.dashboard-theme .topbar > .badge {
+  background: var(--highlight);
+  color: var(--accent-text);
+}
 .dashboard-theme .organization-switcher {
   margin-inline-start: auto;
   margin-left: auto;
