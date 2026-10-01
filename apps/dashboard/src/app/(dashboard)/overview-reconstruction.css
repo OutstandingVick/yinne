@@ -187,3 +187,29 @@
 .dashboard-theme .overview-operational-list li > span:first-child {
   min-width: 0;
 }
+.dashboard-theme .overview-operational-list :is(strong, a) {
+  display: block;
+  font-size: var(--text-small);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+  text-decoration: none;
+}
+.dashboard-theme .overview-operational-list small {
+  display: block;
+  color: var(--muted);
+  font-size: var(--text-caption);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.dashboard-theme .overview-list-value {
+  flex: 0 0 auto;
+  font-family: var(--font-brand);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.dashboard-theme .overview-unavailable {
+  margin-block: 12px 0;
+  color: var(--muted);
+}
