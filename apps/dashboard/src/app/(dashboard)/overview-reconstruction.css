@@ -160,3 +160,30 @@
 .dashboard-theme .overview-recent-orders .state-panel {
   margin-block: auto;
 }
+.dashboard-theme .overview-secondary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(16px, 1.5vw, 24px);
+  min-width: 0;
+}
+.dashboard-theme .overview-operational-card {
+  min-width: 0;
+  padding: clamp(20px, 2vw, 30px);
+}
+.dashboard-theme .overview-operational-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dashboard-theme .overview-operational-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 62px;
+  padding-block: 11px;
+  border-block-start: 1px solid var(--border);
+}
+.dashboard-theme .overview-operational-list li > span:first-child {
+  min-width: 0;
+}
