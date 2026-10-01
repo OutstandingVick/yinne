@@ -62,3 +62,14 @@ test("cobalt remains reserved for active navigation and primary actions", async 
     "rgb(36, 87, 255)",
   );
 });
+
+test("supporting metric and activity cards stay white", async ({ page }) => {
+  await expect(page.locator(".overview-metrics .metric-card").nth(1)).toHaveCSS(
+    "background-color",
+    "rgb(255, 255, 255)",
+  );
+  await expect(page.locator(".overview-recent-orders")).toHaveCSS(
+    "background-color",
+    "rgb(255, 255, 255)",
+  );
+});
