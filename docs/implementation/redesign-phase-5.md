@@ -17,7 +17,7 @@ There are no dashboard Webhooks or Appearance routes in the existing application
 
 ## Verification
 
-The responsive Playwright suites cover 29 dashboard entry pages at desktop, tablet, and mobile widths, plus developer/settings form access and keyboard navigation. Run `pnpm lint`, `pnpm typecheck`, `pnpm format:check`, `pnpm test:all`, `pnpm build`, and `pnpm exec playwright test` before release. Review screenshots in `test-results/` locally; they are generated artifacts, not committed assets.
+The responsive Playwright suites cover 29 dashboard entry pages at desktop, tablet, and mobile widths, plus developer/settings form access and keyboard navigation. During Phase 5, `pnpm lint`, `pnpm typecheck`, `pnpm format:check`, `pnpm test:all` (99 tests), and `pnpm build` passed. The dashboard-wide, Developer/Settings, Operations/Intelligence, and keyboard Playwright checks also passed. Review screenshots in `test-results/` locally; they are generated artifacts, not committed assets.
 
 ## Deferred visual debt
 
