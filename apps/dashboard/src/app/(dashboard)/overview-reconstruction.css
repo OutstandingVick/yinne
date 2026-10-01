@@ -293,8 +293,8 @@
   height: 30px;
   padding: 6px;
   border-radius: var(--radius-control);
-  background: var(--info);
-  color: var(--action);
+  background: var(--nav-hover);
+  color: var(--nav-text);
 }
 .dashboard-theme .home-shell .nav-link[aria-current="page"] svg {
   background: rgb(255 255 255 / 16%);
