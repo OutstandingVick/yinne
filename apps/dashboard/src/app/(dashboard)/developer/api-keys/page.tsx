@@ -1,4 +1,4 @@
-import { Badge, Button, PageHeader, Table } from "@yinne/ui";
+import { Badge, Button, CoreScreen, PageHeader, SectionCard, Table } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listApiKeys } from "@yinne/organizations/services";
 import { activeUserContext } from "../../../../lib/context";
@@ -9,16 +9,17 @@ export default async function ApiKeysPage() {
   const context = await activeUserContext(createRequestId());
   const keys = await listApiKeys(context);
   return (
-    <>
+    <CoreScreen className="developer-screen">
       <PageHeader
         title="API keys"
         description="Secrets are shown once, keyed-hashed at rest, scoped, revocable, and isolated by test/live environment."
       />
-      <section className="card" style={{ marginBottom: 20 }}>
+      <SectionCard>
         <h2>Create API key</h2>
         <ApiKeyForm />
-      </section>
-      <Table label="API keys">
+      </SectionCard>
+      <div className="technical-table">
+      <Table label="API keys" density="compact">
         <thead>
           <tr>
             <th>Name / prefix</th>
@@ -67,6 +68,7 @@ export default async function ApiKeysPage() {
           ))}
         </tbody>
       </Table>
-    </>
+      </div>
+    </CoreScreen>
   );
 }
