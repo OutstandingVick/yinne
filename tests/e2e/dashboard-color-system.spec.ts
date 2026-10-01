@@ -51,3 +51,14 @@ test("sidebar is near-black with neutral inactive navigation", async ({ page }) 
   const inactiveIcon = sidebar.locator('.nav-link:not([aria-current="page"]) svg').first();
   await expect(inactiveIcon).toHaveCSS("color", "rgb(235, 235, 235)");
 });
+
+test("cobalt remains reserved for active navigation and primary actions", async ({ page }) => {
+  await expect(page.locator('.home-shell .desktop-sidebar .nav-link[aria-current="page"]')).toHaveCSS(
+    "background-color",
+    "rgb(36, 87, 255)",
+  );
+  await expect(page.locator(".overview-actions .button:not(.button-secondary)")).toHaveCSS(
+    "background-color",
+    "rgb(36, 87, 255)",
+  );
+});
