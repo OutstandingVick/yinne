@@ -311,8 +311,6 @@
 .dashboard-theme .home-shell .topbar > .badge {
   padding: 8px 12px;
   border-radius: var(--radius-control);
-  background: var(--highlight);
-  color: var(--accent-text);
 }
 .dashboard-theme .home-shell .organization-switcher {
   margin-inline-start: auto;
