@@ -1,16 +1,16 @@
 "use client";
 
-import { Button, ErrorState } from "@yinne/ui";
+import { Button, CoreScreen, ErrorState } from "@yinne/ui";
 
 export default function DashboardError({ reset }: { error: Error; reset: () => void }) {
   return (
-    <>
+    <CoreScreen className="dashboard-error-screen">
       <ErrorState />
-      <div style={{ marginTop: 12, textAlign: "center" }}>
+      <div className="dashboard-error-actions">
         <Button type="button" onClick={reset}>
           Try again
         </Button>
       </div>
-    </>
+    </CoreScreen>
   );
 }
