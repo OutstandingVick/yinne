@@ -12,6 +12,11 @@
   overflow-wrap: anywhere;
   user-select: text;
 }
+.dashboard-theme .dashboard-error-actions {
+  display: flex;
+  justify-content: center;
+  margin-block-start: var(--space-4);
+}
 .dashboard-theme .developer-screen .technical-value {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: var(--text-caption);
