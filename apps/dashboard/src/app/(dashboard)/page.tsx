@@ -119,6 +119,66 @@ export default async function HomePage() {
           )}
         </SectionCard>
       </div>
+      <div className="overview-secondary">
+        <SectionCard className="overview-operational-card">
+          <div className="overview-section-heading">
+            <div>
+              <span className="overview-eyebrow">Operational view</span>
+              <h2>Inventory levels</h2>
+            </div>
+            <Link href="/commerce/inventory" className="overview-text-link">
+              View inventory <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+          {inventory === null ? (
+            <p className="overview-unavailable">Restricted</p>
+          ) : inventory.length === 0 ? (
+            <p className="overview-unavailable">No inventory levels</p>
+          ) : (
+            <ul className="overview-operational-list">
+              {inventory.slice(0, 3).map((level) => (
+                <li key={level.id}>
+                  <span>
+                    <strong>{level.product_name}</strong>
+                    <small>{level.location_name} · {level.variant_title}</small>
+                  </span>
+                  <span className="overview-list-value">{level.on_hand}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
+        <SectionCard className="overview-operational-card">
+          <div className="overview-section-heading">
+            <div>
+              <span className="overview-eyebrow">Catalogue view</span>
+              <h2>Products</h2>
+            </div>
+            <Link href="/commerce/products" className="overview-text-link">
+              View products <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+          {products === null ? (
+            <p className="overview-unavailable">Restricted</p>
+          ) : products.length === 0 ? (
+            <p className="overview-unavailable">No products</p>
+          ) : (
+            <ul className="overview-operational-list">
+              {products.slice(0, 3).map((product) => (
+                <li key={product.id}>
+                  <span>
+                    <Link href={`/commerce/products/${product.id}`}>{product.name}</Link>
+                    <small>{product.variants.length} variants</small>
+                  </span>
+                  <StatusBadge tone={product.status === "active" ? "success" : "warning"}>
+                    {product.status}
+                  </StatusBadge>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
+      </div>
       <section className="notice">
         <strong>Payments are not active.</strong> Orders created in this phase remain unpaid, and
         stock is not decremented until a future payment-success transaction.
