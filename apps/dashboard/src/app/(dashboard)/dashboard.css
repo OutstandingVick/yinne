@@ -560,7 +560,7 @@ body:has(.dashboard-theme dialog[open]) {
   height: 100dvh;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #555 transparent;
+  scrollbar-color: var(--nav-scroll-thumb) transparent;
 }
 .dashboard-theme .brand {
   margin: 4px 12px 30px;
@@ -573,7 +573,7 @@ body:has(.dashboard-theme dialog[open]) {
 .dashboard-theme .org-chip {
   margin: 0 0 24px;
   padding: 14px 12px;
-  border: 1px solid #444;
+  border: 1px solid var(--nav-border);
   border-radius: var(--radius-card);
   background: var(--nav-hover);
   overflow-wrap: anywhere;
@@ -696,7 +696,7 @@ body:has(.dashboard-theme dialog[open]) {
   top: 8px;
   width: 44px;
   height: 44px;
-  border: 1px solid #555;
+  border: 1px solid var(--nav-scroll-thumb);
   border-radius: var(--radius-control);
   color: white;
   background: var(--nav-hover);
