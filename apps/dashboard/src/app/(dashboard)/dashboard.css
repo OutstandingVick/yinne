@@ -503,7 +503,7 @@ body:has(.dashboard-theme dialog[open]) {
   min-width: 0;
 }
 .dashboard-theme .page-header h1 {
-  font-family: var(--font-ui);
+  font-family: var(--font-brand);
   font-size: var(--text-title);
   font-weight: 600;
   line-height: 1.2;
