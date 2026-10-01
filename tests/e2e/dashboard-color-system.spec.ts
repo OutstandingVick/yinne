@@ -130,3 +130,9 @@ test("secondary action stays white with near-black text", async ({ page }) => {
   await expect(action).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(action).toHaveCSS("color", "rgb(23, 23, 23)");
 });
+
+test("semantic status badges retain their meaning outside brand accents", async ({ page }) => {
+  const status = page.locator(".overview-metrics .metric-card").nth(1).locator(".badge");
+  await expect(status).toHaveCSS("background-color", "rgb(234, 246, 239)");
+  await expect(status).toHaveCSS("color", "rgb(23, 96, 58)");
+});
