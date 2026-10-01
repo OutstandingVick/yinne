@@ -281,7 +281,7 @@
 .dashboard-theme .home-shell .nav-link[aria-current="page"] {
   background: var(--action);
   color: white;
-  box-shadow: 0 6px 16px rgb(36 87 255 / 17%);
+  box-shadow: none;
 }
 .dashboard-theme .home-shell .nav-link svg {
   width: 30px;
