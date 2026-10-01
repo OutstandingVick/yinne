@@ -282,3 +282,27 @@
     color: var(--action);
   }
 }
+.dashboard-theme .home-shell .topbar {
+  min-height: 80px;
+  padding: 16px clamp(28px, 3vw, 52px);
+  background: var(--surface);
+  border-bottom: 0;
+  gap: 12px;
+}
+.dashboard-theme .home-shell .topbar > .badge {
+  padding: 8px 12px;
+  border-radius: var(--radius-control);
+}
+.dashboard-theme .home-shell .organization-switcher {
+  margin-inline-start: auto;
+  margin-left: auto;
+}
+.dashboard-theme .home-shell .organization-switcher label {
+  color: var(--muted);
+  font-size: var(--text-caption);
+}
+.dashboard-theme .home-shell .organization-switcher select {
+  min-height: 42px;
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+}
