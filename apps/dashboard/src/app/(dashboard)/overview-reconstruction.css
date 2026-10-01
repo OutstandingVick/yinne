@@ -132,30 +132,50 @@
 .dashboard-theme .overview-text-link span {
   margin-inline-start: 4px;
 }
-.dashboard-theme .overview-recent-orders .table-wrap {
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  background: transparent;
-  margin-block: 0;
+.dashboard-theme .overview-orders {
+  min-width: 0;
 }
-.dashboard-theme .overview-recent-orders table {
-  min-width: 560px;
+.dashboard-theme .overview-orders-head,
+.dashboard-theme .overview-orders-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: 12px;
 }
-.dashboard-theme .overview-recent-orders th {
-  background: transparent;
-  padding-block: 10px;
+.dashboard-theme .overview-orders-head {
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
-.dashboard-theme .overview-recent-orders td {
-  padding-block: 17px;
+.dashboard-theme .overview-orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
-.dashboard-theme .overview-recent-orders td:first-child a {
+.dashboard-theme .overview-orders-list li {
+  min-height: 54px;
+  padding: 10px 12px;
+  border-block-start: 1px solid var(--border);
+}
+.dashboard-theme .overview-orders-list li > * {
+  min-width: 0;
+}
+.dashboard-theme .overview-orders-list a {
   font-weight: 700;
   color: var(--text);
   text-decoration: none;
+  overflow-wrap: anywhere;
 }
-.dashboard-theme .overview-recent-orders td .financial-amount {
+.dashboard-theme .overview-orders-list .financial-amount {
   font-weight: 700;
+  white-space: normal;
+}
+.dashboard-theme .overview-orders-list time {
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
 }
 .dashboard-theme .overview-recent-orders .state-panel {
   margin-block: auto;
@@ -371,5 +391,19 @@
   .dashboard-theme .overview-section-heading {
     align-items: flex-start;
     flex-wrap: wrap;
+  }
+  .dashboard-theme .overview-orders-head {
+    display: none;
+  }
+  .dashboard-theme .overview-orders-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 7px 12px;
+    padding: 15px 0;
+  }
+  .dashboard-theme .overview-orders-list .badge {
+    justify-self: start;
+  }
+  .dashboard-theme .overview-orders-list time {
+    justify-self: end;
   }
 }

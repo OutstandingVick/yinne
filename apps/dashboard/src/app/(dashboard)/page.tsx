@@ -8,7 +8,6 @@ import {
   PageHeader,
   SectionCard,
   StatusBadge,
-  Table,
 } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
 import { listCustomers, listInventoryLevels, listOrders, listProducts } from "@yinne/commerce";
@@ -110,44 +109,38 @@ export default async function HomePage() {
           ) : orders.length === 0 ? (
             <EmptyState title="No orders" description="Create the first unpaid commercial order." />
           ) : (
-            <Table label="Recent orders" density="compact">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Total</th>
-                  <th>Status</th>
-                  <th>Created</th>
-                </tr>
-              </thead>
-              <tbody>
+            <div className="overview-orders">
+              <div className="overview-orders-head" aria-hidden="true">
+                <span>Order</span>
+                <span>Total</span>
+                <span>Status</span>
+                <span>Created</span>
+              </div>
+              <ul className="overview-orders-list">
                 {orders.slice(0, 8).map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      <Link href={`/commerce/orders/${order.id}`}>{order.number}</Link>
-                    </td>
-                    <td>
-                      <FinancialAmount>
-                        {formatMinorAmount(order.total_amount, order.currency)}
-                      </FinancialAmount>
-                    </td>
-                    <td>
-                      <StatusBadge
-                        tone={
-                          order.financial_status === "paid"
-                            ? "success"
-                            : order.financial_status === "refunded"
-                              ? "info"
-                              : "warning"
-                        }
-                      >
-                        {order.financial_status}
-                      </StatusBadge>
-                    </td>
-                    <td>{new Date(order.created_at).toLocaleDateString("en-NG")}</td>
-                  </tr>
+                  <li key={order.id}>
+                    <Link href={`/commerce/orders/${order.id}`}>{order.number}</Link>
+                    <FinancialAmount>
+                      {formatMinorAmount(order.total_amount, order.currency)}
+                    </FinancialAmount>
+                    <StatusBadge
+                      tone={
+                        order.financial_status === "paid"
+                          ? "success"
+                          : order.financial_status === "refunded"
+                            ? "info"
+                            : "warning"
+                      }
+                    >
+                      {order.financial_status}
+                    </StatusBadge>
+                    <time dateTime={new Date(order.created_at).toISOString()}>
+                      {new Date(order.created_at).toLocaleDateString("en-NG")}
+                    </time>
+                  </li>
                 ))}
-              </tbody>
-            </Table>
+              </ul>
+            </div>
           )}
         </SectionCard>
       </div>
