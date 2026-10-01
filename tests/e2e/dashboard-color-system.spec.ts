@@ -33,3 +33,14 @@ test("featured commerce summary is vanilla with near-black values", async ({ pag
   await expect(hero).toHaveCSS("background-color", "rgb(246, 245, 174)");
   await expect(hero.locator(".metric-value")).toHaveCSS("color", "rgb(23, 23, 23)");
 });
+
+test("canary stays a small accent on the featured summary", async ({ page }) => {
+  await expect(page.locator(".overview-featured-metric .badge")).toHaveCSS(
+    "background-color",
+    "rgb(245, 247, 73)",
+  );
+  await expect(page.locator(".overview-featured-metric .badge")).toHaveCSS(
+    "color",
+    "rgb(23, 23, 23)",
+  );
+});
