@@ -16,15 +16,15 @@ const scopes = [
 export function ApiKeyForm() {
   const [state, action, pending] = useActionState(createApiKeyAction, initial);
   return (
-    <form className="form" action={action}>
+    <form className="form developer-form" action={action}>
       <div className="form-row">
         <label htmlFor="key-name">Key name</label>
         <Input id="key-name" name="name" required minLength={2} placeholder="Backend integration" />
       </div>
-      <fieldset className="form-row">
+      <fieldset className="form-row developer-scopes">
         <legend className="label">Scopes</legend>
         {scopes.map((scope) => (
-          <label key={scope} style={{ display: "flex", gap: 9, alignItems: "center" }}>
+          <label key={scope} className="developer-scope-option">
             <Checkbox name="scopes" value={scope} defaultChecked={scope === "organization:read"} />{" "}
             <span className="mono">{scope}</span>
           </label>
@@ -35,7 +35,7 @@ export function ApiKeyForm() {
           <strong>{state.message}</strong>
           {state.secret ? (
             <>
-              <p className="mono">{state.secret}</p>
+              <p className="technical-value developer-secret">{state.secret}</p>
               <p>This value is not stored and cannot be recovered.</p>
             </>
           ) : null}
