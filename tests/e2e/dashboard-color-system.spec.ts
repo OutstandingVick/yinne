@@ -103,3 +103,13 @@ test("overview notice uses a white surface and neutral stripe", async ({ page })
   await expect(notice).toHaveCSS("background-color", "rgb(255, 255, 255)");
   await expect(notice).toHaveCSS("border-left-color", "rgb(23, 23, 23)");
 });
+
+test("chart roles keep cobalt primary and canary comparison", async ({ page }) => {
+  const chart = await page.locator(".dashboard-theme").evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return ["--chart-primary", "--chart-comparison", "--chart-range", "--chart-reference"].map(
+      (token) => styles.getPropertyValue(token).trim().toLowerCase(),
+    );
+  });
+  expect(chart).toEqual(["#2457ff", "#f5f749", "#f6f5ae", "#171717"]);
+});
