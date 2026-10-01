@@ -113,3 +113,14 @@ test("chart roles keep cobalt primary and canary comparison", async ({ page }) =
   });
   expect(chart).toEqual(["#2457ff", "#f5f749", "#f6f5ae", "#171717"]);
 });
+
+test("shared shell palette carries through to Payments", async ({ page }) => {
+  await page.goto("/payments");
+  const sidebar = page.locator(".desktop-sidebar");
+  await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
+  await expect(sidebar.locator(".brand")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(page.locator(".topbar > .badge")).toHaveCSS(
+    "background-color",
+    "rgb(245, 247, 73)",
+  );
+});
