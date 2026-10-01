@@ -213,3 +213,17 @@
   margin-block: 12px 0;
   color: var(--muted);
 }
+.dashboard-theme .overview-screen > .notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--action);
+  color: var(--muted);
+  box-shadow: var(--shadow-card);
+}
+.dashboard-theme .overview-screen > .notice strong {
+  color: var(--text);
+}
