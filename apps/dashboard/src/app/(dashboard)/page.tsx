@@ -17,12 +17,14 @@ import { formatMinorAmount } from "../../lib/money";
 
 export default async function HomePage() {
   const context = await activeUserContext(createRequestId());
-  const [customersResult, productsResult, inventoryResult, ordersResult] = await Promise.allSettled([
-    listCustomers(context, { limit: 100 }),
-    listProducts(context, { limit: 100 }),
-    listInventoryLevels(context, { limit: 100 }),
-    listOrders(context, { limit: 100 }),
-  ]);
+  const [customersResult, productsResult, inventoryResult, ordersResult] = await Promise.allSettled(
+    [
+      listCustomers(context, { limit: 100 }),
+      listProducts(context, { limit: 100 }),
+      listInventoryLevels(context, { limit: 100 }),
+      listOrders(context, { limit: 100 }),
+    ],
+  );
   const customers = customersResult.status === "fulfilled" ? customersResult.value.data : null;
   const products = productsResult.status === "fulfilled" ? productsResult.value.data : null;
   const inventory = inventoryResult.status === "fulfilled" ? inventoryResult.value.data : null;
@@ -40,7 +42,12 @@ export default async function HomePage() {
       "/commerce/customers",
       "People and organizations purchasing from Acme.",
     ],
-    ["Products", products?.length ?? null, "/commerce/products", "Catalogue products with trusted variant prices."],
+    [
+      "Products",
+      products?.length ?? null,
+      "/commerce/products",
+      "Catalogue products with trusted variant prices.",
+    ],
     [
       "Inventory levels",
       inventory?.length ?? null,
@@ -67,7 +74,11 @@ export default async function HomePage() {
       <div className="overview-primary">
         <div className="overview-metrics" aria-label="Commerce summary">
           {cards.map(([name, value, href, description]) => (
-            <Link href={href} key={name} className={name === "Orders" ? "overview-featured-metric" : ""}>
+            <Link
+              href={href}
+              key={name}
+              className={name === "Orders" ? "overview-featured-metric" : ""}
+            >
               <MetricCard
                 label={name}
                 value={value ?? "—"}
@@ -92,7 +103,10 @@ export default async function HomePage() {
             </Link>
           </div>
           {orders === null ? (
-            <EmptyState title="Orders unavailable" description="Open Orders to inspect this data." />
+            <EmptyState
+              title="Orders unavailable"
+              description="Open Orders to inspect this data."
+            />
           ) : orders.length === 0 ? (
             <EmptyState title="No orders" description="Create the first unpaid commercial order." />
           ) : (
@@ -108,8 +122,14 @@ export default async function HomePage() {
               <tbody>
                 {orders.slice(0, 5).map((order) => (
                   <tr key={order.id}>
-                    <td><Link href={`/commerce/orders/${order.id}`}>{order.number}</Link></td>
-                    <td><FinancialAmount>{formatMinorAmount(order.total_amount, order.currency)}</FinancialAmount></td>
+                    <td>
+                      <Link href={`/commerce/orders/${order.id}`}>{order.number}</Link>
+                    </td>
+                    <td>
+                      <FinancialAmount>
+                        {formatMinorAmount(order.total_amount, order.currency)}
+                      </FinancialAmount>
+                    </td>
                     <td>
                       <StatusBadge
                         tone={
@@ -152,7 +172,9 @@ export default async function HomePage() {
                 <li key={level.id}>
                   <span>
                     <strong>{level.product_name}</strong>
-                    <small>{level.location_name} · {level.variant_title}</small>
+                    <small>
+                      {level.location_name} · {level.variant_title}
+                    </small>
                   </span>
                   <span className="overview-list-value">{level.on_hand}</span>
                 </li>
