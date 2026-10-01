@@ -6,6 +6,7 @@
   --surface: #f4f5f7;
   --panel: #ffffff;
   --surface-hover: #f4f4f4;
+  --table-heading-surface: #fafafa;
   --text: var(--brand-black);
   --muted: #626262;
   --border: #e8e8e8;
@@ -19,6 +20,7 @@
   --warning-text: #775000;
   --danger: #fff0ef;
   --danger-text: #a12622;
+  --danger-hover: #831e1a;
   --info: #edf1ff;
   --info-text: #204bd4;
   --accent-surface: var(--brand-vanilla);
