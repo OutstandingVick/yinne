@@ -1,5 +1,9 @@
-import { LoadingState } from "@yinne/ui";
+import { CoreScreen, LoadingState } from "@yinne/ui";
 
 export default function DashboardLoading() {
-  return <LoadingState />;
+  return (
+    <CoreScreen>
+      <LoadingState />
+    </CoreScreen>
+  );
 }
