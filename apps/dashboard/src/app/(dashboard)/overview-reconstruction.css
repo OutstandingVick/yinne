@@ -265,12 +265,12 @@
   filter: none;
 }
 .dashboard-theme .home-shell .org-chip {
-  background: var(--panel);
-  border-color: var(--border);
-  box-shadow: var(--shadow-card);
+  background: var(--nav-hover);
+  border-color: var(--nav-border);
+  box-shadow: none;
 }
 .dashboard-theme .home-shell .org-chip span {
-  color: var(--muted);
+  color: var(--nav-muted);
 }
 .dashboard-theme .home-shell .nav-label {
   margin-block: 26px 8px;
