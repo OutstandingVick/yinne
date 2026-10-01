@@ -54,7 +54,10 @@
   gap: var(--space-5);
   max-width: 800px;
 }
-.dashboard-theme .developer-screen .developer-form > :is(.developer-scopes, .secret-panel, .notice) {
+.dashboard-theme
+  .developer-screen
+  .developer-form
+  > :is(.developer-scopes, .secret-panel, .notice) {
   grid-column: 1 / -1;
 }
 .dashboard-theme .developer-screen .developer-form > button[type="submit"] {

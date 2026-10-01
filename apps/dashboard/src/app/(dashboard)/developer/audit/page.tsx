@@ -13,36 +13,38 @@ export default async function AuditPage() {
         description="Append-only accountability records with redacted metadata. Audit logs are not an event bus."
       />
       <div className="technical-table">
-      <Table label="Audit log" density="compact">
-        <thead>
-          <tr>
-            <th>Action</th>
-            <th>Actor</th>
-            <th>Target</th>
-            <th>Request</th>
-            <th>Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logs.map((log) => (
-            <tr key={log.id}>
-              <td><strong className="technical-primary">{log.action}</strong></td>
-              <td>
-                {log.actorType}
-                <br />
-                <span className="technical-value">{log.actorId}</span>
-              </td>
-              <td>
-                {log.targetType}
-                <br />
-                <span className="technical-value">{log.targetId}</span>
-              </td>
-              <td className="technical-value">{log.requestId}</td>
-              <td>{log.createdAt.toISOString()}</td>
+        <Table label="Audit log" density="compact">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Target</th>
+              <th>Request</th>
+              <th>Time</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {logs.map((log) => (
+              <tr key={log.id}>
+                <td>
+                  <strong className="technical-primary">{log.action}</strong>
+                </td>
+                <td>
+                  {log.actorType}
+                  <br />
+                  <span className="technical-value">{log.actorId}</span>
+                </td>
+                <td>
+                  {log.targetType}
+                  <br />
+                  <span className="technical-value">{log.targetId}</span>
+                </td>
+                <td className="technical-value">{log.requestId}</td>
+                <td>{log.createdAt.toISOString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
     </CoreScreen>
   );

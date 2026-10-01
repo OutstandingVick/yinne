@@ -19,54 +19,58 @@ export default async function ApiKeysPage() {
         <ApiKeyForm />
       </SectionCard>
       <div className="technical-table">
-      <Table label="API keys" density="compact">
-        <thead>
-          <tr>
-            <th>Name / prefix</th>
-            <th>Environment</th>
-            <th>Scopes</th>
-            <th>Status</th>
-            <th>Last used</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {keys.map((key) => (
-            <tr key={key.id}>
-              <td>
-                <strong className="technical-primary">{key.name}</strong>
-                <span className="technical-secondary technical-value">{key.prefix}</span>
-              </td>
-              <td>
-                <StatusBadge tone={key.environment === "test" ? "warning" : "info"}>{key.environment}</StatusBadge>
-              </td>
-              <td>
-                {key.scopes.map((scope) => (
-                  <div className="technical-value" key={scope}>
-                    {scope}
-                  </div>
-                ))}
-              </td>
-              <td>
-                <StatusBadge tone={key.status === "active" ? "success" : "danger"}>{key.status}</StatusBadge>
-              </td>
-              <td>{key.lastUsedAt?.toISOString() ?? "Never"}</td>
-              <td>
-                {key.status === "active" ? (
-                  <form action={revokeApiKeyAction}>
-                    <input type="hidden" name="id" value={key.id} />
-                    <Button className="button-danger" type="submit">
-                      Revoke
-                    </Button>
-                  </form>
-                ) : (
-                  "—"
-                )}
-              </td>
+        <Table label="API keys" density="compact">
+          <thead>
+            <tr>
+              <th>Name / prefix</th>
+              <th>Environment</th>
+              <th>Scopes</th>
+              <th>Status</th>
+              <th>Last used</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {keys.map((key) => (
+              <tr key={key.id}>
+                <td>
+                  <strong className="technical-primary">{key.name}</strong>
+                  <span className="technical-secondary technical-value">{key.prefix}</span>
+                </td>
+                <td>
+                  <StatusBadge tone={key.environment === "test" ? "warning" : "info"}>
+                    {key.environment}
+                  </StatusBadge>
+                </td>
+                <td>
+                  {key.scopes.map((scope) => (
+                    <div className="technical-value" key={scope}>
+                      {scope}
+                    </div>
+                  ))}
+                </td>
+                <td>
+                  <StatusBadge tone={key.status === "active" ? "success" : "danger"}>
+                    {key.status}
+                  </StatusBadge>
+                </td>
+                <td>{key.lastUsedAt?.toISOString() ?? "Never"}</td>
+                <td>
+                  {key.status === "active" ? (
+                    <form action={revokeApiKeyAction}>
+                      <input type="hidden" name="id" value={key.id} />
+                      <Button className="button-danger" type="submit">
+                        Revoke
+                      </Button>
+                    </form>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
     </CoreScreen>
   );
