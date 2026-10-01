@@ -80,7 +80,7 @@
 }
 .dashboard-theme .overview-screen > .notice {
   background: var(--accent-surface);
-  border-inline-start-color: var(--action);
+  border-inline-start-color: var(--brand-black);
 }
 @media (max-width: 40rem) {
   .dashboard-theme .overview-grid .metric-card {
