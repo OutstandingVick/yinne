@@ -254,3 +254,13 @@
   background: var(--brand-yellow);
   color: var(--brand-black);
 }
+/* Filter bars float as a single rounded strip. */
+.dashboard-theme .filter-bar {
+  align-items: end;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
