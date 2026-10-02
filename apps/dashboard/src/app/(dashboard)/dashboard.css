@@ -671,6 +671,12 @@ body:has(.dashboard-theme dialog[open]) {
   font-size: var(--text-small);
   overflow-wrap: anywhere;
 }
+.dashboard-theme .account-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
 .dashboard-theme .menu-toggle {
   display: none;
 }
