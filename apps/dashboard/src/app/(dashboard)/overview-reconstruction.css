@@ -349,6 +349,10 @@
   max-width: 25ch;
   overflow-wrap: anywhere;
 }
+.dashboard-theme .home-shell .account-controls {
+  padding-inline-start: 14px;
+  border-inline-start: 1px solid var(--border);
+}
 .dashboard-theme .home-shell .topbar > form:last-child .button {
   border-color: var(--border);
   box-shadow: var(--shadow-card);
