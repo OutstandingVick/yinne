@@ -279,9 +279,7 @@
   padding-inline: 12px;
 }
 .dashboard-theme .home-shell .nav-link[aria-current="page"] {
-  background: var(--action);
-  color: white;
-  box-shadow: none;
+  background: var(--nav-hover);
 }
 .dashboard-theme .home-shell .nav-link svg {
   width: 30px;
