@@ -461,3 +461,21 @@
   border-radius: 999px;
   background: var(--soft-tint);
 }
+/* Operations and intelligence screens share the soft canvas spacing. */
+.dashboard-theme :is(.operations-screen, .intelligence-screen, .module-screen, .developer-screen) {
+  gap: 20px;
+}
+.dashboard-theme .core-total-card {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
+.dashboard-theme .core-total-card :is(.label, p, span) {
+  color: rgb(255 255 255 / 82%);
+}
+.dashboard-theme .core-status-line {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
