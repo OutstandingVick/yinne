@@ -593,6 +593,12 @@ body:has(.dashboard-theme dialog[open]) {
   letter-spacing: 0.12em;
   font-weight: 600;
 }
+.dashboard-theme .nav-group + .nav-group {
+  margin-block-start: 18px;
+}
+.dashboard-theme .nav-group .nav-label {
+  margin: 0 12px 6px;
+}
 .dashboard-theme .nav-link {
   color: var(--nav-text);
   padding: 10px 12px;
