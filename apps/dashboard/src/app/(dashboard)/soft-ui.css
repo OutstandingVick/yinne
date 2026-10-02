@@ -306,3 +306,11 @@
   color: #ffffff;
   box-shadow: var(--soft-glow);
 }
+/* Dropdown panels float like the rail flyouts. */
+.dashboard-theme .dropdown-panel {
+  padding: 8px;
+  border: 0;
+  border-radius: var(--soft-radius-inner);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow-lift);
+}
