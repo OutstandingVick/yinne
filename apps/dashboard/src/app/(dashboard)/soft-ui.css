@@ -116,3 +116,13 @@
   outline: none;
   box-shadow: 0 0 0 4px rgb(36 87 255 / 14%);
 }
+/* Checkboxes use the brand blue. */
+.dashboard-theme .checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  accent-color: var(--brand-blue);
+}
+.dashboard-theme .date-control .input {
+  min-width: 170px;
+}
