@@ -33,7 +33,7 @@ export default async function HomePage() {
       "Orders",
       orders?.length ?? null,
       "/commerce/orders",
-      "Unpaid commercial records; payments remain a later capability.",
+      "Commercial orders and their payment status.",
     ],
     [
       "Customers",
@@ -107,7 +107,7 @@ export default async function HomePage() {
               description="Open Orders to inspect this data."
             />
           ) : orders.length === 0 ? (
-            <EmptyState title="No orders" description="Create the first unpaid commercial order." />
+            <EmptyState title="No orders" description="Create the first commercial order." />
           ) : (
             <div className="overview-orders">
               <div className="overview-orders-head" aria-hidden="true">
@@ -207,8 +207,8 @@ export default async function HomePage() {
         </SectionCard>
       </div>
       <section className="notice">
-        <strong>Payments are not active.</strong> Orders created in this phase remain unpaid, and
-        stock is not decremented until a future payment-success transaction.
+        <strong>Payments are active in test mode.</strong> New orders start unpaid, and stock is
+        decremented when a payment succeeds.
       </section>
     </CoreScreen>
   );
