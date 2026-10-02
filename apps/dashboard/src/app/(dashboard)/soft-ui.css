@@ -501,3 +501,25 @@
   font-weight: 500;
   letter-spacing: -0.03em;
 }
+/* Cards rise in gently on load; respect reduced motion. */
+@keyframes soft-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.dashboard-theme .content :is(.card, .table-wrap, .filter-bar, .yh-card) {
+  animation: soft-rise 360ms ease both;
+}
+.dashboard-theme .content :is(.card, .table-wrap, .yh-card):nth-child(2) {
+  animation-delay: 40ms;
+}
+.dashboard-theme .content :is(.card, .table-wrap, .yh-card):nth-child(3) {
+  animation-delay: 80ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-theme * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
