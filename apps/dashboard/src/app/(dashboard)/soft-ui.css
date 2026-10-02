@@ -179,3 +179,25 @@
 .dashboard-theme .card-grid {
   gap: 20px;
 }
+/* Tables sit in a rounded card with airy rows. */
+.dashboard-theme .table-wrap {
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .table-wrap table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.dashboard-theme .table-wrap th,
+.dashboard-theme .table-wrap td {
+  border-bottom: 1px solid var(--soft-line);
+  padding-inline: 20px;
+}
+.dashboard-theme .table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+.dashboard-theme .table-default td {
+  padding-block: 16px;
+}
