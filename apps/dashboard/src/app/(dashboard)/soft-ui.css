@@ -328,3 +328,9 @@
 .dashboard-theme .modal-actions {
   gap: 10px;
 }
+/* Tooltips: near-black pills. */
+.dashboard-theme .tooltip-content {
+  border-radius: 12px;
+  background: var(--brand-black);
+  color: #ffffff;
+}
