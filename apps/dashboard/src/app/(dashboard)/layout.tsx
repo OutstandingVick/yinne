@@ -105,7 +105,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </div>
             <nav aria-label="Primary">
               {workspaceNav.map((group) => (
-                <div className="nav-group" key={group.label}>
+                <div className="nav-group" role="group" aria-label={group.label} key={group.label}>
                   <div className="nav-label">{group.label}</div>
                   {group.items.map(([label, href]) => (
                     <NavLink href={href} key={label}>
@@ -114,7 +114,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   ))}
                 </div>
               ))}
-              <div className="nav-group">
+              <div className="nav-group" role="group" aria-label="Intelligence">
                 <div className="nav-label">Intelligence</div>
                 {intelligenceNav.map(([label, href]) => (
                   <NavLink href={href} key={label}>
@@ -122,7 +122,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   </NavLink>
                 ))}
               </div>
-              <div className="nav-group">
+              <div className="nav-group" role="group" aria-label="Platform">
                 <div className="nav-label">Platform</div>
                 {platformNav.map(([label, href]) => (
                   <NavLink href={href} key={label}>
