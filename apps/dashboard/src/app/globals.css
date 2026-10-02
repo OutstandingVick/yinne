@@ -92,7 +92,7 @@
   border: 0;
   border-radius: 0.55rem;
   background: #17251c;
-  color: white;
+  color: var(--vanilla);
   font: inherit;
   font-weight: 750;
   cursor: pointer;
@@ -206,7 +206,7 @@
 .store-checkout {
   border: 0;
   background: var(--store-primary);
-  color: white;
+  color: var(--vanilla);
   font-weight: 750;
   cursor: pointer;
   display: inline-block;
@@ -308,7 +308,7 @@ select:focus-visible {
 }
 .test-banner {
   background: #173f31;
-  color: white;
+  color: var(--vanilla);
   text-align: center;
   padding: 7px;
   font-weight: 750;
@@ -456,7 +456,7 @@ select:focus-visible {
   border: 0;
   border-radius: 8px;
   background: var(--action);
-  color: white;
+  color: var(--vanilla);
   font-weight: 700;
   padding: 10px 15px;
   min-height: 42px;
