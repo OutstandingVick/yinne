@@ -89,9 +89,9 @@ test("mobile navigation keeps the same dark and cobalt hierarchy", async ({ page
   ).toBe("rgb(36, 87, 255)");
 });
 
-test("brand mark keeps its cobalt artwork on a white shell tile", async ({ page }) => {
+test("brand mark remains cobalt without a detached white tile", async ({ page }) => {
   const brand = page.locator(".home-shell .desktop-sidebar .brand");
-  await expect(brand).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(brand).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(brand.locator("img")).toHaveCSS("filter", "none");
 });
 
@@ -121,7 +121,7 @@ test("shared shell palette carries through to Payments", async ({ page }) => {
   await page.goto("/payments");
   const sidebar = page.locator(".desktop-sidebar");
   await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
-  await expect(sidebar.locator(".brand")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(sidebar.locator(".brand")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
   await expect(page.locator(".topbar > .badge")).toHaveCSS("background-color", "rgb(245, 247, 73)");
 });
 
