@@ -787,3 +787,7 @@ body:has(.dashboard-theme dialog[open]) {
     flex-basis: auto;
   }
 }
+/* Shared global components default to white; the dashboard uses vanilla surfaces instead. */
+.dashboard-theme :is(.input, .table-wrap, .state-panel) {
+  background: var(--panel);
+}
