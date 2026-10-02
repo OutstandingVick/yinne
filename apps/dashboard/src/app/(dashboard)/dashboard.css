@@ -769,6 +769,9 @@ body:has(.dashboard-theme dialog[open]) {
   .dashboard-theme .account-email {
     flex: 1;
   }
+  .dashboard-theme .account-controls {
+    margin-inline-start: auto;
+  }
   .dashboard-theme .content {
     padding: 24px 16px;
   }
