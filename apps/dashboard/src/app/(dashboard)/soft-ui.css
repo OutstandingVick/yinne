@@ -352,3 +352,34 @@
 .dashboard-theme .detail-value {
   font-weight: 500;
 }
+/* Empty and error states: a friendly dashed card with a playful mark. */
+.dashboard-theme .state-panel {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 40px 24px;
+  border: 2px dashed var(--soft-line);
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  text-align: center;
+}
+.dashboard-theme .state-panel::before {
+  content: "";
+  width: 56px;
+  height: 56px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, var(--brand-yellow) 0 30%, transparent 31%), var(--soft-tint);
+}
+.dashboard-theme .state-panel h2 {
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.dashboard-theme .state-panel p {
+  max-width: 44ch;
+  color: var(--muted);
+}
+.dashboard-theme .state-error::before {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0 30%, transparent 31%), var(--danger);
+}
