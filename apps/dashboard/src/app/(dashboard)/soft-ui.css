@@ -264,3 +264,8 @@
   background: var(--soft-card);
   box-shadow: var(--soft-shadow);
 }
+/* Search fields are pills. */
+.dashboard-theme .search-control .input {
+  border-radius: 999px;
+  padding-left: 44px;
+}
