@@ -260,9 +260,12 @@
   width: 138px;
 }
 .dashboard-theme .home-shell .org-chip {
-  background: var(--nav-hover);
-  border-color: var(--nav-border);
+  background: transparent;
+  border: 0;
+  border-inline-start: 2px solid var(--nav-border);
+  border-radius: 0;
   box-shadow: none;
+  padding-block: 8px;
 }
 .dashboard-theme .home-shell .org-chip span {
   color: var(--nav-muted);
