@@ -19,23 +19,53 @@ import { listUserOrganizations } from "@yinne/organizations/identity";
 import { switchOrganizationAction } from "./actions";
 
 const workspaceNav = [
-  ["Home", "/", false],
-  ["Customers", "/commerce/customers", false],
-  ["Products", "/commerce/products", false],
-  ["Inventory", "/commerce/inventory", false],
-  ["Orders", "/commerce/orders", false],
-  ["Payments", "/payments", false],
-  ["Checkout Sessions", "/checkout/sessions", false],
-  ["Payment Links", "/payment-links", false],
-  ["Storefront", "/storefront", false],
-  ["Marketplace", "/marketplace/manage", false],
-  ["Transactions", "/transactions", false],
-  ["Refunds", "/refunds", false],
-  ["Invoices", "/invoices", false],
-  ["Locations", "/operations/locations", false],
-  ["Employees", "/operations/employees", false],
-  ["Subscription Plans", "/subscription-plans", false],
-  ["Subscriptions", "/subscriptions", false],
+  {
+    label: "Workspace",
+    items: [
+      ["Home", "/"],
+      ["Customers", "/commerce/customers"],
+      ["Products", "/commerce/products"],
+      ["Inventory", "/commerce/inventory"],
+      ["Orders", "/commerce/orders"],
+    ],
+  },
+  {
+    label: "Payments",
+    items: [
+      ["Payments", "/payments"],
+      ["Checkout Sessions", "/checkout/sessions"],
+      ["Payment Links", "/payment-links"],
+    ],
+  },
+  {
+    label: "Sales channels",
+    items: [
+      ["Storefront", "/storefront"],
+      ["Marketplace", "/marketplace/manage"],
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      ["Transactions", "/transactions"],
+      ["Refunds", "/refunds"],
+      ["Invoices", "/invoices"],
+    ],
+  },
+  {
+    label: "Operations",
+    items: [
+      ["Locations", "/operations/locations"],
+      ["Employees", "/operations/employees"],
+    ],
+  },
+  {
+    label: "Recurring",
+    items: [
+      ["Subscription Plans", "/subscription-plans"],
+      ["Subscriptions", "/subscriptions"],
+    ],
+  },
 ] as const;
 const intelligenceNav = [
   ["Analytics", "/analytics"],
@@ -74,24 +104,32 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </span>
             </div>
             <nav aria-label="Primary">
-              <div className="nav-label">Workspace</div>
-              {workspaceNav.map(([label, href]) => (
-                <NavLink href={href} key={label}>
-                  {label}
-                </NavLink>
+              {workspaceNav.map((group) => (
+                <div className="nav-group" key={group.label}>
+                  <div className="nav-label">{group.label}</div>
+                  {group.items.map(([label, href]) => (
+                    <NavLink href={href} key={label}>
+                      {label}
+                    </NavLink>
+                  ))}
+                </div>
               ))}
-              <div className="nav-label">Intelligence</div>
-              {intelligenceNav.map(([label, href]) => (
-                <NavLink href={href} key={label}>
-                  {label}
-                </NavLink>
-              ))}
-              <div className="nav-label">Platform</div>
-              {platformNav.map(([label, href]) => (
-                <NavLink href={href} key={label}>
-                  {label}
-                </NavLink>
-              ))}
+              <div className="nav-group">
+                <div className="nav-label">Intelligence</div>
+                {intelligenceNav.map(([label, href]) => (
+                  <NavLink href={href} key={label}>
+                    {label}
+                  </NavLink>
+                ))}
+              </div>
+              <div className="nav-group">
+                <div className="nav-label">Platform</div>
+                {platformNav.map(([label, href]) => (
+                  <NavLink href={href} key={label}>
+                    {label}
+                  </NavLink>
+                ))}
+              </div>
             </nav>
           </>
         }
