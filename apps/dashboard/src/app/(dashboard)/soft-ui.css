@@ -54,3 +54,21 @@
   max-width: 60ch;
   color: var(--muted);
 }
+/* Primary buttons: blue pills with a soft glow. */
+.dashboard-theme .button {
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--soft-blue-gradient);
+  box-shadow: var(--soft-glow);
+  font-weight: 600;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+.dashboard-theme .button:hover {
+  transform: translateY(-1px);
+}
+.dashboard-theme .button:active {
+  transform: translateY(0);
+}
