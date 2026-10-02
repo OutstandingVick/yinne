@@ -353,7 +353,7 @@
   padding-inline-start: 14px;
   border-inline-start: 1px solid var(--border);
 }
-.dashboard-theme .home-shell .topbar > form:last-child .button {
+.dashboard-theme .home-shell .account-controls .button {
   border-color: var(--border);
   box-shadow: var(--shadow-card);
 }
