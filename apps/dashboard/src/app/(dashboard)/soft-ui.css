@@ -438,3 +438,26 @@
   color: var(--muted);
   font-size: 0.8rem;
 }
+/* Module screens (payments, invoices, subscriptions…): summary tiles in brand colours. */
+.dashboard-theme .module-summary {
+  gap: 16px;
+}
+.dashboard-theme .module-summary > * {
+  border-radius: var(--soft-radius);
+}
+.dashboard-theme .module-summary > :nth-child(3n + 1) {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
+.dashboard-theme .module-summary > :nth-child(3n + 1) :is(.label, p, span) {
+  color: rgb(255 255 255 / 80%);
+}
+.dashboard-theme .module-summary > :nth-child(3n + 2) {
+  background: linear-gradient(135deg, var(--brand-vanilla), var(--brand-yellow));
+}
+.dashboard-theme .module-public-url {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--soft-tint);
+}
