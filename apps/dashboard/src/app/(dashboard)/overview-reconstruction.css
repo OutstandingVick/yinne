@@ -212,6 +212,11 @@
   white-space: normal;
   text-align: end;
 }
+.dashboard-theme .overview-orders-list .badge {
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
+}
 .dashboard-theme .overview-orders-list time {
   font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
