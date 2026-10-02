@@ -19,3 +19,21 @@
 .dashboard-theme .rail {
   background: var(--soft-canvas);
 }
+/* Top bar: transparent strip with floating pill controls. */
+.dashboard-theme .topbar {
+  background: var(--soft-canvas);
+  border-bottom: 0;
+}
+.dashboard-theme .organization-switcher select,
+.dashboard-theme .topbar .button-secondary {
+  border-color: transparent;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .account-email {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
