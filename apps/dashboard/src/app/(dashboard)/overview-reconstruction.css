@@ -185,6 +185,9 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.dashboard-theme .overview-orders-head span:nth-child(2) {
+  text-align: end;
+}
 .dashboard-theme .overview-orders-list {
   list-style: none;
   padding: 0;
@@ -207,6 +210,7 @@
 .dashboard-theme .overview-orders-list .financial-amount {
   font-weight: 700;
   white-space: normal;
+  text-align: end;
 }
 .dashboard-theme .overview-orders-list time {
   font-size: var(--text-small);
