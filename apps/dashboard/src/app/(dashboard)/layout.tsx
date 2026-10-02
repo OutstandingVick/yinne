@@ -153,17 +153,19 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 Switch
               </Button>
             </form>
-            <span className="account-email">{session.user.email}</span>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/sign-in" });
-              }}
-            >
-              <Button className="button-secondary" type="submit">
-                Sign out
-              </Button>
-            </form>
+            <div className="account-controls">
+              <span className="account-email">{session.user.email}</span>
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut({ redirectTo: "/sign-in" });
+                }}
+              >
+                <Button className="button-secondary" type="submit">
+                  Sign out
+                </Button>
+              </form>
+            </div>
           </>
         }
       >
