@@ -1,0 +1,21 @@
+/* Soft UI: the Home page's rounded, airy card language applied to every dashboard screen.
+   Loaded last so it refines the shared components without touching their markup. */
+.dashboard-theme {
+  --soft-canvas: #eef0f4;
+  --soft-card: #ffffff;
+  --soft-line: #e7e9ef;
+  --soft-tint: #e9eeff;
+  --soft-radius: 28px;
+  --soft-radius-inner: 18px;
+  --soft-shadow: 0 1px 2px rgb(23 23 23 / 4%), 0 12px 32px rgb(23 23 23 / 5%);
+  --soft-shadow-lift: 0 2px 4px rgb(23 23 23 / 5%), 0 18px 40px rgb(23 23 23 / 8%);
+  --soft-glow: 0 10px 24px rgb(36 87 255 / 32%);
+  --soft-blue-gradient: linear-gradient(180deg, #4a75ff, var(--brand-blue));
+}
+.dashboard-theme .main,
+.dashboard-theme .content {
+  background: var(--soft-canvas);
+}
+.dashboard-theme .rail {
+  background: var(--soft-canvas);
+}
