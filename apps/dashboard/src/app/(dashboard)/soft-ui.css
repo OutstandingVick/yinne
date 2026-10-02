@@ -419,3 +419,22 @@
     background-position: -200% 0;
   }
 }
+/* Forms: roomier rows and pill action rows. */
+.dashboard-theme .form-row {
+  gap: 8px;
+}
+.dashboard-theme .form-row > .label,
+.dashboard-theme .form-row > label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.dashboard-theme :is(.form-grid, .form-stack) {
+  gap: 18px;
+}
+.dashboard-theme :is(.form-actions, .module-actions) {
+  gap: 10px;
+}
+.dashboard-theme .help {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
