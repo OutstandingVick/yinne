@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { NavLink } from "./nav-link";
+import { navigation } from "./navigation";
+import { Rail } from "./rail";
 import { DashboardShell } from "./shell";
 import "./fonts.css";
 import "./tokens.css";
@@ -9,6 +11,7 @@ import "./module-screens.css";
 import "./operations-intelligence.css";
 import "./developer-settings.css";
 import "./overview-reconstruction.css";
+import "./rail.css";
 import { redirect } from "next/navigation";
 import { Badge, Button } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
@@ -17,69 +20,6 @@ import { auth, signOut } from "../../auth";
 import { activeUserContext } from "../../lib/context";
 import { listUserOrganizations } from "@yinne/organizations/identity";
 import { switchOrganizationAction } from "./actions";
-
-const workspaceNav = [
-  {
-    label: "Workspace",
-    items: [
-      ["Home", "/"],
-      ["Customers", "/commerce/customers"],
-      ["Products", "/commerce/products"],
-      ["Inventory", "/commerce/inventory"],
-      ["Orders", "/commerce/orders"],
-    ],
-  },
-  {
-    label: "Payments",
-    items: [
-      ["Payments", "/payments"],
-      ["Checkout Sessions", "/checkout/sessions"],
-      ["Payment Links", "/payment-links"],
-    ],
-  },
-  {
-    label: "Sales channels",
-    items: [
-      ["Storefront", "/storefront"],
-      ["Marketplace", "/marketplace/manage"],
-    ],
-  },
-  {
-    label: "Finance",
-    items: [
-      ["Transactions", "/transactions"],
-      ["Refunds", "/refunds"],
-      ["Invoices", "/invoices"],
-    ],
-  },
-  {
-    label: "Operations",
-    items: [
-      ["Locations", "/operations/locations"],
-      ["Employees", "/operations/employees"],
-    ],
-  },
-  {
-    label: "Recurring",
-    items: [
-      ["Subscription Plans", "/subscription-plans"],
-      ["Subscriptions", "/subscriptions"],
-    ],
-  },
-] as const;
-const intelligenceNav = [
-  ["Analytics", "/analytics"],
-  ["Capital", "/capital"],
-] as const;
-const platformNav = [
-  ["Team", "/settings/team", false],
-  ["Organization", "/settings/organization", false],
-  ["Providers", "/settings/providers", false],
-  ["Mock Provider", "/developer/mock-provider", false],
-  ["API keys", "/developer/api-keys", false],
-  ["Events", "/developer/events", false],
-  ["Audit logs", "/developer/audit", false],
-] as const;
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -91,6 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="dashboard-theme">
       <div className="test-banner">TEST MODE · No real financial execution is available</div>
       <DashboardShell
+        rail={<Rail />}
         sidebar={
           <>
             <div className="brand">
@@ -104,32 +45,16 @@ export default async function DashboardLayout({ children }: { children: React.Re
               </span>
             </div>
             <nav aria-label="Primary">
-              {workspaceNav.map((group) => (
+              {navigation.map((group) => (
                 <div className="nav-group" role="group" aria-label={group.label} key={group.label}>
-                  <div className="nav-label">{group.label}</div>
+                  {group.items.length > 1 && <div className="nav-label">{group.label}</div>}
                   {group.items.map(([label, href]) => (
-                    <NavLink href={href} key={label}>
+                    <NavLink href={href} key={href}>
                       {label}
                     </NavLink>
                   ))}
                 </div>
               ))}
-              <div className="nav-group" role="group" aria-label="Intelligence">
-                <div className="nav-label">Intelligence</div>
-                {intelligenceNav.map(([label, href]) => (
-                  <NavLink href={href} key={label}>
-                    {label}
-                  </NavLink>
-                ))}
-              </div>
-              <div className="nav-group" role="group" aria-label="Platform">
-                <div className="nav-label">Platform</div>
-                {platformNav.map(([label, href]) => (
-                  <NavLink href={href} key={label}>
-                    {label}
-                  </NavLink>
-                ))}
-              </div>
             </nav>
           </>
         }
