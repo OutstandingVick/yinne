@@ -46,7 +46,7 @@
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   background: var(--nav-surface);
-  color: var(--brand-vanilla);
+  color: white;
   font-size: var(--text-caption);
   box-shadow: var(--shadow-overlay);
 }
@@ -442,7 +442,7 @@ body:has(.dashboard-theme dialog[open]) {
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   background: var(--action);
-  color: var(--brand-vanilla);
+  color: white;
   font-size: var(--text-small);
   font-weight: 700;
   line-height: 1.4;
@@ -459,7 +459,7 @@ body:has(.dashboard-theme dialog[open]) {
 }
 .dashboard-theme .button-danger {
   background: var(--danger-text);
-  color: var(--brand-vanilla);
+  color: white;
 }
 .dashboard-theme .button-small {
   min-height: 36px;
@@ -611,7 +611,7 @@ body:has(.dashboard-theme dialog[open]) {
 }
 .dashboard-theme .nav-link[aria-current="page"] {
   background: var(--nav-hover);
-  color: var(--brand-vanilla);
+  color: white;
   font-weight: 700;
 }
 .dashboard-theme .nav-link[aria-current="page"]::before {
@@ -724,7 +724,7 @@ body:has(.dashboard-theme dialog[open]) {
   height: 44px;
   border: 1px solid var(--nav-scroll-thumb);
   border-radius: var(--radius-control);
-  color: var(--brand-vanilla);
+  color: white;
   background: var(--nav-hover);
   font-size: 24px;
   cursor: pointer;
@@ -786,8 +786,4 @@ body:has(.dashboard-theme dialog[open]) {
   .dashboard-theme .topbar .account-email {
     flex-basis: auto;
   }
-}
-/* Shared global components default to white; the dashboard uses vanilla surfaces instead. */
-.dashboard-theme :is(.input, .table-wrap, .state-panel) {
-  background: var(--panel);
 }

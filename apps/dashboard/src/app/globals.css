@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --vanilla: #f6f5ae;
-  --surface: var(--vanilla);
-  --panel: var(--vanilla);
+  --surface: #f6f7f4;
+  --panel: #ffffff;
   --text: #17211b;
   --muted: #627068;
   --border: #dce2dd;
@@ -30,12 +29,12 @@
   display: grid;
   place-items: center;
   padding: 1.5rem;
-  background: var(--vanilla);
+  background: #f5f4ef;
   color: #171712;
 }
 .public-card {
   width: min(100%, 38rem);
-  background: var(--vanilla);
+  background: white;
   border: 1px solid #ddd9cb;
   border-radius: 1rem;
   padding: clamp(1.25rem, 4vw, 2.5rem);
@@ -92,7 +91,7 @@
   border: 0;
   border-radius: 0.55rem;
   background: #17251c;
-  color: var(--vanilla);
+  color: white;
   font: inherit;
   font-weight: 750;
   cursor: pointer;
@@ -115,7 +114,7 @@
 
 .store-shell {
   --store-primary: #1f6f50;
-  --store-bg: var(--vanilla);
+  --store-bg: #fffdf7;
   --store-text: #17211d;
   min-height: 100vh;
   padding: clamp(1rem, 4vw, 4rem);
@@ -158,7 +157,7 @@
   border: 1px solid color-mix(in srgb, var(--store-text) 15%, transparent);
   border-radius: 1rem;
   overflow: hidden;
-  background: var(--vanilla);
+  background: white;
 }
 .product-card > div {
   padding: 1rem;
@@ -170,7 +169,7 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: color-mix(in srgb, var(--store-primary) 15%, var(--vanilla));
+  background: color-mix(in srgb, var(--store-primary) 15%, white);
 }
 .product-detail {
   display: grid;
@@ -206,7 +205,7 @@
 .store-checkout {
   border: 0;
   background: var(--store-primary);
-  color: var(--vanilla);
+  color: white;
   font-weight: 750;
   cursor: pointer;
   display: inline-block;
@@ -308,7 +307,7 @@ select:focus-visible {
 }
 .test-banner {
   background: #173f31;
-  color: var(--vanilla);
+  color: white;
   text-align: center;
   padding: 7px;
   font-weight: 750;
@@ -456,7 +455,7 @@ select:focus-visible {
   border: 0;
   border-radius: 8px;
   background: var(--action);
-  color: var(--vanilla);
+  color: white;
   font-weight: 700;
   padding: 10px 15px;
   min-height: 42px;
@@ -466,7 +465,7 @@ select:focus-visible {
   background: var(--action-hover);
 }
 .button-secondary {
-  background: var(--vanilla);
+  background: white;
   color: var(--text);
   border: 1px solid var(--border);
 }
@@ -478,7 +477,7 @@ select:focus-visible {
   min-height: 42px;
   border: 1px solid #c8d0ca;
   border-radius: 8px;
-  background: var(--vanilla);
+  background: white;
   padding: 9px 11px;
   color: var(--text);
 }
@@ -534,7 +533,7 @@ select:focus-visible {
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: var(--vanilla);
+  background: white;
 }
 table {
   width: 100%;
@@ -550,7 +549,7 @@ td {
 }
 th {
   color: var(--muted);
-  background: var(--vanilla);
+  background: #fafbf9;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -566,7 +565,7 @@ tr:last-child td {
 .state-panel {
   border: 1px dashed #b9c5bd;
   border-radius: 14px;
-  background: var(--vanilla);
+  background: white;
   padding: 34px;
   text-align: center;
 }
@@ -594,7 +593,7 @@ tr:last-child td {
 }
 .auth-card {
   width: min(430px, 100%);
-  background: var(--vanilla);
+  background: white;
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 32px;

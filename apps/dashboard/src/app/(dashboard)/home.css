@@ -1,9 +1,9 @@
 /* Home overview: soft-card layout in the Yinne palette. */
 .dashboard-theme .yh {
-  --yh-canvas: var(--brand-vanilla);
-  --yh-card: var(--brand-vanilla);
-  --yh-line: var(--border);
-  --yh-tint: color-mix(in srgb, var(--brand-blue) 14%, var(--brand-vanilla));
+  --yh-canvas: #eef0f4;
+  --yh-card: #ffffff;
+  --yh-line: #e7e9ef;
+  --yh-tint: #e9eeff;
   --yh-radius: 28px;
   --yh-shadow: 0 1px 2px rgb(23 23 23 / 4%), 0 12px 32px rgb(23 23 23 / 5%);
   --yh-glow: 0 10px 24px rgb(36 87 255 / 32%);
@@ -11,10 +11,10 @@
   color: var(--brand-black);
 }
 .dashboard-theme .home-shell .content {
-  background: var(--brand-vanilla);
+  background: var(--yh-canvas, #eef0f4);
 }
 .dashboard-theme .home-shell .main {
-  background: var(--brand-vanilla);
+  background: #eef0f4;
 }
 
 /* Header */
@@ -75,7 +75,7 @@
 }
 .dashboard-theme .yh-pill-primary {
   background: linear-gradient(180deg, #4a75ff, var(--brand-blue));
-  color: var(--brand-vanilla);
+  color: #ffffff;
   box-shadow: var(--yh-glow);
 }
 
@@ -146,7 +146,7 @@
   display: flex;
   flex-direction: column;
   padding: 10px;
-  background: var(--brand-vanilla);
+  background: linear-gradient(180deg, #f7f8fb, #ffffff);
 }
 .dashboard-theme .yh-stack {
   display: grid;
@@ -168,10 +168,10 @@
 }
 .dashboard-theme .yh-currency-blue {
   background: linear-gradient(135deg, #6b8cff, var(--brand-blue));
-  color: var(--brand-vanilla);
+  color: #ffffff;
 }
 .dashboard-theme .yh-currency-yellow {
-  background: var(--brand-yellow);
+  background: linear-gradient(135deg, var(--brand-vanilla), var(--brand-yellow));
   color: var(--brand-black);
 }
 .dashboard-theme .yh-currency-ink {
@@ -333,7 +333,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--brand-yellow);
+  background: var(--brand-vanilla);
   color: var(--brand-black);
   font-weight: 600;
   text-decoration: none;
@@ -351,7 +351,7 @@
 }
 .dashboard-theme .yh-avatar.is-selected {
   box-shadow:
-    0 0 0 3px var(--brand-vanilla),
+    0 0 0 3px #ffffff,
     0 0 0 5px var(--brand-blue);
 }
 .dashboard-theme .yh-avatar.yh-avatar-add {
@@ -430,7 +430,7 @@
   background: var(--yh-tint);
 }
 .dashboard-theme .yh-bars li.is-peak {
-  background: linear-gradient(180deg, var(--brand-blue), var(--yh-tint));
+  background: linear-gradient(180deg, var(--brand-blue), #c9d6ff);
   box-shadow: var(--yh-glow);
 }
 .dashboard-theme .yh-bar-tip {

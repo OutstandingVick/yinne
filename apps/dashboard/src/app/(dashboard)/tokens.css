@@ -3,13 +3,13 @@
   --brand-yellow: #f5f749;
   --brand-vanilla: #f6f5ae;
   --brand-black: #171717;
-  --surface: var(--brand-vanilla);
-  --panel: var(--brand-vanilla);
-  --surface-hover: color-mix(in srgb, var(--brand-vanilla) 90%, var(--brand-black));
-  --table-heading-surface: color-mix(in srgb, var(--brand-vanilla) 94%, var(--brand-black));
+  --surface: #f4f5f7;
+  --panel: #ffffff;
+  --surface-hover: #f4f4f4;
+  --table-heading-surface: #fafafa;
   --text: var(--brand-black);
   --muted: #626262;
-  --border: color-mix(in srgb, var(--brand-black) 12%, var(--brand-vanilla));
+  --border: #e8e8e8;
   --control-border: #b6b6b6;
   --action: var(--brand-blue);
   --action-hover: #1844db;
@@ -29,7 +29,7 @@
   --summary-text: var(--brand-black);
   --accent-text: var(--brand-black);
   --nav-surface: var(--brand-black);
-  --nav-text: var(--brand-vanilla);
+  --nav-text: #ebebeb;
   --nav-muted: #b3b3b3;
   --nav-hover: #2c2c2c;
   --nav-border: #444444;
