@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isActive } from "./navigation";
 
 export function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
-  const active =
-    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+  const active = isActive(href, pathname);
   return (
     <Link className="nav-link" href={href} aria-current={active ? "page" : undefined}>
       <svg

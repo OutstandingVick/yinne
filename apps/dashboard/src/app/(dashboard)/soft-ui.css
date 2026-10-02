@@ -1,0 +1,525 @@
+/* Soft UI: the Home page's rounded, airy card language applied to every dashboard screen.
+   Loaded last so it refines the shared components without touching their markup. */
+.dashboard-theme {
+  --soft-canvas: #eef0f4;
+  --soft-card: #ffffff;
+  --soft-line: #e7e9ef;
+  --soft-tint: #e9eeff;
+  --soft-radius: 28px;
+  --soft-radius-inner: 18px;
+  --soft-shadow: 0 1px 2px rgb(23 23 23 / 4%), 0 12px 32px rgb(23 23 23 / 5%);
+  --soft-shadow-lift: 0 2px 4px rgb(23 23 23 / 5%), 0 18px 40px rgb(23 23 23 / 8%);
+  --soft-glow: 0 10px 24px rgb(36 87 255 / 32%);
+  --soft-blue-gradient: linear-gradient(180deg, #4a75ff, var(--brand-blue));
+}
+.dashboard-theme .main,
+.dashboard-theme .content {
+  background: var(--soft-canvas);
+}
+.dashboard-theme .rail {
+  background: var(--soft-canvas);
+}
+/* Top bar: transparent strip with floating pill controls. */
+.dashboard-theme .topbar {
+  background: var(--soft-canvas);
+  border-bottom: 0;
+}
+.dashboard-theme .organization-switcher select,
+.dashboard-theme .topbar .button-secondary {
+  border-color: transparent;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .account-email {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+/* Page headers: large friendly titles like "Welcome back". */
+.dashboard-theme .page-header {
+  align-items: center;
+  gap: 16px 24px;
+  margin-bottom: 8px;
+}
+.dashboard-theme .page-header h1 {
+  font-family: var(--font-brand);
+  font-size: clamp(1.75rem, 2.6vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+.dashboard-theme .page-header p {
+  max-width: 60ch;
+  color: var(--muted);
+}
+/* Primary buttons: blue pills with a soft glow. */
+.dashboard-theme .button {
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--soft-blue-gradient);
+  box-shadow: var(--soft-glow);
+  font-weight: 600;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+.dashboard-theme .button:hover {
+  transform: translateY(-1px);
+}
+.dashboard-theme .button:active {
+  transform: translateY(0);
+}
+/* Secondary, ghost and danger buttons keep the pill shape without the glow. */
+.dashboard-theme .button-secondary {
+  border-color: transparent;
+  background: var(--soft-card);
+  color: var(--brand-black);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .button-ghost {
+  background: transparent;
+  box-shadow: none;
+}
+.dashboard-theme .button-ghost:hover {
+  background: var(--soft-tint);
+}
+.dashboard-theme .button-danger {
+  background: var(--danger-text);
+  box-shadow: 0 10px 24px rgb(161 38 34 / 25%);
+}
+.dashboard-theme .button-small {
+  min-height: 36px;
+  padding: 0 16px;
+}
+/* Inputs and selects: soft rounded fields that light up blue on focus. */
+.dashboard-theme .input {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--soft-line);
+  border-radius: 16px;
+  background: var(--soft-card);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.dashboard-theme textarea.input {
+  padding: 12px 18px;
+}
+.dashboard-theme .input:hover {
+  border-color: #cfd5e3;
+}
+.dashboard-theme .input:focus {
+  border-color: var(--brand-blue);
+  outline: none;
+  box-shadow: 0 0 0 4px rgb(36 87 255 / 14%);
+}
+/* Checkboxes use the brand blue. */
+.dashboard-theme .checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  accent-color: var(--brand-blue);
+}
+.dashboard-theme .date-control .input {
+  min-width: 170px;
+}
+/* Cards: large radius, no hard border, soft shadow. */
+.dashboard-theme .card {
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .card > h2:first-child,
+.dashboard-theme .card > header h2 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+/* Metric cards: big figures and a lift on hover when they are links. */
+.dashboard-theme .metric-card {
+  padding: 24px 26px;
+}
+.dashboard-theme .metric-card .metric-value {
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.dashboard-theme a:has(> .metric-card) {
+  color: inherit;
+  text-decoration: none;
+}
+.dashboard-theme a > .metric-card {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+.dashboard-theme a:hover > .metric-card {
+  transform: translateY(-2px);
+  box-shadow: var(--soft-shadow-lift);
+}
+/* The first metric in a grid is the blue hero card, like Home's Collected card. */
+.dashboard-theme .card-grid > .metric-card:first-child,
+.dashboard-theme .card-grid > a:first-child > .metric-card {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
+.dashboard-theme .card-grid > .metric-card:first-child :is(p, span:not(.badge), small),
+.dashboard-theme .card-grid > a:first-child > .metric-card :is(p, span:not(.badge), small) {
+  color: rgb(255 255 255 / 82%);
+}
+/* Section cards get generous padding. */
+.dashboard-theme .core-section-card {
+  padding: 26px 28px;
+}
+.dashboard-theme .card-grid {
+  gap: 20px;
+}
+/* Tables sit in a rounded card with airy rows. */
+.dashboard-theme .table-wrap {
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .table-wrap table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.dashboard-theme .table-wrap th,
+.dashboard-theme .table-wrap td {
+  border-bottom: 1px solid var(--soft-line);
+  padding-inline: 20px;
+}
+.dashboard-theme .table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+.dashboard-theme .table-default td {
+  padding-block: 16px;
+}
+/* Table headers are quiet captions; rows highlight in a blue tint. */
+.dashboard-theme .table-wrap th {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dashboard-theme .table-wrap tbody tr {
+  transition: background 140ms ease;
+}
+.dashboard-theme .table-wrap tbody tr:hover {
+  background: #f6f8ff;
+}
+.dashboard-theme .table-wrap a {
+  color: var(--brand-black);
+  font-weight: 600;
+  text-decoration: none;
+}
+.dashboard-theme .table-wrap a:hover {
+  color: var(--brand-blue);
+}
+/* Status badges: rounded pills with a tinted symbol bubble. */
+.dashboard-theme .status-badge {
+  gap: 6px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.dashboard-theme .status-badge > span[aria-hidden="true"] {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 70%);
+  font-size: 0.7rem;
+}
+/* Plain badges match the pill language; info picks up the brand blue. */
+.dashboard-theme .badge {
+  border-radius: 999px;
+  padding-inline: 10px;
+}
+.dashboard-theme .badge-info {
+  background: var(--soft-tint);
+  color: var(--brand-blue);
+}
+.dashboard-theme .badge-warning:not(.status-badge) {
+  background: var(--brand-yellow);
+  color: var(--brand-black);
+}
+/* Filter bars float as a single rounded strip. */
+.dashboard-theme .filter-bar {
+  align-items: end;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+/* Search fields are pills. */
+.dashboard-theme .search-control .input {
+  border-radius: 999px;
+  padding-left: 44px;
+}
+/* Pagination: pill buttons around a quiet summary. */
+.dashboard-theme .pagination {
+  align-items: center;
+  gap: 12px;
+}
+.dashboard-theme .pagination-summary {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--soft-card);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+/* Tabs: a segmented pill control with a blue active tab. */
+.dashboard-theme .tab-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .tab-list button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--brand-black);
+  font-weight: 500;
+}
+.dashboard-theme .tab-list button[aria-selected="true"] {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
+/* Dropdown panels float like the rail flyouts. */
+.dashboard-theme .dropdown-panel {
+  padding: 8px;
+  border: 0;
+  border-radius: var(--soft-radius-inner);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow-lift);
+}
+/* Modals and drawers: big radius and a blurred backdrop. */
+.dashboard-theme .ui-modal {
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: 0 30px 80px rgb(23 23 23 / 20%);
+}
+.dashboard-theme .ui-modal::backdrop {
+  background: rgb(23 23 23 / 30%);
+  backdrop-filter: blur(4px);
+}
+.dashboard-theme .modal-actions {
+  gap: 10px;
+}
+/* Tooltips: near-black pills. */
+.dashboard-theme .tooltip-content {
+  border-radius: 12px;
+  background: var(--brand-black);
+  color: #ffffff;
+}
+/* Detail grids: each field is a soft tile inside the card. */
+.dashboard-theme .detail-grid {
+  gap: 12px;
+  padding: 20px;
+}
+.dashboard-theme .detail-item {
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--soft-radius-inner);
+  background: var(--soft-canvas);
+}
+.dashboard-theme .detail-item .label {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.dashboard-theme .detail-value {
+  font-weight: 500;
+}
+/* Empty and error states: a friendly dashed card with a playful mark. */
+.dashboard-theme .state-panel {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 40px 24px;
+  border: 2px dashed var(--soft-line);
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  text-align: center;
+}
+.dashboard-theme .state-panel::before {
+  content: "";
+  width: 56px;
+  height: 56px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 35%, var(--brand-yellow) 0 30%, transparent 31%), var(--soft-tint);
+}
+.dashboard-theme .state-panel h2 {
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.dashboard-theme .state-panel p {
+  max-width: 44ch;
+  color: var(--muted);
+}
+.dashboard-theme .state-error::before {
+  background: radial-gradient(circle at 35% 35%, #ffffff 0 30%, transparent 31%), var(--danger);
+}
+/* Notices: rounded callouts with a yellow accent bar. */
+.dashboard-theme .notice {
+  position: relative;
+  padding: 16px 20px 16px 28px;
+  border: 0;
+  border-radius: var(--soft-radius-inner);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .notice::before {
+  content: "";
+  position: absolute;
+  inset: 12px auto 12px 12px;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--brand-yellow);
+}
+/* Loading: shimmering soft placeholder cards. */
+.dashboard-theme .loading {
+  min-height: 240px;
+  border-radius: var(--soft-radius);
+  background: linear-gradient(
+      100deg,
+      var(--soft-card) 30%,
+      var(--soft-tint) 50%,
+      var(--soft-card) 70%
+    )
+    0 0 / 200% 100%;
+  box-shadow: var(--soft-shadow);
+  animation: soft-shimmer 1.4s linear infinite;
+}
+@keyframes soft-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+/* Forms: roomier rows and pill action rows. */
+.dashboard-theme .form-row {
+  gap: 8px;
+}
+.dashboard-theme .form-row > .label,
+.dashboard-theme .form-row > label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.dashboard-theme :is(.form-grid, .form-stack) {
+  gap: 18px;
+}
+.dashboard-theme :is(.form-actions, .module-actions) {
+  gap: 10px;
+}
+.dashboard-theme .help {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+/* Module screens (payments, invoices, subscriptions…): summary tiles in brand colours. */
+.dashboard-theme .module-summary {
+  gap: 16px;
+}
+.dashboard-theme .module-summary > * {
+  border-radius: var(--soft-radius);
+}
+.dashboard-theme .module-summary > :nth-child(3n + 1) {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
+.dashboard-theme .module-summary > :nth-child(3n + 1) :is(.label, p, span) {
+  color: rgb(255 255 255 / 80%);
+}
+.dashboard-theme .module-summary > :nth-child(3n + 2) {
+  background: linear-gradient(135deg, var(--brand-vanilla), var(--brand-yellow));
+}
+.dashboard-theme .module-public-url {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--soft-tint);
+}
+/* Operations and intelligence screens share the soft canvas spacing. */
+.dashboard-theme :is(.operations-screen, .intelligence-screen, .module-screen, .developer-screen) {
+  gap: 20px;
+}
+.dashboard-theme .core-total-card {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
+.dashboard-theme .core-total-card :is(.label, p, span) {
+  color: rgb(255 255 255 / 82%);
+}
+.dashboard-theme .core-status-line {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+/* Developer screens: IDs and keys become monospace chips. */
+.dashboard-theme :is(.mono, .technical-value):not(td, th) {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--soft-canvas);
+  font-size: 0.8rem;
+}
+.dashboard-theme .technical-table .technical-primary {
+  font-weight: 600;
+}
+.dashboard-theme .technical-table .technical-secondary {
+  color: var(--muted);
+}
+/* Money reads large and tabular, like the Home balances. */
+.dashboard-theme .financial-amount {
+  font-variant-numeric: tabular-nums;
+}
+.dashboard-theme .financial-amount-prominent {
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+/* Cards rise in gently on load; respect reduced motion. */
+@keyframes soft-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.dashboard-theme .content :is(.card, .table-wrap, .filter-bar, .yh-card) {
+  animation: soft-rise 360ms ease both;
+}
+.dashboard-theme .content :is(.card, .table-wrap, .yh-card):nth-child(2) {
+  animation-delay: 40ms;
+}
+.dashboard-theme .content :is(.card, .table-wrap, .yh-card):nth-child(3) {
+  animation-delay: 80ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-theme * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { navigateWithRail } from "./support/dashboard";
 
 async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -13,13 +14,13 @@ async function signIn(page: Page) {
 test("owner completes the core commerce dashboard flow", async ({ page }) => {
   await signIn(page);
   const suffix = Date.now().toString();
-  await page.getByRole("link", { name: "Customers", exact: true }).click();
+  await navigateWithRail(page, "Customers");
   await expect(page.getByRole("heading", { name: "Customers" })).toBeVisible();
   await page.getByLabel("Name").fill(`E2E Customer ${suffix}`);
   await page.getByLabel("Email").fill(`e2e-${suffix}@example.test`);
   await page.getByRole("button", { name: "Add customer" }).click();
   await expect(page.getByText(`E2E Customer ${suffix}`)).toBeVisible();
-  await page.getByRole("link", { name: "Products", exact: true }).click();
+  await navigateWithRail(page, "Products");
   await expect(page.getByRole("heading", { name: "Products" })).toBeVisible();
   await page.getByLabel("Name").fill(`E2E Coffee ${suffix}`);
   await page.getByLabel("Slug").fill(`e2e-coffee-${suffix}`);
@@ -31,7 +32,7 @@ test("owner completes the core commerce dashboard flow", async ({ page }) => {
   await productRow.getByRole("link").click();
   await page.getByRole("button", { name: "Activate" }).click();
   await expect(page.getByText("active", { exact: true }).first()).toBeVisible();
-  await page.getByRole("link", { name: "Inventory", exact: true }).click();
+  await navigateWithRail(page, "Inventory");
   await expect(page.getByRole("heading", { name: "Inventory" })).toBeVisible();
   await page
     .getByLabel("Variant")
@@ -40,7 +41,7 @@ test("owner completes the core commerce dashboard flow", async ({ page }) => {
   await page.getByLabel("Reason").fill("E2E opening stock");
   await page.getByRole("button", { name: "Record adjustment" }).click();
   await expect(page.getByRole("row").filter({ hasText: `E2E-${suffix}` })).toContainText("12");
-  await page.getByRole("link", { name: "Orders", exact: true }).click();
+  await navigateWithRail(page, "Orders");
   await expect(page.getByRole("heading", { name: "Orders" })).toBeVisible();
   await page.getByLabel("Customer").selectOption({ label: `E2E Customer ${suffix}` });
   await page

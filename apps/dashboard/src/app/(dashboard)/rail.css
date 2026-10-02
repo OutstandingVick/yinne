@@ -1,0 +1,171 @@
+/* Desktop icon rail with per-group flyouts; the mobile drawer keeps the full list. */
+.dashboard-theme .shell {
+  grid-template-columns: 104px minmax(0, 1fr);
+}
+.dashboard-theme .rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  height: calc(100dvh - 32px);
+  padding: 24px 0;
+  background: var(--surface);
+}
+.dashboard-theme .home-shell .rail {
+  background: #eef0f4;
+}
+.dashboard-theme .rail-brand {
+  display: block;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.dashboard-theme .rail-brand img {
+  display: block;
+}
+.dashboard-theme .rail-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-height: 0;
+}
+.dashboard-theme .rail-group {
+  position: relative;
+}
+.dashboard-theme .rail-group-end {
+  margin-top: auto;
+}
+.dashboard-theme .rail-button {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--brand-black);
+  box-shadow:
+    0 1px 2px rgb(23 23 23 / 4%),
+    0 8px 20px rgb(23 23 23 / 5%);
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+.dashboard-theme .rail-button svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dashboard-theme .rail-button:hover {
+  transform: translateY(-1px);
+}
+.dashboard-theme .rail-button[data-active] {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(180deg, #4a75ff, var(--brand-blue));
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgb(36 87 255 / 35%);
+}
+.dashboard-theme .rail-button:focus-visible,
+.dashboard-theme .rail-flyout-link:focus-visible,
+.dashboard-theme .rail-brand:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 3px;
+}
+.dashboard-theme .rail-flyout {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 14px);
+  display: grid;
+  min-width: 200px;
+  padding: 10px;
+  border-radius: 18px;
+  background: var(--brand-black);
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgb(23 23 23 / 22%);
+  opacity: 0;
+  visibility: hidden;
+  translate: -6px -50%;
+  transition:
+    opacity 140ms ease,
+    translate 140ms ease,
+    visibility 0s linear 140ms;
+}
+/* Invisible bridge so the pointer can cross the gap into the flyout. */
+.dashboard-theme .rail-flyout::before {
+  content: "";
+  position: absolute;
+  inset: 0 100% 0 -16px;
+}
+.dashboard-theme .rail-group:hover .rail-flyout,
+.dashboard-theme .rail-group:focus-within .rail-flyout {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 -50%;
+  transition-delay: 0s;
+}
+.dashboard-theme .rail-flyout-title {
+  padding: 4px 10px 6px;
+  color: var(--brand-vanilla);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dashboard-theme .rail-flyout-title:only-child {
+  padding-bottom: 4px;
+  color: #ffffff;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.dashboard-theme .rail-flyout-link {
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: #ebebeb;
+  text-decoration: none;
+}
+.dashboard-theme .rail-flyout-link:hover {
+  background: #2c2c2c;
+}
+.dashboard-theme .rail-flyout-link[aria-current="page"] {
+  background: var(--brand-blue);
+  color: #ffffff;
+}
+@media (max-height: 760px) {
+  .dashboard-theme .rail {
+    gap: 16px;
+    padding: 16px 0;
+  }
+  .dashboard-theme .rail-nav {
+    gap: 8px;
+  }
+  .dashboard-theme .rail-button {
+    width: 46px;
+    height: 46px;
+  }
+  .dashboard-theme .rail-button[data-active] {
+    width: 52px;
+    height: 52px;
+  }
+}
+@media (max-width: 69.999rem) {
+  .dashboard-theme .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-theme .rail {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-theme .rail-button,
+  .dashboard-theme .rail-flyout {
+    transition: none;
+  }
+}
