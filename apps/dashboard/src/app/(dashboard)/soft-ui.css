@@ -479,3 +479,16 @@
   background: var(--soft-card);
   box-shadow: var(--soft-shadow);
 }
+/* Developer screens: IDs and keys become monospace chips. */
+.dashboard-theme :is(.mono, .technical-value):not(td, th) {
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--soft-canvas);
+  font-size: 0.8rem;
+}
+.dashboard-theme .technical-table .technical-primary {
+  font-weight: 600;
+}
+.dashboard-theme .technical-table .technical-secondary {
+  color: var(--muted);
+}
