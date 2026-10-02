@@ -115,7 +115,7 @@
 
 .store-shell {
   --store-primary: #1f6f50;
-  --store-bg: #fffdf7;
+  --store-bg: var(--vanilla);
   --store-text: #17211d;
   min-height: 100vh;
   padding: clamp(1rem, 4vw, 4rem);
@@ -170,7 +170,7 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  background: color-mix(in srgb, var(--store-primary) 15%, white);
+  background: color-mix(in srgb, var(--store-primary) 15%, var(--vanilla));
 }
 .product-detail {
   display: grid;
