@@ -400,3 +400,22 @@
   border-radius: 999px;
   background: var(--brand-yellow);
 }
+/* Loading: shimmering soft placeholder cards. */
+.dashboard-theme .loading {
+  min-height: 240px;
+  border-radius: var(--soft-radius);
+  background: linear-gradient(
+      100deg,
+      var(--soft-card) 30%,
+      var(--soft-tint) 50%,
+      var(--soft-card) 70%
+    )
+    0 0 / 200% 100%;
+  box-shadow: var(--soft-shadow);
+  animation: soft-shimmer 1.4s linear infinite;
+}
+@keyframes soft-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
