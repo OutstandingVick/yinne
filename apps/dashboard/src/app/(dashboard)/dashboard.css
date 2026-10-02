@@ -600,6 +600,7 @@ body:has(.dashboard-theme dialog[open]) {
   margin: 0 12px 6px;
 }
 .dashboard-theme .nav-link {
+  position: relative;
   color: var(--nav-text);
   padding: 8px 12px;
   min-height: 40px;
@@ -613,16 +614,25 @@ body:has(.dashboard-theme dialog[open]) {
   flex-shrink: 0;
 }
 .dashboard-theme .nav-link[aria-current="page"] {
-  background: var(--action);
+  background: var(--nav-hover);
   color: white;
   font-weight: 700;
+}
+.dashboard-theme .nav-link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  inset-block: 9px;
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--action);
 }
 @media (hover: hover) {
   .dashboard-theme .nav-link:hover {
     background: var(--nav-hover);
   }
   .dashboard-theme .nav-link[aria-current="page"]:hover {
-    background: var(--action-hover);
+    background: var(--nav-hover);
   }
 }
 .dashboard-theme .content {
