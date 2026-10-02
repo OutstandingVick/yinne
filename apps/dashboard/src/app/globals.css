@@ -4,7 +4,7 @@
 
 :root {
   --vanilla: #f6f5ae;
-  --surface: #f6f7f4;
+  --surface: var(--vanilla);
   --panel: var(--vanilla);
   --text: #17211b;
   --muted: #627068;
@@ -30,7 +30,7 @@
   display: grid;
   place-items: center;
   padding: 1.5rem;
-  background: #f5f4ef;
+  background: var(--vanilla);
   color: #171712;
 }
 .public-card {
@@ -550,7 +550,7 @@ td {
 }
 th {
   color: var(--muted);
-  background: #fafbf9;
+  background: var(--vanilla);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.05em;

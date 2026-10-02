@@ -1,9 +1,9 @@
 /* Home overview: soft-card layout in the Yinne palette. */
 .dashboard-theme .yh {
-  --yh-canvas: #eef0f4;
+  --yh-canvas: var(--brand-vanilla);
   --yh-card: var(--brand-vanilla);
-  --yh-line: #e7e9ef;
-  --yh-tint: #e9eeff;
+  --yh-line: var(--border);
+  --yh-tint: color-mix(in srgb, var(--brand-blue) 14%, var(--brand-vanilla));
   --yh-radius: 28px;
   --yh-shadow: 0 1px 2px rgb(23 23 23 / 4%), 0 12px 32px rgb(23 23 23 / 5%);
   --yh-glow: 0 10px 24px rgb(36 87 255 / 32%);
@@ -11,10 +11,10 @@
   color: var(--brand-black);
 }
 .dashboard-theme .home-shell .content {
-  background: var(--yh-canvas, #eef0f4);
+  background: var(--brand-vanilla);
 }
 .dashboard-theme .home-shell .main {
-  background: #eef0f4;
+  background: var(--brand-vanilla);
 }
 
 /* Header */
@@ -430,7 +430,7 @@
   background: var(--yh-tint);
 }
 .dashboard-theme .yh-bars li.is-peak {
-  background: linear-gradient(180deg, var(--brand-blue), #c9d6ff);
+  background: linear-gradient(180deg, var(--brand-blue), var(--yh-tint));
   box-shadow: var(--yh-glow);
 }
 .dashboard-theme .yh-bar-tip {

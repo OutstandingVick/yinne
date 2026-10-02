@@ -15,7 +15,7 @@
   background: var(--surface);
 }
 .dashboard-theme .home-shell .rail {
-  background: #eef0f4;
+  background: var(--brand-vanilla);
 }
 .dashboard-theme .rail-brand {
   display: block;
@@ -128,7 +128,7 @@
 .dashboard-theme .rail-flyout-link {
   padding: 8px 10px;
   border-radius: 10px;
-  color: #ebebeb;
+  color: var(--brand-vanilla);
   text-decoration: none;
 }
 .dashboard-theme .rail-flyout-link:hover {
