@@ -49,14 +49,16 @@ test("sidebar is near-black with neutral inactive navigation", async ({ page }) 
   const sidebar = page.locator(".home-shell .desktop-sidebar");
   await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
   const inactiveIcon = sidebar.locator('.nav-link:not([aria-current="page"]) svg').first();
-  await expect(inactiveIcon).toHaveCSS("color", "rgb(235, 235, 235)");
+  await expect(inactiveIcon).toHaveCSS("color", "rgb(179, 179, 179)");
 });
 
 test("cobalt remains reserved for active navigation and primary actions", async ({ page }) => {
-  await expect(page.locator('.home-shell .desktop-sidebar .nav-link[aria-current="page"]')).toHaveCSS(
-    "background-color",
-    "rgb(36, 87, 255)",
-  );
+  const active = page.locator('.home-shell .desktop-sidebar .nav-link[aria-current="page"]');
+  await expect(active).toHaveCSS("background-color", "rgb(44, 44, 44)");
+  await expect(active.locator("svg")).toHaveCSS("color", "rgb(36, 87, 255)");
+  expect(
+    await active.evaluate((element) => getComputedStyle(element, "::before").backgroundColor),
+  ).toBe("rgb(36, 87, 255)");
   await expect(page.locator(".overview-actions .button:not(.button-secondary)")).toHaveCSS(
     "background-color",
     "rgb(36, 87, 255)",
@@ -80,10 +82,11 @@ test("mobile navigation keeps the same dark and cobalt hierarchy", async ({ page
   const drawer = page.getByRole("dialog", { name: "Navigation" });
   await expect(drawer).toBeVisible();
   await expect(drawer).toHaveCSS("background-color", "rgb(23, 23, 23)");
-  await expect(drawer.locator('.nav-link[aria-current="page"]')).toHaveCSS(
-    "background-color",
-    "rgb(36, 87, 255)",
-  );
+  const active = drawer.locator('.nav-link[aria-current="page"]');
+  await expect(active).toHaveCSS("background-color", "rgb(44, 44, 44)");
+  expect(
+    await active.evaluate((element) => getComputedStyle(element, "::before").backgroundColor),
+  ).toBe("rgb(36, 87, 255)");
 });
 
 test("brand mark keeps its cobalt artwork on a white shell tile", async ({ page }) => {
@@ -119,10 +122,7 @@ test("shared shell palette carries through to Payments", async ({ page }) => {
   const sidebar = page.locator(".desktop-sidebar");
   await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
   await expect(sidebar.locator(".brand")).toHaveCSS("background-color", "rgb(255, 255, 255)");
-  await expect(page.locator(".topbar > .badge")).toHaveCSS(
-    "background-color",
-    "rgb(245, 247, 73)",
-  );
+  await expect(page.locator(".topbar > .badge")).toHaveCSS("background-color", "rgb(245, 247, 73)");
 });
 
 test("secondary action stays white with near-black text", async ({ page }) => {
