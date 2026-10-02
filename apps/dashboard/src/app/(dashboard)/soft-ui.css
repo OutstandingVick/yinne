@@ -72,3 +72,25 @@
 .dashboard-theme .button:active {
   transform: translateY(0);
 }
+/* Secondary, ghost and danger buttons keep the pill shape without the glow. */
+.dashboard-theme .button-secondary {
+  border-color: transparent;
+  background: var(--soft-card);
+  color: var(--brand-black);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .button-ghost {
+  background: transparent;
+  box-shadow: none;
+}
+.dashboard-theme .button-ghost:hover {
+  background: var(--soft-tint);
+}
+.dashboard-theme .button-danger {
+  background: var(--danger-text);
+  box-shadow: 0 10px 24px rgb(161 38 34 / 25%);
+}
+.dashboard-theme .button-small {
+  min-height: 36px;
+  padding: 0 16px;
+}
