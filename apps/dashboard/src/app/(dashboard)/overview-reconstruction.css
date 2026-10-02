@@ -405,13 +405,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .dashboard-theme .overview-metrics {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .dashboard-theme .overview-metrics .overview-featured-metric {
     grid-column: 1 / -1;
   }
   .dashboard-theme .overview-metrics > a:last-child {
-    grid-column: auto;
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 40rem) {
