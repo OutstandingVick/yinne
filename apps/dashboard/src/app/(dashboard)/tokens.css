@@ -4,9 +4,9 @@
   --brand-vanilla: #f6f5ae;
   --brand-black: #171717;
   --surface: #f4f5f7;
-  --panel: #ffffff;
-  --surface-hover: #f4f4f4;
-  --table-heading-surface: #fafafa;
+  --panel: var(--brand-vanilla);
+  --surface-hover: color-mix(in srgb, var(--brand-vanilla) 90%, var(--brand-black));
+  --table-heading-surface: color-mix(in srgb, var(--brand-vanilla) 94%, var(--brand-black));
   --text: var(--brand-black);
   --muted: #626262;
   --border: #e8e8e8;
