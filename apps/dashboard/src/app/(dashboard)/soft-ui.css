@@ -241,3 +241,16 @@
   background: rgb(255 255 255 / 70%);
   font-size: 0.7rem;
 }
+/* Plain badges match the pill language; info picks up the brand blue. */
+.dashboard-theme .badge {
+  border-radius: 999px;
+  padding-inline: 10px;
+}
+.dashboard-theme .badge-info {
+  background: var(--soft-tint);
+  color: var(--brand-blue);
+}
+.dashboard-theme .badge-warning:not(.status-badge) {
+  background: var(--brand-yellow);
+  color: var(--brand-black);
+}
