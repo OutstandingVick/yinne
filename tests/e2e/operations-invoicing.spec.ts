@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { navigateWithRail } from "./support/dashboard";
 
 const openInvoiceToken = Buffer.alloc(32, 31).toString("base64url");
 
@@ -15,18 +16,18 @@ async function signIn(page: Page) {
 
 test("owner can inspect canonical locations and employee scopes", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "Locations", exact: true }).click();
+  await navigateWithRail(page, "Locations");
   await expect(page.getByRole("heading", { name: "Locations" })).toBeVisible();
   await expect(page.getByRole("table", { name: "Locations" })).toContainText("Ikeja Flagship");
 
-  await page.getByRole("link", { name: "Employees" }).click();
+  await navigateWithRail(page, "Employees");
   await expect(page.getByRole("heading", { name: "Employees" })).toBeVisible();
   await expect(page.getByRole("table", { name: "Employees" })).toContainText("owner@acme.test");
 });
 
 test("owner sees draft, open, overdue, void, and paid invoice fixtures", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "Invoices" }).click();
+  await navigateWithRail(page, "Invoices");
   const table = page.getByRole("table", { name: "Invoices" });
   await expect(table).toContainText("Draft");
   await expect(table).toContainText("INV-2026-000001");

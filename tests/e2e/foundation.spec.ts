@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading, navigateWithRail } from "./support/dashboard";
 
 test("owner completes the Phase 1 dashboard lifecycle", async ({ page }) => {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -13,13 +14,13 @@ test("owner completes the Phase 1 dashboard lifecycle", async ({ page }) => {
   await expect(page.getByText("TEST MODE", { exact: false }).first()).toBeVisible();
   await expect(page.getByLabel("Organization")).toHaveValue(/.+/);
   await page.getByRole("button", { name: "Switch" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
-  await page.getByRole("link", { name: "Organization", exact: true }).click();
+  await navigateWithRail(page, "Organization");
   await expect(page.getByRole("heading", { name: "Organization" })).toBeVisible();
   await page.getByRole("button", { name: "Save organization" }).click();
 
-  await page.getByRole("link", { name: "API keys" }).click();
+  await navigateWithRail(page, "API keys");
   const keyName = `E2E ${Date.now()}`;
   await page.getByLabel("Key name").fill(keyName);
   await page.getByRole("button", { name: "Create test key" }).click();

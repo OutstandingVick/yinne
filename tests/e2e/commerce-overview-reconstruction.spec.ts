@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading, navigateWithRail } from "./support/dashboard";
 
-test("commerce overview composition keeps real data and existing navigation usable", async ({
+test("home overview composition keeps real data and existing navigation usable", async ({
   page,
 }) => {
   test.setTimeout(150_000);
@@ -10,12 +11,12 @@ test("commerce overview composition keeps real data and existing navigation usab
   await page.getByLabel("Email").fill("owner@acme.test");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
   for (const width of [1440, 900, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
-    await expect(page.locator(".overview-primary")).toBeVisible();
-    await expect(page.locator(".overview-secondary")).toBeVisible();
+    await expect(page.locator(".yh-row-top")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Money movement" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Recent orders" })).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
@@ -28,9 +29,9 @@ test("commerce overview composition keeps real data and existing navigation usab
   }
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole("link", { name: "Analytics", exact: true }).last().click();
+  await navigateWithRail(page, "Analytics");
   await expect(page.getByRole("heading", { name: "Analytics", exact: true })).toBeVisible();
   await page.goto("/");
-  await page.getByRole("link", { name: "View orders" }).click();
+  await page.locator(".yh-orders").getByRole("link", { name: "See all" }).click();
   await expect(page.getByRole("heading", { name: "Orders", exact: true })).toBeVisible();
 });
