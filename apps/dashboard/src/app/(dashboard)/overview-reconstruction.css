@@ -323,12 +323,13 @@
   box-shadow: var(--shadow-card);
 }
 .dashboard-theme:has(.home-shell) .test-banner {
-  padding-block: 6px;
-  background: var(--brand-vanilla);
+  padding-block: 4px;
+  background: var(--panel);
+  border-block-end: 1px solid var(--border);
   color: var(--text);
   text-align: center;
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.025em;
 }
 .dashboard-theme .home-shell .account-email {
