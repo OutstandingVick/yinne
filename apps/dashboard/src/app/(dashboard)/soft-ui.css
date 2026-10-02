@@ -314,3 +314,17 @@
   background: var(--soft-card);
   box-shadow: var(--soft-shadow-lift);
 }
+/* Modals and drawers: big radius and a blurred backdrop. */
+.dashboard-theme .ui-modal {
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: 0 30px 80px rgb(23 23 23 / 20%);
+}
+.dashboard-theme .ui-modal::backdrop {
+  background: rgb(23 23 23 / 30%);
+  backdrop-filter: blur(4px);
+}
+.dashboard-theme .modal-actions {
+  gap: 10px;
+}
