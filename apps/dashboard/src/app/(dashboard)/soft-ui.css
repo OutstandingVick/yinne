@@ -37,3 +37,20 @@
   background: var(--soft-card);
   box-shadow: var(--soft-shadow);
 }
+/* Page headers: large friendly titles like "Welcome back". */
+.dashboard-theme .page-header {
+  align-items: center;
+  gap: 16px 24px;
+  margin-bottom: 8px;
+}
+.dashboard-theme .page-header h1 {
+  font-family: var(--font-brand);
+  font-size: clamp(1.75rem, 2.6vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+.dashboard-theme .page-header p {
+  max-width: 60ch;
+  color: var(--muted);
+}
