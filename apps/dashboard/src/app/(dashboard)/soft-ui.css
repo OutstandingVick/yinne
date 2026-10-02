@@ -172,3 +172,10 @@
 .dashboard-theme .card-grid > a:first-child > .metric-card :is(p, span:not(.badge), small) {
   color: rgb(255 255 255 / 82%);
 }
+/* Section cards get generous padding. */
+.dashboard-theme .core-section-card {
+  padding: 26px 28px;
+}
+.dashboard-theme .card-grid {
+  gap: 20px;
+}
