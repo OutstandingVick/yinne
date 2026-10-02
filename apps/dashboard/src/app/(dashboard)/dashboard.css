@@ -601,8 +601,8 @@ body:has(.dashboard-theme dialog[open]) {
 }
 .dashboard-theme .nav-link {
   color: var(--nav-text);
-  padding: 10px 12px;
-  min-height: 44px;
+  padding: 8px 12px;
+  min-height: 40px;
   border-radius: var(--radius-control);
   font-size: var(--text-small);
   gap: 12px;
