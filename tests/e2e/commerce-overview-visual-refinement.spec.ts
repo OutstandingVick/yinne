@@ -48,8 +48,22 @@ test("Commerce Overview remains readable across viewports", async ({ page }) => 
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
       `Overview overflows at ${width}px`,
     ).toBe(true);
+    if (width <= 900) {
+      const metrics = await page.locator(".overview-metrics").boundingBox();
+      const orders = await page.locator(".overview-recent-orders").boundingBox();
+      expect(metrics).not.toBeNull();
+      expect(orders).not.toBeNull();
+      expect(orders!.y).toBeGreaterThan(metrics!.y + metrics!.height);
+    }
     if (process.env.YINNE_CAPTURE_OVERVIEW === "1") {
       await page.screenshot({ path: `/tmp/yinne-overview-${width}.png`, fullPage: true });
     }
   }
+  await expect(page.getByRole("combobox", { name: "Organization" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+  await expect(page.locator(".overview-actions")).toBeVisible();
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  await expect(page.getByRole("dialog", { name: "Navigation" })).toBeVisible();
+  await page.getByRole("button", { name: "Close navigation" }).click();
+  await expect(page.getByRole("dialog", { name: "Navigation" })).toBeHidden();
 });

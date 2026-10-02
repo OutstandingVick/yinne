@@ -413,8 +413,12 @@
     padding: clamp(24px, 3vw, 36px);
   }
 }
+@media (max-width: 64rem) {
+  .dashboard-theme .overview-primary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @media (max-width: 48rem) {
-  .dashboard-theme .overview-primary,
   .dashboard-theme .overview-secondary {
     grid-template-columns: minmax(0, 1fr);
   }
