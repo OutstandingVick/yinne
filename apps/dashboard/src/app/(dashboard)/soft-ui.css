@@ -281,3 +281,28 @@
   color: var(--muted);
   font-size: 0.85rem;
 }
+/* Tabs: a segmented pill control with a blue active tab. */
+.dashboard-theme .tab-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .tab-list button {
+  min-height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--brand-black);
+  font-weight: 500;
+}
+.dashboard-theme .tab-list button[aria-selected="true"] {
+  background: var(--soft-blue-gradient);
+  color: #ffffff;
+  box-shadow: var(--soft-glow);
+}
