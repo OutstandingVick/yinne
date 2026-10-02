@@ -201,3 +201,26 @@
 .dashboard-theme .table-default td {
   padding-block: 16px;
 }
+/* Table headers are quiet captions; rows highlight in a blue tint. */
+.dashboard-theme .table-wrap th {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.dashboard-theme .table-wrap tbody tr {
+  transition: background 140ms ease;
+}
+.dashboard-theme .table-wrap tbody tr:hover {
+  background: #f6f8ff;
+}
+.dashboard-theme .table-wrap a {
+  color: var(--brand-black);
+  font-weight: 600;
+  text-decoration: none;
+}
+.dashboard-theme .table-wrap a:hover {
+  color: var(--brand-blue);
+}
