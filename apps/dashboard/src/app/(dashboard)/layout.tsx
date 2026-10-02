@@ -12,6 +12,7 @@ import "./operations-intelligence.css";
 import "./developer-settings.css";
 import "./overview-reconstruction.css";
 import "./rail.css";
+import "./soft-ui.css";
 import { redirect } from "next/navigation";
 import { Badge, Button } from "@yinne/ui";
 import { createRequestId } from "@yinne/core";
