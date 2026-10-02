@@ -2,8 +2,6 @@ import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { navigateWithRail } from "./support/dashboard";
 
-const openInvoiceToken = Buffer.alloc(32, 31).toString("base64url");
-
 async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
   if (!password) throw new Error("YINNE_SEED_PASSWORD is required for seeded E2E flows.");
@@ -41,13 +39,39 @@ test("public capability rejects unknown invoice tokens", async ({ request }) => 
   expect(response.status()).toBe(404);
 });
 
+/**
+ * Creates a draft through the dashboard form and issues it through the API, because the
+ * one-time public invoice URL is only returned in the issue response.
+ */
+async function issueFreshInvoice(page: Page) {
+  await signIn(page);
+  await page.goto("/invoices/new");
+  await page.getByLabel("Description").fill(`E2E invoice ${Date.now()}`);
+  await page.getByLabel("Unit amount (minor units)").fill("250000");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]{36}$/);
+  const invoiceId = new URL(page.url()).pathname.split("/").at(-1)!;
+  const response = await page.request.post(`/v1/invoices/${invoiceId}/issue`, {
+    headers: {
+      origin: new URL(page.url()).origin,
+      "idempotency-key": crypto.randomUUID() + crypto.randomUUID(),
+    },
+  });
+  expect(response.ok()).toBe(true);
+  const { invoice } = (await response.json()) as {
+    invoice: { invoice_number: string; invoice_url: string };
+  };
+  return invoice;
+}
+
 test("customer can pay an issued invoice through hosted checkout", async ({ page }) => {
-  await page.goto(`/invoice/${openInvoiceToken}`);
-  await expect(page.getByText("INV-2026-000001")).toBeVisible();
+  const invoice = await issueFreshInvoice(page);
+  await page.goto(invoice.invoice_url);
+  await expect(page.getByText(invoice.invoice_number)).toBeVisible();
   await page.getByRole("button", { name: "Pay invoice" }).click();
   await expect(page).toHaveURL(/\/checkout\/[A-Za-z0-9_-]{43}$/);
   await page.getByRole("button", { name: "Pay securely" }).click();
-  await expect(page).toHaveURL(new RegExp(`/invoice/${openInvoiceToken}$`));
+  await expect(page).toHaveURL(new RegExp(`${invoice.invoice_url}$`));
   await expect(page.getByText("Invoice paid")).toBeVisible();
 });
 
