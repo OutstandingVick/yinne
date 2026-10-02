@@ -564,10 +564,6 @@ body:has(.dashboard-theme dialog[open]) {
 }
 .dashboard-theme .brand {
   margin: 4px 12px 30px;
-  width: fit-content;
-  padding: 10px 12px;
-  border-radius: var(--radius-control);
-  background: var(--panel);
 }
 .dashboard-theme .brand img {
   width: 130px;
