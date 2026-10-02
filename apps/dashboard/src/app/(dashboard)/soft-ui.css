@@ -383,3 +383,20 @@
 .dashboard-theme .state-error::before {
   background: radial-gradient(circle at 35% 35%, #ffffff 0 30%, transparent 31%), var(--danger);
 }
+/* Notices: rounded callouts with a yellow accent bar. */
+.dashboard-theme .notice {
+  position: relative;
+  padding: 16px 20px 16px 28px;
+  border: 0;
+  border-radius: var(--soft-radius-inner);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .notice::before {
+  content: "";
+  position: absolute;
+  inset: 12px auto 12px 12px;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--brand-yellow);
+}
