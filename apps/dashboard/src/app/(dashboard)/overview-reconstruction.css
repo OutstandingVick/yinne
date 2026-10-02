@@ -323,6 +323,10 @@
   box-shadow: var(--shadow-card);
 }
 .dashboard-theme:has(.home-shell) .test-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   padding-block: 4px;
   background: var(--panel);
   border-block-end: 1px solid var(--border);
@@ -331,6 +335,15 @@
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.025em;
+}
+.dashboard-theme:has(.home-shell) .test-banner::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--highlight);
+  box-shadow: 0 0 0 1px var(--brand-black);
 }
 .dashboard-theme .home-shell .account-email {
   max-width: 25ch;
