@@ -191,8 +191,8 @@
   margin: 0;
 }
 .dashboard-theme .overview-orders-list li {
-  min-height: 54px;
-  padding: 10px 12px;
+  min-height: 48px;
+  padding: 8px 12px;
   border-block-start: 1px solid var(--border);
 }
 .dashboard-theme .overview-orders-list li > * {
