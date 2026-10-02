@@ -15,7 +15,7 @@
   background: var(--surface);
 }
 .dashboard-theme .home-shell .rail {
-  background: var(--brand-vanilla);
+  background: #eef0f4;
 }
 .dashboard-theme .rail-brand {
   display: block;
@@ -45,7 +45,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--brand-vanilla);
+  background: #ffffff;
   color: var(--brand-black);
   box-shadow:
     0 1px 2px rgb(23 23 23 / 4%),
@@ -70,7 +70,7 @@
   width: 64px;
   height: 64px;
   background: linear-gradient(180deg, #4a75ff, var(--brand-blue));
-  color: var(--brand-vanilla);
+  color: #ffffff;
   box-shadow: 0 10px 24px rgb(36 87 255 / 35%);
 }
 .dashboard-theme .rail-button:focus-visible,
@@ -88,7 +88,7 @@
   padding: 10px;
   border-radius: 18px;
   background: var(--brand-black);
-  color: var(--brand-vanilla);
+  color: #ffffff;
   box-shadow: 0 16px 40px rgb(23 23 23 / 22%);
   opacity: 0;
   visibility: hidden;
@@ -121,14 +121,14 @@
 }
 .dashboard-theme .rail-flyout-title:only-child {
   padding-bottom: 4px;
-  color: var(--brand-vanilla);
+  color: #ffffff;
   letter-spacing: 0;
   text-transform: none;
 }
 .dashboard-theme .rail-flyout-link {
   padding: 8px 10px;
   border-radius: 10px;
-  color: var(--brand-vanilla);
+  color: #ebebeb;
   text-decoration: none;
 }
 .dashboard-theme .rail-flyout-link:hover {
@@ -136,7 +136,7 @@
 }
 .dashboard-theme .rail-flyout-link[aria-current="page"] {
   background: var(--brand-blue);
-  color: var(--brand-vanilla);
+  color: #ffffff;
 }
 @media (max-height: 760px) {
   .dashboard-theme .rail {

@@ -343,7 +343,7 @@
 @media (hover: hover) {
   .dashboard-theme .home-shell .nav-link:not([aria-current="page"]):hover {
     background: var(--nav-hover);
-    color: var(--brand-vanilla);
+    color: white;
   }
 }
 .dashboard-theme .home-shell .topbar {
