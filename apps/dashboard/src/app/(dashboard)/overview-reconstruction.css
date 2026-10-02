@@ -299,10 +299,10 @@
   }
 }
 .dashboard-theme .home-shell .topbar {
-  min-height: 80px;
-  padding: 16px clamp(28px, 3vw, 52px);
-  background: var(--surface);
-  border-bottom: 0;
+  min-height: 72px;
+  padding: 12px clamp(28px, 3vw, 52px);
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
   gap: 12px;
 }
 .dashboard-theme .home-shell .topbar > .badge {
