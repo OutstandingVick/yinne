@@ -269,3 +269,15 @@
   border-radius: 999px;
   padding-left: 44px;
 }
+/* Pagination: pill buttons around a quiet summary. */
+.dashboard-theme .pagination {
+  align-items: center;
+  gap: 12px;
+}
+.dashboard-theme .pagination-summary {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--soft-card);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
