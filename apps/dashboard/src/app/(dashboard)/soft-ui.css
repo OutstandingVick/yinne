@@ -126,3 +126,16 @@
 .dashboard-theme .date-control .input {
   min-width: 170px;
 }
+/* Cards: large radius, no hard border, soft shadow. */
+.dashboard-theme .card {
+  border: 0;
+  border-radius: var(--soft-radius);
+  background: var(--soft-card);
+  box-shadow: var(--soft-shadow);
+}
+.dashboard-theme .card > h2:first-child,
+.dashboard-theme .card > header h2 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
