@@ -334,3 +334,21 @@
   background: var(--brand-black);
   color: #ffffff;
 }
+/* Detail grids: each field is a soft tile inside the card. */
+.dashboard-theme .detail-grid {
+  gap: 12px;
+  padding: 20px;
+}
+.dashboard-theme .detail-item {
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--soft-radius-inner);
+  background: var(--soft-canvas);
+}
+.dashboard-theme .detail-item .label {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.dashboard-theme .detail-value {
+  font-weight: 500;
+}
