@@ -54,6 +54,33 @@
 .dashboard-theme .overview-metrics > a:last-child {
   grid-column: 1 / -1;
 }
+.dashboard-theme .overview-metrics > a:last-child .metric-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  column-gap: 20px;
+}
+.dashboard-theme .overview-metrics > a:last-child .badge {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+.dashboard-theme .overview-metrics > a:last-child .metric-value {
+  grid-column: 2;
+  grid-row: 2 / 4;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+}
+.dashboard-theme .overview-metrics > a:last-child strong {
+  grid-column: 1;
+  grid-row: 2;
+}
+.dashboard-theme .overview-metrics > a:last-child p {
+  grid-column: 1;
+  grid-row: 3;
+}
 .dashboard-theme .overview-metrics .metric-card {
   min-height: 0;
   height: 100%;
