@@ -777,11 +777,13 @@ body:has(.dashboard-theme dialog[open]) {
   }
 }
 @media (max-width: 24rem) {
-  .dashboard-theme .topbar .account-email {
+  .dashboard-theme .topbar .account-controls {
     order: 4;
     flex-basis: 100%;
+    justify-content: space-between;
+    margin-inline-start: 0;
   }
-  .dashboard-theme .topbar > form:last-child {
-    margin-inline-start: auto;
+  .dashboard-theme .topbar .account-email {
+    flex-basis: auto;
   }
 }
