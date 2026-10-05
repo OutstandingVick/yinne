@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { navigateWithRail } from "./support/dashboard";
 
 async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -13,7 +14,7 @@ async function signIn(page: Page) {
 
 test("owner views active and archived recurring plans", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "Subscription Plans", exact: true }).click();
+  await navigateWithRail(page, "Subscription Plans");
   const table = page.getByRole("table", { name: "Subscription Plans" });
   await expect(table).toContainText("Coffee Club");
   await expect(table).toContainText("Legacy Tasting Club");
@@ -22,7 +23,7 @@ test("owner views active and archived recurring plans", async ({ page }) => {
 
 test("owner sees active trialing past due paused and cancelled subscriptions", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "Subscriptions", exact: true }).click();
+  await navigateWithRail(page, "Subscriptions");
   const table = page.getByRole("table", { name: "Subscriptions" });
   for (const status of ["active", "trialing", "past_due", "paused", "cancelled"])
     await expect(table).toContainText(status);

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading } from "./support/dashboard";
 
 test("dashboard shell preserves navigation and reflows across viewports", async ({ page }) => {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -7,11 +8,11 @@ test("dashboard shell preserves navigation and reflows across viewports", async 
   await page.getByLabel("Email").fill("owner@acme.test");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
   for (const width of [1440, 1024, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
-    await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);

@@ -1,13 +1,19 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
+import { signInAsOwner } from "./support/dashboard";
+
+const canvas = "rgb(238, 240, 244)";
+const white = "rgb(255, 255, 255)";
+const nearBlack = "rgb(23, 23, 23)";
+const cobalt = "rgb(36, 87, 255)";
+const canary = "rgb(245, 247, 73)";
+
+async function backgroundImage(locator: Locator) {
+  return locator.evaluate((element) => getComputedStyle(element).backgroundImage);
+}
 
 test.beforeEach(async ({ page }) => {
-  const password = process.env.YINNE_SEED_PASSWORD;
-  if (!password) throw new Error("YINNE_SEED_PASSWORD is required.");
-  await page.goto("/sign-in");
-  await page.getByLabel("Email").fill("owner@acme.test");
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await signInAsOwner(page);
 });
 
 test("brand palette tokens stay mapped to the approved colors", async ({ page }) => {
@@ -28,83 +34,81 @@ test("brand palette tokens stay mapped to the approved colors", async ({ page })
   });
 });
 
-test("featured commerce summary is vanilla with near-black values", async ({ page }) => {
-  const hero = page.locator(".overview-featured-metric .metric-card");
-  await expect(hero).toHaveCSS("background-color", "rgb(246, 245, 174)");
-  await expect(hero.locator(".metric-value")).toHaveCSS("color", "rgb(23, 23, 23)");
+test("collected balance card is the cobalt hero with white text", async ({ page }) => {
+  const collected = page.locator(".yh-currency-blue");
+  expect(await backgroundImage(collected)).toContain(cobalt);
+  await expect(collected).toHaveCSS("color", white);
 });
 
-test("canary stays a small accent on the featured summary", async ({ page }) => {
-  await expect(page.locator(".overview-featured-metric .badge")).toHaveCSS(
-    "background-color",
-    "rgb(245, 247, 73)",
-  );
-  await expect(page.locator(".overview-featured-metric .badge")).toHaveCSS(
-    "color",
-    "rgb(23, 23, 23)",
-  );
+test("canary marks the unpaid balance card", async ({ page }) => {
+  const unpaid = page.locator(".yh-currency-yellow");
+  expect(await backgroundImage(unpaid)).toContain(canary);
+  await expect(unpaid).toHaveCSS("color", nearBlack);
 });
 
-test("sidebar is near-black with neutral inactive navigation", async ({ page }) => {
-  const sidebar = page.locator(".home-shell .desktop-sidebar");
-  await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
-  const inactiveIcon = sidebar.locator('.nav-link:not([aria-current="page"]) svg').first();
-  await expect(inactiveIcon).toHaveCSS("color", "rgb(179, 179, 179)");
+test("icon rail sits on the soft canvas with white inactive icons", async ({ page }) => {
+  await expect(page.locator(".rail")).toHaveCSS("background-color", canvas);
+  const inactive = page.locator(".rail-button:not([data-active])").first();
+  await expect(inactive).toHaveCSS("background-color", white);
+  await expect(inactive).toHaveCSS("color", nearBlack);
 });
 
-test("cobalt remains reserved for active navigation and primary actions", async ({ page }) => {
-  const active = page.locator('.home-shell .desktop-sidebar .nav-link[aria-current="page"]');
-  await expect(active).toHaveCSS("background-color", "rgb(44, 44, 44)");
-  await expect(active.locator("svg")).toHaveCSS("color", "rgb(36, 87, 255)");
-  expect(
-    await active.evaluate((element) => getComputedStyle(element, "::before").backgroundColor),
-  ).toBe("rgb(36, 87, 255)");
-  await expect(page.locator(".overview-actions .button:not(.button-secondary)")).toHaveCSS(
-    "background-color",
-    "rgb(36, 87, 255)",
-  );
+test("cobalt marks the active section and the primary action", async ({ page }) => {
+  const active = page.locator(".rail-button[data-active]");
+  await expect(active).toHaveCount(1);
+  expect(await backgroundImage(active)).toContain(cobalt);
+  await expect(active).toHaveCSS("color", white);
+  expect(await backgroundImage(page.locator(".yh-actions .yh-pill-primary"))).toContain(cobalt);
 });
 
-test("supporting metric and activity cards stay white", async ({ page }) => {
-  await expect(page.locator(".overview-metrics .metric-card").nth(1)).toHaveCSS(
-    "background-color",
-    "rgb(255, 255, 255)",
-  );
-  await expect(page.locator(".overview-recent-orders")).toHaveCSS(
-    "background-color",
-    "rgb(255, 255, 255)",
-  );
+test("content cards stay white on the canvas", async ({ page }) => {
+  await expect(page.locator(".content")).toHaveCSS("background-color", canvas);
+  await expect(page.locator(".yh-overview")).toHaveCSS("background-color", white);
+  await expect(page.locator(".yh-orders")).toHaveCSS("background-color", white);
 });
 
-test("mobile navigation keeps the same dark and cobalt hierarchy", async ({ page }) => {
+test("rail flyouts are near-black with a cobalt current page", async ({ page }) => {
+  await page.goto("/payments");
+  const group = page.locator(".rail-group", {
+    has: page.getByRole("link", { name: "Payment Links", includeHidden: true }),
+  });
+  await group.locator(".rail-button").hover();
+  const flyout = group.locator(".rail-flyout");
+  await expect(flyout).toBeVisible();
+  await expect(flyout).toHaveCSS("background-color", nearBlack);
+  await expect(flyout.locator('[aria-current="page"]')).toHaveCSS("background-color", cobalt);
+});
+
+test("mobile navigation keeps the dark drawer with a cobalt marker", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Open navigation" }).click();
   const drawer = page.getByRole("dialog", { name: "Navigation" });
   await expect(drawer).toBeVisible();
-  await expect(drawer).toHaveCSS("background-color", "rgb(23, 23, 23)");
+  await expect(drawer).toHaveCSS("background-color", nearBlack);
   const active = drawer.locator('.nav-link[aria-current="page"]');
-  await expect(active).toHaveCSS("background-color", "rgb(44, 44, 44)");
   expect(
     await active.evaluate((element) => getComputedStyle(element, "::before").backgroundColor),
-  ).toBe("rgb(36, 87, 255)");
+  ).toBe(cobalt);
 });
 
-test("brand mark remains cobalt without a detached white tile", async ({ page }) => {
-  const brand = page.locator(".home-shell .desktop-sidebar .brand");
-  await expect(brand).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(brand.locator("img")).toHaveCSS("filter", "none");
+test("rail brand mark shows the Yinne icon and links home", async ({ page }) => {
+  const brand = page.getByRole("link", { name: "Yinne home" });
+  await expect(brand).toHaveAttribute("href", "/");
+  await expect(brand.locator("img")).toHaveAttribute("src", /yinne-icon\.svg/);
 });
 
 test("test-mode marker uses a compact canary badge", async ({ page }) => {
-  const badge = page.locator(".home-shell .topbar > .badge");
-  await expect(badge).toHaveCSS("background-color", "rgb(245, 247, 73)");
-  await expect(badge).toHaveCSS("color", "rgb(23, 23, 23)");
+  const badge = page.locator(".topbar > .badge");
+  await expect(badge).toHaveCSS("background-color", canary);
+  await expect(badge).toHaveCSS("color", nearBlack);
 });
 
-test("overview notice uses a white surface and neutral stripe", async ({ page }) => {
-  const notice = page.locator(".overview-screen > .notice");
-  await expect(notice).toHaveCSS("background-color", "rgb(255, 255, 255)");
-  await expect(notice).toHaveCSS("border-left-color", "rgb(23, 23, 23)");
+test("overview notice is white with a canary accent bar", async ({ page }) => {
+  const notice = page.locator(".yh > .notice");
+  await expect(notice).toHaveCSS("background-color", white);
+  expect(
+    await notice.evaluate((element) => getComputedStyle(element, "::before").backgroundColor),
+  ).toBe(canary);
 });
 
 test("chart roles keep cobalt primary and canary comparison", async ({ page }) => {
@@ -119,20 +123,21 @@ test("chart roles keep cobalt primary and canary comparison", async ({ page }) =
 
 test("shared shell palette carries through to Payments", async ({ page }) => {
   await page.goto("/payments");
-  const sidebar = page.locator(".desktop-sidebar");
-  await expect(sidebar).toHaveCSS("background-color", "rgb(23, 23, 23)");
-  await expect(sidebar.locator(".brand")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(page.locator(".topbar > .badge")).toHaveCSS("background-color", "rgb(245, 247, 73)");
+  await expect(page.locator(".rail")).toHaveCSS("background-color", canvas);
+  await expect(page.locator(".content")).toHaveCSS("background-color", canvas);
+  await expect(page.locator(".topbar > .badge")).toHaveCSS("background-color", canary);
+  await expect(page.locator(".table-wrap")).toHaveCSS("background-color", white);
 });
 
-test("secondary action stays white with near-black text", async ({ page }) => {
-  const action = page.locator(".overview-actions .button-secondary");
-  await expect(action).toHaveCSS("background-color", "rgb(255, 255, 255)");
-  await expect(action).toHaveCSS("color", "rgb(23, 23, 23)");
+test("secondary actions stay white with near-black text", async ({ page }) => {
+  const action = page.locator(".yh-pill:not(.yh-pill-primary)").first();
+  await expect(action).toHaveCSS("background-color", white);
+  await expect(action).toHaveCSS("color", nearBlack);
 });
 
 test("semantic status badges retain their meaning outside brand accents", async ({ page }) => {
-  const status = page.locator(".overview-metrics .metric-card").nth(1).locator(".badge");
+  await page.goto("/payments");
+  const status = page.locator(".table-wrap .badge-success").first();
   await expect(status).toHaveCSS("background-color", "rgb(234, 246, 239)");
   await expect(status).toHaveCSS("color", "rgb(23, 96, 58)");
 });

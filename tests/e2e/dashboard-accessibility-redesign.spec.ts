@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading } from "./support/dashboard";
 
 test("dashboard navigation and forms remain keyboard-accessible", async ({ page }) => {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -7,7 +8,7 @@ test("dashboard navigation and forms remain keyboard-accessible", async ({ page 
   await page.getByLabel("Email").fill("owner@acme.test");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   const menu = page.getByRole("button", { name: "Open navigation" });
