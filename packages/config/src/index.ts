@@ -1,7 +1,9 @@
 import { config as loadDotEnv } from "dotenv";
 import { z } from "zod";
 
-loadDotEnv({ path: new URL("../../../.env", import.meta.url) });
+// webpackIgnore stops Next.js from bundling .env as an asset, which fails wherever the file
+// is absent (Vercel, CI). Next.js gets these values from with-root-env.mjs or the host instead.
+loadDotEnv({ path: new URL(/* webpackIgnore: true */ "../../../.env", import.meta.url) });
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
