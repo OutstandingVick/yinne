@@ -2,7 +2,21 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "dev": { "cache": false, "persistent": true },
-    "build": { "dependsOn": ["^build"], "outputs": [".next/**", "dist/**", "!.next/cache/**"] },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "dist/**", "!.next/cache/**"],
+      "env": [
+        "DATABASE_URL",
+        "WORKER_DATABASE_URL",
+        "MIGRATION_DATABASE_URL",
+        "AUTH_SECRET",
+        "API_KEY_PEPPER",
+        "AUTH_TRUST_HOST",
+        "NEXT_PUBLIC_YINNE_MODE",
+        "YINNE_ALLOWED_ORIGINS",
+        "LOG_LEVEL"
+      ]
+    },
     "typecheck": { "dependsOn": ["^typecheck"], "outputs": [] },
     "test": { "dependsOn": ["^build"], "outputs": ["coverage/**"] }
   }
