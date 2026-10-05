@@ -47,6 +47,9 @@ importers:
       '@next/env':
         specifier: 15.5.24
         version: 15.5.24
+      '@node-rs/argon2':
+        specifier: 2.0.2
+        version: 2.0.2
       '@yinne/analytics':
         specifier: workspace:*
         version: link:../../modules/analytics
@@ -116,6 +119,9 @@ importers:
       pino:
         specifier: 9.9.0
         version: 9.9.0
+      postgres:
+        specifier: 3.4.7
+        version: 3.4.7
       react:
         specifier: 19.1.1
         version: 19.1.1
@@ -2085,6 +2091,7 @@ packages:
   eslint@9.34.0:
     resolution: {integrity: sha512-RNCHRX5EwdrESy3Jc9o8ie8Bog+PeYvvSR8sDGoZxNFTvZ4dlxUB3WzQ3bQMztFrSRODGrLLj8g6OFuGY/aiQg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
