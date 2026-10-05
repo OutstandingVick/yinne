@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading } from "./support/dashboard";
 
 test("all dashboard sections remain reachable without document overflow", async ({ page }) => {
   test.setTimeout(300_000);
@@ -8,7 +9,7 @@ test("all dashboard sections remain reachable without document overflow", async 
   await page.getByLabel("Email").fill("owner@acme.test");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
   const paths = [
     "/",
@@ -45,7 +46,7 @@ test("all dashboard sections remain reachable without document overflow", async 
     await page.setViewportSize({ width, height: 900 });
     for (const path of paths) {
       await page.goto(path);
-      await expect(page.locator(".page-header h1")).toBeVisible();
+      await expect(page.locator("main h1")).toBeVisible();
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
         `${path} at ${width}px`,

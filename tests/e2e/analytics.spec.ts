@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { navigateWithRail } from "./support/dashboard";
 
 async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -13,7 +14,7 @@ async function signIn(page: Page) {
 
 test("owner views canonical analytics and domain reports", async ({ page }) => {
   await signIn(page);
-  await page.getByRole("link", { name: "Analytics", exact: true }).click();
+  await navigateWithRail(page, "Analytics");
   await expect(page.getByRole("heading", { name: "Analytics" })).toBeVisible();
   await expect(page.getByText("Net collected", { exact: true })).toBeVisible();
   await page.locator('a[href="/analytics/payments"]').click();

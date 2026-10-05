@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading } from "./support/dashboard";
 
 test("commerce and payments modules retain their content and responsive containment", async ({
   page,
@@ -10,7 +11,7 @@ test("commerce and payments modules retain their content and responsive containm
   await page.getByLabel("Email").fill("owner@acme.test");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
   const screens = [
     ["/storefront", "Storefront"],

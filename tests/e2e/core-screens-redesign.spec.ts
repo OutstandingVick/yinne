@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { homeHeading } from "./support/dashboard";
 
 test("core dashboard screens preserve navigation, content, and responsive containment", async ({
   page,
@@ -10,30 +11,32 @@ test("core dashboard screens preserve navigation, content, and responsive contai
   await page.getByLabel("Email").fill("owner@acme.test");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("heading", { name: "Commerce overview" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: homeHeading })).toBeVisible();
 
-  const screens = [
-    ["/", "Commerce overview"],
-    ["/commerce/orders", "Orders"],
-    ["/commerce/products", "Products"],
-    ["/commerce/customers", "Customers"],
-    ["/payments", "Payments"],
-    ["/transactions", "Transactions"],
-    ["/analytics", "Analytics"],
-  ] as const;
+  const screens: [href: string, title: string | RegExp, slug: string][] = [
+    ["/", homeHeading, "home"],
+    ["/commerce/orders", "Orders", "orders"],
+    ["/commerce/products", "Products", "products"],
+    ["/commerce/customers", "Customers", "customers"],
+    ["/payments", "Payments", "payments"],
+    ["/transactions", "Transactions", "transactions"],
+    ["/analytics", "Analytics", "analytics"],
+  ];
   for (const width of [1440, 900, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const [href, title] of screens) {
+    for (const [href, title, slug] of screens) {
       await page.goto(href);
-      await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: title, exact: typeof title === "string" }),
+      ).toBeVisible();
       await expect(page.locator(".core-screen")).toBeVisible();
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
-        `${title} at ${width}px`,
+        `${slug} at ${width}px`,
       ).toBe(true);
       if (width === 390)
         await page.screenshot({
-          path: `test-results/core-${title.toLowerCase().replaceAll(" ", "-")}-390.png`,
+          path: `test-results/core-${slug}-390.png`,
           fullPage: true,
         });
     }

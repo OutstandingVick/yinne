@@ -4,10 +4,12 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 export function DashboardShell({
+  rail,
   sidebar,
   topbar,
   children,
 }: {
+  rail: ReactNode;
   sidebar: ReactNode;
   topbar: ReactNode;
   children: ReactNode;
@@ -31,7 +33,7 @@ export function DashboardShell({
         Skip to content
       </a>
       <div className={`shell${pathname === "/" ? " home-shell" : ""}`}>
-        <aside className="sidebar desktop-sidebar">{sidebar}</aside>
+        <aside className="rail desktop-sidebar">{rail}</aside>
         <div className="main">
           <header className="topbar">
             <button
