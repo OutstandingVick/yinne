@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { navigateWithRail } from "./support/dashboard";
+import { fetchFromPage, navigateWithRail } from "./support/dashboard";
 
 async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -26,7 +26,8 @@ test("owner views canonical analytics and domain reports", async ({ page }) => {
 
 test("analytics API partitions currencies and validates ranges", async ({ page }) => {
   await signIn(page);
-  const valid = await page.request.get(
+  const valid = await fetchFromPage(
+    page,
     "/v1/analytics/sales?from=2026-08-01T00%3A00%3A00.000Z&to=2026-09-01T00%3A00%3A00.000Z&timezone=Africa%2FLagos",
   );
   expect(valid.status()).toBe(200);
@@ -38,7 +39,8 @@ test("analytics API partitions currencies and validates ranges", async ({ page }
   expect(Object.values(body.gmv).every((amount) => /^-?[0-9]+$/.test(amount))).toBe(true);
   expect(body.gmv).not.toHaveProperty("mixed");
   expect(body.meta.formula_version).toBe("analytics.v1");
-  const invalid = await page.request.get(
+  const invalid = await fetchFromPage(
+    page,
     "/v1/analytics/sales?from=2026-09-01T00%3A00%3A00.000Z&to=2026-08-01T00%3A00%3A00.000Z",
   );
   expect(invalid.status()).toBe(400);

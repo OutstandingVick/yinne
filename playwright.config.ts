@@ -16,10 +16,14 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "YINNE_ALLOWED_ORIGINS=http://127.0.0.1:3010 pnpm --filter @yinne/dashboard dev:e2e",
+    // CI tests a production build: `next dev` compiles each route on first visit, which on
+    // 2-core runners outlasts navigation and action timeouts. Locally the dev server is kept.
+    command: process.env.CI
+      ? "YINNE_ALLOWED_ORIGINS=http://127.0.0.1:3010 pnpm --filter @yinne/dashboard build && YINNE_ALLOWED_ORIGINS=http://127.0.0.1:3010 pnpm --filter @yinne/dashboard start --port 3010"
+      : "YINNE_ALLOWED_ORIGINS=http://127.0.0.1:3010 pnpm --filter @yinne/dashboard dev:e2e",
     url: "http://127.0.0.1:3010/v1/health",
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: process.env.CI ? 420_000 : 120_000,
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

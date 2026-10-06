@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { navigateWithRail } from "./support/dashboard";
+import { fetchFromPage, navigateWithRail } from "./support/dashboard";
 
 async function signIn(page: Page) {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -51,14 +51,13 @@ async function issueFreshInvoice(page: Page) {
   await page.getByRole("button", { name: "Save draft" }).click();
   await expect(page).toHaveURL(/\/invoices\/[0-9a-f-]{36}$/);
   const invoiceId = new URL(page.url()).pathname.split("/").at(-1)!;
-  const response = await page.request.post(`/v1/invoices/${invoiceId}/issue`, {
-    headers: {
-      origin: new URL(page.url()).origin,
-      "idempotency-key": crypto.randomUUID() + crypto.randomUUID(),
-    },
+  const response = await fetchFromPage(page, `/v1/invoices/${invoiceId}/issue`, {
+    method: "POST",
+    headers: { "idempotency-key": crypto.randomUUID() + crypto.randomUUID() },
   });
-  expect(response.ok()).toBe(true);
-  const { invoice } = (await response.json()) as {
+  const body = await response.text();
+  expect(response.status(), body).toBe(200);
+  const { invoice } = JSON.parse(body) as {
     invoice: { invoice_number: string; invoice_url: string };
   };
   return invoice;
