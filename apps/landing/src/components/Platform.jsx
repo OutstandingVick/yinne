@@ -1,4 +1,11 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
+
+function CodePanel() {
+  return (
+    <div className="overflow-hidden rounded-[10px] bg-ink shadow-[0_24px_60px_rgba(23,23,23,0.18)]"></div>
+  );
+}
+
 /** Section 2: what Yinne runs, shown as an API call, endpoints and module cards. */
 export default function Platform() {
   return (
@@ -19,6 +26,9 @@ export default function Platform() {
             <p className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400">
               ⓘ Call it from anywhere
             </p>
+            <div className="mt-4">
+              <CodePanel />
+            </div>
           </div>
         </div>
       </div>
