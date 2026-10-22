@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         cobalt: "#2457FF",
+        canary: "#F5F749",
         ink: "#171717",
       },
     },
