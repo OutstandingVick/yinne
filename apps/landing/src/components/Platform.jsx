@@ -12,6 +12,11 @@ const modules = [
     title: "Payments & refunds",
     body: "Payment links, hosted checkout and refunds, reconciled the moment money moves.",
   },
+  {
+    tag: "Finance",
+    title: "Invoices & subscriptions",
+    body: "Issue invoices, bill on a schedule and let customers pay from a link that just works.",
+  },
 ];
 
 const endpoints = [
