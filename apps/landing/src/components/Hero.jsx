@@ -12,6 +12,10 @@ export default function Hero() {
           <h1 className="mt-6 font-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.95] tracking-[-0.03em] text-ink">
             Commerce and payments, in one calm place.
           </h1>
+          <p className="mt-8 max-w-[34ch] font-display text-[clamp(1.4rem,2.4vw,2.1rem)] leading-[1.25] tracking-[-0.02em] text-gray-500">
+            <span className="text-ink">Orders, inventory and payments</span> — run from one
+            dashboard, live from your very first sale.
+          </p>
         </div>
       </div>
     </section>
