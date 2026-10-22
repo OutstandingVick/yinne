@@ -1,6 +1,6 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
 
-const chips = ["⚡ Real-time", "◎ Multi-currency"];
+const chips = ["⚡ Real-time", "◎ Multi-currency", "▢ Test mode", "{ } Typed API", "↻ Webhooks"];
 
 function CodePanel() {
   return (
