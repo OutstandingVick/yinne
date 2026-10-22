@@ -11,6 +11,11 @@ export default function HowItWorks() {
               From first product to first payout.
             </h2>
           </div>
+          <p className="max-w-[52ch] text-[15px] leading-relaxed text-white/60 lg:justify-self-end">
+            No integrations to wire up and nothing to install. Set up in an afternoon, take your
+            first payment in test mode, and{" "}
+            <strong className="font-bold text-canary">go live when you are ready.</strong>
+          </p>
         </div>
       </div>
     </section>
