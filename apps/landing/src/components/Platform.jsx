@@ -22,6 +22,8 @@ function CodePanel() {
           <span className="text-canary">$</span> curl api.yinne.store/v1/orders?status=paid{"\n"}
           {"{"}
           {"\n"}
+          {"  "}
+          <span className="text-vanilla">"count"</span>: 52,{"\n"}
           {"}"}
         </code>
       </pre>
