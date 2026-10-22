@@ -1,3 +1,4 @@
+import Footer from "./components/Footer.jsx";
 import Hero from "./components/Hero.jsx";
 import HowItWorks from "./components/HowItWorks.jsx";
 import Platform from "./components/Platform.jsx";
@@ -10,6 +11,7 @@ export default function App() {
         <Platform />
         <HowItWorks />
       </main>
+      <Footer />
     </>
   );
 }
