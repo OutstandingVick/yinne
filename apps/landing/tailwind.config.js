@@ -12,6 +12,7 @@ export default {
       fontFamily: {
         // Free stand-ins for parse.bot's PP Mondwest (pixel serif) and PP Neue Bit (bitmap).
         display: ['"Pixelify Sans"', "ui-serif", "Georgia", "serif"],
+        bit: ['"Silkscreen"', "ui-monospace", "monospace"],
         mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
     },
