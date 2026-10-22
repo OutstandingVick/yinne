@@ -1,4 +1,5 @@
 import Navbar from "./Navbar.jsx";
+import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 
 /** Section 1: headline, value line, calls to action and the dot-matrix globe. */
@@ -16,6 +17,11 @@ export default function Hero() {
             <span className="text-ink">Orders, inventory and payments</span> — run from one
             dashboard, live from your very first sale.
           </p>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Button href="https://app.yinne.store" arrow>
+              Open the dashboard
+            </Button>
+          </div>
         </div>
       </div>
     </section>
