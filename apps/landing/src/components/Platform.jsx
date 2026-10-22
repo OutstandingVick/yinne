@@ -13,6 +13,10 @@ export default function Platform() {
           spreadsheet. Yinne is all of it at once — and every screen is backed by the same API,{" "}
           <strong className="font-bold text-ink">so your data is never in two places.</strong>
         </p>
+
+        <div className="mt-14 grid gap-6 lg:grid-cols-[1.35fr_1fr]">
+          <div className="rounded-[12px] border border-gray-200 bg-gray-50/60 p-4 sm:p-6"></div>
+        </div>
       </div>
     </section>
   );
