@@ -247,7 +247,8 @@ ALTER TABLE idempotency_records ADD CONSTRAINT idempotency_environment_check CHE
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'yinne_app') THEN
-    CREATE ROLE yinne_app LOGIN PASSWORD 'yinne_app' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION;
+    -- No password here: scripts/migrate.ts sets it from DATABASE_URL after migrating.
+    CREATE ROLE yinne_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION;
   END IF;
 END
 $$;
