@@ -27,6 +27,18 @@ export default function Footer() {
           </div>
         </div>
 
+        <div className="grid gap-10 border-b border-gray-100 py-14 sm:grid-cols-[1.5fr_1fr_1fr]">
+          <div>
+            <a href="/" className="flex items-center gap-3">
+              <img src="/yinne-icon.svg" alt="" width="32" height="32" className="rounded-[8px]" />
+              <span className="font-display text-2xl tracking-[-0.02em] text-ink">Yinne</span>
+            </a>
+            <p className="mt-4 max-w-[34ch] text-[13px] leading-relaxed text-gray-500">
+              Commerce and payments, in one calm place.
+            </p>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-2 py-8 font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400 sm:flex-row sm:justify-between">
           <span>© {new Date().getFullYear()} Yinne</span>
           <span>Test mode · No real financial execution</span>
