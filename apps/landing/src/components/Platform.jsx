@@ -24,6 +24,10 @@ function CodePanel() {
           {"\n"}
           {"  "}
           <span className="text-vanilla">"count"</span>: 52,{"\n"}
+          {"  "}
+          <span className="text-vanilla">"orders"</span>: [{"\n"}
+          {"  ]"}
+          {"\n"}
           {"}"}
         </code>
       </pre>
