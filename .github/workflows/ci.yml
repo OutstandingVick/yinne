@@ -23,7 +23,7 @@ jobs:
           --health-interval 2s --health-timeout 3s --health-retries 20
     env:
       NODE_ENV: test
-      DATABASE_URL: postgresql://yinne_app:yinne_app@localhost:5432/yinne
+      DATABASE_URL: postgresql://yinne_app:yinne_app_local@localhost:5432/yinne
       WORKER_DATABASE_URL: postgresql://yinne_worker:yinne_worker_local@localhost:5432/yinne
       MIGRATION_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/yinne
       AUTH_SECRET: ci-auth-secret-at-least-thirty-two-characters
