@@ -6,6 +6,7 @@ export default {
       colors: {
         cobalt: "#2457FF",
         canary: "#F5F749",
+        vanilla: "#F6F5AE",
         ink: "#171717",
       },
     },
