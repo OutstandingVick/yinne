@@ -38,7 +38,14 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/*.js", "**/*.mjs"],
+    files: ["**/*.js", "**/*.mjs", "**/*.jsx"],
     ...tseslint.configs.disableTypeChecked,
+  },
+  {
+    files: ["apps/landing/**/*.{js,jsx}"],
+    languageOptions: {
+      parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: { document: "readonly", window: "readonly" },
+    },
   },
 );
