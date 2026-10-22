@@ -27,7 +27,7 @@ export default function Footer() {
         <div className="relative overflow-hidden rounded-[16px] bg-cobalt px-6 py-16 text-white sm:px-12 lg:py-24">
           <span
             aria-hidden="true"
-            className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-canary"
+            className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-canary sm:-right-16 sm:-top-16 sm:h-64 sm:w-64"
           />
           <span
             aria-hidden="true"
