@@ -12,6 +12,10 @@ function CodePanel() {
         <span className="font-bit text-[10px] uppercase tracking-[0.14em] text-white/40">
           yinne · test
         </span>
+        <span className="flex items-center gap-1.5 font-bit text-[10px] uppercase tracking-[0.14em] text-canary">
+          <span className="h-1.5 w-1.5 rounded-full bg-canary" aria-hidden="true" />
+          200 · 38ms
+        </span>
       </div>
     </div>
   );
