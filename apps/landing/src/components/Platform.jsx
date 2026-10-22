@@ -1,6 +1,14 @@
 import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 
+const modules = [
+  {
+    tag: "Commerce",
+    title: "Orders & inventory",
+    body: "Products, variants and stock across every location, with orders that know what you can actually sell.",
+  },
+];
+
 const endpoints = [
   { method: "GET", path: "/v1/orders", label: "Every order, newest first." },
   { method: "POST", path: "/v1/payment-links", label: "Get paid from a link." },
@@ -113,6 +121,23 @@ export default function Platform() {
             </div>
           </div>
         </div>
+
+        <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {modules.map((module) => (
+            <li
+              key={module.title}
+              className="rounded-[12px] border border-gray-200 bg-white p-6 transition-colors hover:border-ink"
+            >
+              <p className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-500">
+                {module.tag}
+              </p>
+              <h3 className="mt-6 font-display text-2xl leading-tight tracking-[-0.02em] text-ink">
+                {module.title}
+              </h3>
+              <p className="mt-3 text-[13px] leading-relaxed text-gray-600">{module.body}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
