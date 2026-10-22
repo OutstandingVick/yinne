@@ -11,6 +11,11 @@ const steps = [
     title: "Share a link",
     body: "Send a payment link, an invoice or your storefront. Customers pay without an account.",
   },
+  {
+    number: "03",
+    title: "Get paid",
+    body: "Payments reconcile automatically, stock updates on success and refunds stay in sync.",
+  },
 ];
 
 /** Section 3: four steps from first product to first payout, on a near-black band. */
