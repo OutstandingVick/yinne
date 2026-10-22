@@ -26,6 +26,9 @@ function CodePanel() {
           <span className="text-vanilla">"count"</span>: 52,{"\n"}
           {"  "}
           <span className="text-vanilla">"orders"</span>: [{"\n"}
+          {"    "}
+          {'{ "number": "ORD-01A1", "total": "NGN 12,500.00", "status": "paid" },'}
+          {"\n"}
           {"  ]"}
           {"\n"}
           {"}"}
