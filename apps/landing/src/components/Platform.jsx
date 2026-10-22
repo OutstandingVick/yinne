@@ -1,5 +1,7 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
 
+const endpoints = [{ method: "GET", path: "/v1/orders", label: "Every order, newest first." }];
+
 const chips = ["⚡ Real-time", "◎ Multi-currency", "▢ Test mode", "{ } Typed API", "↻ Webhooks"];
 
 function CodePanel() {
@@ -86,6 +88,18 @@ export default function Platform() {
               <span className="inline-block rounded-[4px] border border-gray-200 px-2 py-1 font-bit text-[10px] uppercase tracking-[0.12em] text-gray-500">
                 Read & write
               </span>
+              <ul className="mt-6 divide-y divide-gray-100">
+                {endpoints.map((endpoint) => (
+                  <li key={endpoint.path} className="grid grid-cols-[auto_1fr] gap-x-4 py-4">
+                    <span className="font-mono text-xs text-gray-400">
+                      {endpoint.method} <span className="text-gray-500">{endpoint.path}</span>
+                    </span>
+                    <span className="font-display text-lg leading-snug tracking-[-0.01em] text-ink">
+                      {endpoint.label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
