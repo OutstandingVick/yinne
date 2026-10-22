@@ -29,6 +29,9 @@ function CodePanel() {
           {"    "}
           {'{ "number": "ORD-01A1", "total": "NGN 12,500.00", "status": "paid" },'}
           {"\n"}
+          {"    "}
+          {'{ "number": "ORD-01A0", "total": "NGN 6,500.00", "status": "paid" }'}
+          {"\n"}
           {"  ]"}
           {"\n"}
           {"}"}
