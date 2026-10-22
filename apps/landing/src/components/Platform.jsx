@@ -17,6 +17,14 @@ function CodePanel() {
           200 · 38ms
         </span>
       </div>
+      <pre className="overflow-x-auto p-5 font-mono text-[13px] leading-relaxed text-white/80">
+        <code>
+          <span className="text-canary">$</span> curl api.yinne.store/v1/orders?status=paid{"\n"}
+          {"{"}
+          {"\n"}
+          {"}"}
+        </code>
+      </pre>
     </div>
   );
 }
