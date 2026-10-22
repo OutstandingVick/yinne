@@ -23,7 +23,8 @@ export default function DotMatrix() {
         const onParallel = Math.abs(Math.sin(lat * 4)) < 0.16;
         const rim = rr > 0.86;
         if (onMeridian || onParallel || rim) {
-          result.push({ row, col, highlight: false, depth: 0.35 + z * 0.65 });
+          const highlight = (row * 7 + col * 3) % 23 === 0;
+          result.push({ row, col, highlight, depth: 0.35 + z * 0.65 });
         }
       }
     }
