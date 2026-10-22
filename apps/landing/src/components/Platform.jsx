@@ -17,6 +17,11 @@ const modules = [
     title: "Invoices & subscriptions",
     body: "Issue invoices, bill on a schedule and let customers pay from a link that just works.",
   },
+  {
+    tag: "Intelligence",
+    title: "Analytics & capital",
+    body: "Live revenue, customer and payment reports, plus a capital profile built from your real numbers.",
+  },
 ];
 
 const endpoints = [
