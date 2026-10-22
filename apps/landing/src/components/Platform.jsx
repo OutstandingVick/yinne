@@ -64,6 +64,9 @@ export default function Platform() {
             <div className="mt-4">
               <CodePanel />
             </div>
+            <p className="mt-4 font-mono text-xs text-gray-500">
+              ↳ the same data the dashboard shows, over REST with typed JSON.
+            </p>
           </div>
         </div>
       </div>
