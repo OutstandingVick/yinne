@@ -1,4 +1,7 @@
-const links = [{ label: "Platform", href: "#platform" }];
+const links = [
+  { label: "Platform", href: "#platform" },
+  { label: "How it works", href: "#how-it-works" },
+];
 
 /** Floating header: wordmark on the left, a frosted pill of links on the right. */
 export default function Navbar() {
