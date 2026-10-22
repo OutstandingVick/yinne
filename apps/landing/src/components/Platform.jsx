@@ -2,7 +2,15 @@ import Eyebrow from "./ui/Eyebrow.jsx";
 
 function CodePanel() {
   return (
-    <div className="overflow-hidden rounded-[10px] bg-ink shadow-[0_24px_60px_rgba(23,23,23,0.18)]"></div>
+    <div className="overflow-hidden rounded-[10px] bg-ink shadow-[0_24px_60px_rgba(23,23,23,0.18)]">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+        <div className="flex gap-1.5" aria-hidden="true">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+        </div>
+      </div>
+    </div>
   );
 }
 
