@@ -9,6 +9,9 @@ function CodePanel() {
           <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
         </div>
+        <span className="font-bit text-[10px] uppercase tracking-[0.14em] text-white/40">
+          yinne · test
+        </span>
       </div>
     </div>
   );
