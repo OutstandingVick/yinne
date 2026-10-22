@@ -1,4 +1,13 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
+
+const steps = [
+  {
+    number: "01",
+    title: "Add what you sell",
+    body: "Create products and variants, set prices and record stock at each location.",
+  },
+];
+
 /** Section 3: four steps from first product to first payout, on a near-black band. */
 export default function HowItWorks() {
   return (
@@ -17,6 +26,20 @@ export default function HowItWorks() {
             <strong className="font-bold text-canary">go live when you are ready.</strong>
           </p>
         </div>
+
+        <ol className="mt-16 grid gap-px overflow-hidden rounded-[12px] border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step) => (
+            <li key={step.number} className="group bg-ink p-6 transition-colors hover:bg-[#1f1f1f]">
+              <span className="font-bit text-[11px] tracking-[0.14em] text-canary">
+                {step.number}
+              </span>
+              <h3 className="mt-10 font-display text-2xl leading-tight tracking-[-0.02em]">
+                {step.title}
+              </h3>
+              <p className="mt-3 text-[13px] leading-relaxed text-white/55">{step.body}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
