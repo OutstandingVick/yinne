@@ -4,7 +4,10 @@ import Eyebrow from "./ui/Eyebrow.jsx";
 const columns = [
   {
     title: "Product",
-    links: [{ label: "Platform", href: "#platform" }],
+    links: [
+      { label: "Platform", href: "#platform" },
+      { label: "How it works", href: "#how-it-works" },
+    ],
   },
 ];
 
