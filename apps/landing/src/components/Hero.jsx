@@ -3,6 +3,8 @@ import Button from "./ui/Button.jsx";
 import DotMatrix from "./ui/DotMatrix.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 
+const stats = [{ value: "8", label: "Modules" }];
+
 /** Section 1: headline, value line, calls to action and the dot-matrix globe. */
 export default function Hero() {
   return (
@@ -35,6 +37,18 @@ export default function Hero() {
         </div>
         <div className="flex flex-col items-center gap-8 lg:items-end">
           <DotMatrix />
+          <dl className="grid w-full max-w-[460px] grid-cols-3 border-t border-gray-200 pt-6">
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <dt className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400">
+                  {stat.label}
+                </dt>
+                <dd className="mt-1 font-display text-4xl tracking-[-0.03em] text-ink">
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>
