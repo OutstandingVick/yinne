@@ -25,6 +25,12 @@ export default function Hero() {
               See how it works
             </Button>
           </div>
+          <div className="mt-10 inline-flex items-center gap-3 rounded-[6px] border border-gray-200 bg-white/80 px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-cobalt" aria-hidden="true" />
+            <span className="font-bit text-[11px] uppercase tracking-[0.12em] text-gray-500">
+              Built in Lagos · Test mode live
+            </span>
+          </div>
         </div>
       </div>
     </section>
