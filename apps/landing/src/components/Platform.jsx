@@ -1,6 +1,9 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
 
-const endpoints = [{ method: "GET", path: "/v1/orders", label: "Every order, newest first." }];
+const endpoints = [
+  { method: "GET", path: "/v1/orders", label: "Every order, newest first." },
+  { method: "POST", path: "/v1/payment-links", label: "Get paid from a link." },
+];
 
 const chips = ["⚡ Real-time", "◎ Multi-currency", "▢ Test mode", "{ } Typed API", "↻ Webhooks"];
 
