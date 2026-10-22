@@ -1,3 +1,4 @@
+import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 
 const endpoints = [
@@ -104,6 +105,11 @@ export default function Platform() {
                   </li>
                 ))}
               </ul>
+            </div>
+            <div className="mt-8">
+              <Button href="https://app.yinne.store" variant="cobalt" arrow>
+                Start in test mode
+              </Button>
             </div>
           </div>
         </div>
