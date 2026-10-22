@@ -6,6 +6,11 @@ const steps = [
     title: "Add what you sell",
     body: "Create products and variants, set prices and record stock at each location.",
   },
+  {
+    number: "02",
+    title: "Share a link",
+    body: "Send a payment link, an invoice or your storefront. Customers pay without an account.",
+  },
 ];
 
 /** Section 3: four steps from first product to first payout, on a near-black band. */
