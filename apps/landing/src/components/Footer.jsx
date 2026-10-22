@@ -6,6 +6,10 @@ export default function Footer() {
     <footer className="bg-white">
       <div className="mx-auto max-w-[1320px] px-4 pt-24 sm:px-6 lg:pt-32">
         <div className="relative overflow-hidden rounded-[16px] bg-cobalt px-6 py-16 text-white sm:px-12 lg:py-24">
+          <span
+            aria-hidden="true"
+            className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-canary"
+          />
           <div className="relative max-w-[22ch]">
             <Eyebrow tone="dark">Start today</Eyebrow>
             <h2 className="mt-5 font-display text-[clamp(2.75rem,6vw,4.75rem)] leading-[0.98] tracking-[-0.03em]">
