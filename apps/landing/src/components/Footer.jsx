@@ -1,0 +1,87 @@
+import Button from "./ui/Button.jsx";
+import Eyebrow from "./ui/Eyebrow.jsx";
+
+const columns = [
+  {
+    title: "Product",
+    links: [
+      { label: "Platform", href: "#platform" },
+      { label: "How it works", href: "#how-it-works" },
+      { label: "Dashboard", href: "https://app.yinne.store" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "GitHub", href: "https://github.com/OutstandingVick/yinne" },
+      { label: "Contact", href: "mailto:hello@yinne.store" },
+    ],
+  },
+];
+
+/** Section 4: closing statement, call to action, links and the legal line. */
+export default function Footer() {
+  return (
+    <footer className="bg-white">
+      <div className="mx-auto max-w-[1320px] px-4 pt-24 sm:px-6 lg:pt-32">
+        <div className="relative overflow-hidden rounded-[16px] bg-cobalt px-6 py-16 text-white sm:px-12 lg:py-24">
+          <span
+            aria-hidden="true"
+            className="absolute -right-20 -top-20 h-40 w-40 rounded-full bg-canary sm:-right-16 sm:-top-16 sm:h-64 sm:w-64"
+          />
+          <span
+            aria-hidden="true"
+            className="absolute right-40 top-28 hidden h-14 w-14 rounded-full bg-vanilla sm:block"
+          />
+          <div className="relative max-w-[880px]">
+            <Eyebrow tone="dark">Start today</Eyebrow>
+            <h2 className="mt-5 font-display text-[clamp(2.75rem,6vw,4.75rem)] leading-[0.98] tracking-[-0.03em]">
+              Your business, finally in one place.
+            </h2>
+          </div>
+          <div className="relative mt-10 flex flex-wrap gap-3">
+            <Button href="https://app.yinne.store" variant="light" arrow>
+              Open the dashboard
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid gap-10 border-b border-gray-100 py-14 sm:grid-cols-[1.5fr_1fr_1fr]">
+          <div>
+            <a href="/" className="flex items-center gap-3">
+              <img src="/yinne-icon.svg" alt="" width="32" height="32" className="rounded-[8px]" />
+              <span className="font-display text-2xl tracking-[-0.02em] text-ink">Yinne</span>
+            </a>
+            <p className="mt-4 max-w-[34ch] text-[13px] leading-relaxed text-gray-500">
+              Commerce and payments, in one calm place.
+            </p>
+          </div>
+          {columns.map((column) => (
+            <div key={column.title}>
+              <p className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400">
+                {column.title}
+              </p>
+              <ul className="mt-4 space-y-2">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-[13px] text-ink transition-colors hover:text-cobalt"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-2 py-8 font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400 sm:flex-row sm:justify-between">
+          <span>© {new Date().getFullYear()} Yinne</span>
+          <span>Test mode · No real financial execution</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
