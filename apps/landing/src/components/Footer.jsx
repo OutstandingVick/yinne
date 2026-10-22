@@ -1,5 +1,13 @@
 import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
+
+const columns = [
+  {
+    title: "Product",
+    links: [{ label: "Platform", href: "#platform" }],
+  },
+];
+
 /** Section 4: closing statement, call to action, links and the legal line. */
 export default function Footer() {
   return (
@@ -37,6 +45,25 @@ export default function Footer() {
               Commerce and payments, in one calm place.
             </p>
           </div>
+          {columns.map((column) => (
+            <div key={column.title}>
+              <p className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400">
+                {column.title}
+              </p>
+              <ul className="mt-4 space-y-2">
+                {column.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-[13px] text-ink transition-colors hover:text-cobalt"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <div className="flex flex-col gap-2 py-8 font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400 sm:flex-row sm:justify-between">
