@@ -1,7 +1,7 @@
 import { config as loadDotEnv } from "dotenv";
 import { createHash } from "node:crypto";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import postgres from "postgres";
 import { hashPassword, permissionKeys, predefinedRolePermissions, roleKeys } from "@yinne/auth";
 import {
@@ -1073,7 +1073,20 @@ try {
       })
       .onConflictDoUpdate({
         target: [invoiceCounters.organizationId, invoiceCounters.environment, invoiceCounters.year],
-        set: { nextValue: 5 },
+        // Never move the counter backwards or onto a number already in use: invoices issued
+        // since the last seed hold numbers above the fixtures, and reusing one would violate the
+        // unique index.
+        set: {
+          nextValue: sql`greatest(
+            ${invoiceCounters.nextValue},
+            5,
+            (select coalesce(max(split_part(${invoices.number}, '-', 3)::int), 0) + 1
+               from ${invoices}
+              where ${invoices.organizationId} = ${organizationId}
+                and ${invoices.environment} = 'test'
+                and ${invoices.number} like 'INV-2026-%')
+          )`,
+        },
       });
     const invoiceFixtures = [
       {
