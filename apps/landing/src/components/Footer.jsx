@@ -7,6 +7,7 @@ const columns = [
     links: [
       { label: "Platform", href: "#platform" },
       { label: "How it works", href: "#how-it-works" },
+      { label: "Dashboard", href: "https://app.yinne.store" },
     ],
   },
 ];
