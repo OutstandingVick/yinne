@@ -2,6 +2,7 @@ const styles = {
   primary: "bg-ink text-white hover:bg-cobalt",
   secondary: "border border-gray-200 bg-white text-ink hover:border-ink",
   cobalt: "bg-cobalt text-white hover:bg-ink",
+  light: "bg-white text-ink hover:bg-vanilla",
 };
 
 /** Square-cornered uppercase mono button with an optional trailing arrow. */
