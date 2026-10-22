@@ -80,6 +80,10 @@ export default function Platform() {
               ))}
             </ul>
           </div>
+
+          <div className="flex flex-col justify-between rounded-[12px] border border-gray-200 bg-white p-6">
+            <div></div>
+          </div>
         </div>
       </div>
     </section>
