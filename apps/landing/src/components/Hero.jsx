@@ -1,5 +1,6 @@
 import Navbar from "./Navbar.jsx";
 import Button from "./ui/Button.jsx";
+import DotMatrix from "./ui/DotMatrix.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 
 /** Section 1: headline, value line, calls to action and the dot-matrix globe. */
@@ -31,6 +32,9 @@ export default function Hero() {
               Built in Lagos · Test mode live
             </span>
           </div>
+        </div>
+        <div className="flex flex-col items-center gap-8 lg:items-end">
+          <DotMatrix />
         </div>
       </div>
     </section>
