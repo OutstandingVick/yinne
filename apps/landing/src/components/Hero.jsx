@@ -6,12 +6,19 @@ import Eyebrow from "./ui/Eyebrow.jsx";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-gray-100 bg-white">
-      <img
-        src="/hero-store.jpg"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-60"
-      />
+      {/* Store-aisle photo blended into the hero palette: a cobalt multiply tint, a white wash
+          that keeps the headline readable, the vanilla glow and a fade into the next section. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <img
+          src="/hero-store.jpg"
+          alt=""
+          className="h-full w-full object-cover object-[70%_center] saturate-[0.85]"
+        />
+        <div className="absolute inset-0 bg-cobalt/25 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/75 lg:via-white/85 lg:to-white/25" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#F6F5AE_0%,rgba(246,245,174,0)_55%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white" />
+      </div>
       <Navbar />
       <div className="relative mx-auto grid max-w-[1320px] items-center gap-12 px-4 pb-20 pt-36 sm:px-6 lg:grid-cols-[1.25fr_1fr] lg:pb-28 lg:pt-44">
         <div>
