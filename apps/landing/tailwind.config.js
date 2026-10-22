@@ -9,6 +9,9 @@ export default {
         vanilla: "#F6F5AE",
         ink: "#171717",
       },
+      fontFamily: {
+        mono: ['"JetBrains Mono"', "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+      },
     },
   },
   plugins: [],
