@@ -82,7 +82,11 @@ export default function Platform() {
           </div>
 
           <div className="flex flex-col justify-between rounded-[12px] border border-gray-200 bg-white p-6">
-            <div></div>
+            <div>
+              <span className="inline-block rounded-[4px] border border-gray-200 px-2 py-1 font-bit text-[10px] uppercase tracking-[0.12em] text-gray-500">
+                Read & write
+              </span>
+            </div>
           </div>
         </div>
       </div>
