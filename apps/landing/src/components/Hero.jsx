@@ -3,7 +3,10 @@ import Button from "./ui/Button.jsx";
 import DotMatrix from "./ui/DotMatrix.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 
-const stats = [{ value: "8", label: "Modules" }];
+const stats = [
+  { value: "8", label: "Modules" },
+  { value: "1", label: "Dashboard" },
+];
 
 /** Section 1: headline, value line, calls to action and the dot-matrix globe. */
 export default function Hero() {
