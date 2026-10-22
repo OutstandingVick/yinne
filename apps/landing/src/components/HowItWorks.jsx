@@ -16,6 +16,11 @@ const steps = [
     title: "Get paid",
     body: "Payments reconcile automatically, stock updates on success and refunds stay in sync.",
   },
+  {
+    number: "04",
+    title: "Grow with data",
+    body: "Watch revenue, customers and payments in real time, and plan with real numbers.",
+  },
 ];
 
 /** Section 3: four steps from first product to first payout, on a near-black band. */
