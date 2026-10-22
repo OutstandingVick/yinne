@@ -10,6 +10,13 @@ const columns = [
       { label: "Dashboard", href: "https://app.yinne.store" },
     ],
   },
+  {
+    title: "Company",
+    links: [
+      { label: "GitHub", href: "https://github.com/OutstandingVick/yinne" },
+      { label: "Contact", href: "mailto:hello@yinne.store" },
+    ],
+  },
 ];
 
 /** Section 4: closing statement, call to action, links and the legal line. */
