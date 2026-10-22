@@ -3,6 +3,7 @@ import Eyebrow from "./ui/Eyebrow.jsx";
 const endpoints = [
   { method: "GET", path: "/v1/orders", label: "Every order, newest first." },
   { method: "POST", path: "/v1/payment-links", label: "Get paid from a link." },
+  { method: "GET", path: "/v1/analytics/sales", label: "Revenue by day and currency." },
 ];
 
 const chips = ["⚡ Real-time", "◎ Multi-currency", "▢ Test mode", "{ } Typed API", "↻ Webhooks"];
