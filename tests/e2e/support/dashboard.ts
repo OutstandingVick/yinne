@@ -32,6 +32,9 @@ export async function navigateWithRail(page: Page, pageName: string) {
     await group.locator(".rail-flyout").getByRole("link", { name: pageName, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`${href}$`), { timeout: 5_000 });
   }).toPass({ timeout: 30_000 });
+  // Move the pointer off the rail so its hover flyout cannot cover the page under test.
+  const viewport = page.viewportSize();
+  if (viewport) await page.mouse.move(viewport.width - 1, viewport.height - 1);
 }
 
 /**

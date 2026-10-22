@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { isActive, navigation, type NavGroup } from "./navigation";
 
@@ -21,6 +22,12 @@ const icons: Record<NavGroup["icon"], string> = {
 /** Desktop navigation: one icon per group, with the group's pages in a flyout. */
 export function Rail() {
   const pathname = usePathname();
+  // Flyouts open on :focus-within, so the link just clicked would keep its panel open over
+  // the new page. Release that focus once navigation lands.
+  useEffect(() => {
+    const focused = document.activeElement;
+    if (focused instanceof HTMLElement && focused.closest(".rail-flyout")) focused.blur();
+  }, [pathname]);
   return (
     <>
       <Link href="/" className="rail-brand" aria-label="Yinne home">
