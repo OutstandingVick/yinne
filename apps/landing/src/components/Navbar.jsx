@@ -1,3 +1,5 @@
+const links = [{ label: "Platform", href: "#platform" }];
+
 /** Floating header: wordmark on the left, a frosted pill of links on the right. */
 export default function Navbar() {
   return (
@@ -16,6 +18,15 @@ export default function Navbar() {
           </span>
         </a>
         <div className="flex items-center gap-1 rounded-[14px] border border-white/70 bg-white/70 p-1.5 shadow-[0_8px_30px_rgba(23,23,23,0.08)] backdrop-blur-md">
+          {links.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="hidden rounded-[10px] px-5 py-2.5 font-mono text-[13px] uppercase tracking-[0.06em] text-ink/80 transition-colors hover:bg-vanilla hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-cobalt sm:block"
+            >
+              {link.label}
+            </a>
+          ))}
           <a
             href="https://app.yinne.store"
             className="rounded-[10px] bg-ink px-5 py-2.5 font-mono text-[13px] uppercase tracking-[0.06em] text-white transition-colors hover:bg-cobalt focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
