@@ -3,7 +3,7 @@ export default function Eyebrow({ children, tone = "light" }) {
   return (
     <p
       className={`font-bit text-[11px] uppercase tracking-[0.14em] ${
-        tone === "dark" ? "text-white/50" : "text-gray-400"
+        tone === "dark" ? "text-white/60" : "text-gray-500"
       }`}
     >
       + {children}
