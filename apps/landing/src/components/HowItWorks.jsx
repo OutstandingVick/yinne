@@ -52,6 +52,10 @@ export default function HowItWorks() {
                 {step.title}
               </h3>
               <p className="mt-3 text-[13px] leading-relaxed text-white/55">{step.body}</p>
+              <span
+                aria-hidden="true"
+                className="mt-8 block h-px w-8 bg-cobalt transition-all duration-300 group-hover:w-full"
+              />
             </li>
           ))}
         </ol>
