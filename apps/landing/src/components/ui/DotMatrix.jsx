@@ -28,7 +28,7 @@ export default function DotMatrix() {
         }
       }
     }
-    return result;
+    return new Map(result.map((dot) => [dot.row * SIZE + dot.col, dot]));
   }, []);
 
   return (
@@ -38,7 +38,7 @@ export default function DotMatrix() {
       style={{ gridTemplateColumns: `repeat(${SIZE}, minmax(0, 1fr))` }}
     >
       {Array.from({ length: SIZE * SIZE }, (_, index) => {
-        const dot = dots.find((d) => d.row * SIZE + d.col === index);
+        const dot = dots.get(index);
         return (
           <span key={index} className="flex items-center justify-center">
             {dot ? (
