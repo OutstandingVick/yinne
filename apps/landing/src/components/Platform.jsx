@@ -1,5 +1,7 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
 
+const chips = ["⚡ Real-time", "◎ Multi-currency"];
+
 function CodePanel() {
   return (
     <div className="overflow-hidden rounded-[10px] bg-ink shadow-[0_24px_60px_rgba(23,23,23,0.18)]">
@@ -67,6 +69,16 @@ export default function Platform() {
             <p className="mt-4 font-mono text-xs text-gray-500">
               ↳ the same data the dashboard shows, over REST with typed JSON.
             </p>
+            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+              {chips.map((chip) => (
+                <li
+                  key={chip}
+                  className="font-bit text-[10px] uppercase tracking-[0.12em] text-gray-500"
+                >
+                  {chip}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
