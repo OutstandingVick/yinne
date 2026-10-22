@@ -21,6 +21,9 @@ export default function Hero() {
             <Button href="https://app.yinne.store" arrow>
               Open the dashboard
             </Button>
+            <Button href="#how-it-works" variant="secondary">
+              See how it works
+            </Button>
           </div>
         </div>
       </div>
