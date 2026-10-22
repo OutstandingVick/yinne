@@ -18,8 +18,11 @@ test("owner completes the core commerce dashboard flow", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Customers" })).toBeVisible();
   await page.getByLabel("Name").fill(`E2E Customer ${suffix}`);
   await page.getByLabel("Email").fill(`e2e-${suffix}@example.test`);
-  await page.getByRole("button", { name: "Add customer" }).click();
-  await expect(page.getByText(`E2E Customer ${suffix}`)).toBeVisible();
+  // A production build can render before hydration finishes, swallowing an instant click.
+  await expect(async () => {
+    await page.getByRole("button", { name: "Add customer" }).click();
+    await expect(page.getByText(`E2E Customer ${suffix}`).first()).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 30_000 });
   await navigateWithRail(page, "Products");
   await expect(page.getByRole("heading", { name: "Products" })).toBeVisible();
   await page.getByLabel("Name").fill(`E2E Coffee ${suffix}`);

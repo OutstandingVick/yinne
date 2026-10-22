@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { navigateWithRail } from "./support/dashboard";
+import { fetchFromPage, navigateWithRail } from "./support/dashboard";
 
 async function signIn(page: Page, email = "owner@acme.test") {
   const password = process.env.YINNE_SEED_PASSWORD;
@@ -32,7 +32,7 @@ test("Capital shows deterministic score change and history", async ({ page }) =>
 
 test("Capital API exposes aggregate signals without customer PII", async ({ page }) => {
   await signIn(page);
-  const response = await page.request.get("/v1/capital/signals");
+  const response = await fetchFromPage(page, "/v1/capital/signals");
   expect(response.status()).toBe(200);
   const body = await response.text();
   expect(body).toContain("revenue_consistency");
@@ -41,13 +41,13 @@ test("Capital API exposes aggregate signals without customer PII", async ({ page
 
 test("location-only manager cannot read organization-wide Capital", async ({ page }) => {
   await signIn(page, "manager@acme.test");
-  const response = await page.request.get("/v1/capital/profile");
+  const response = await fetchFromPage(page, "/v1/capital/profile");
   expect(response.status()).toBe(403);
 });
 
 test("insufficient data is represented without a poor-score fallback", async ({ page }) => {
   await signIn(page);
-  const response = await page.request.get("/v1/capital/profile");
+  const response = await fetchFromPage(page, "/v1/capital/profile");
   const body = (await response.json()) as {
     profile: { status: string; missing_requirements: string[]; score: number | null };
   };
