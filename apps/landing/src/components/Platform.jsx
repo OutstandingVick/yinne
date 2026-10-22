@@ -7,6 +7,11 @@ const modules = [
     title: "Orders & inventory",
     body: "Products, variants and stock across every location, with orders that know what you can actually sell.",
   },
+  {
+    tag: "Payments",
+    title: "Payments & refunds",
+    body: "Payment links, hosted checkout and refunds, reconciled the moment money moves.",
+  },
 ];
 
 const endpoints = [
