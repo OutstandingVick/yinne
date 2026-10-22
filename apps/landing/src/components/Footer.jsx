@@ -33,7 +33,7 @@ export default function Footer() {
             aria-hidden="true"
             className="absolute right-40 top-28 hidden h-14 w-14 rounded-full bg-vanilla sm:block"
           />
-          <div className="relative max-w-[22ch]">
+          <div className="relative max-w-[880px]">
             <Eyebrow tone="dark">Start today</Eyebrow>
             <h2 className="mt-5 font-display text-[clamp(2.75rem,6vw,4.75rem)] leading-[0.98] tracking-[-0.03em]">
               Your business, finally in one place.
