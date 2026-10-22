@@ -1,5 +1,6 @@
 const styles = {
   primary: "bg-ink text-white hover:bg-cobalt",
+  secondary: "border border-gray-200 bg-white text-ink hover:border-ink",
 };
 
 /** Square-cornered uppercase mono button with an optional trailing arrow. */
