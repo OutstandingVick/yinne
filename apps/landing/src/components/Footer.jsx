@@ -1,3 +1,4 @@
+import Button from "./ui/Button.jsx";
 import Eyebrow from "./ui/Eyebrow.jsx";
 /** Section 4: closing statement, call to action, links and the legal line. */
 export default function Footer() {
@@ -10,6 +11,11 @@ export default function Footer() {
             <h2 className="mt-5 font-display text-[clamp(2.75rem,6vw,4.75rem)] leading-[0.98] tracking-[-0.03em]">
               Your business, finally in one place.
             </h2>
+          </div>
+          <div className="relative mt-10 flex flex-wrap gap-3">
+            <Button href="https://app.yinne.store" variant="light" arrow>
+              Open the dashboard
+            </Button>
           </div>
         </div>
 
