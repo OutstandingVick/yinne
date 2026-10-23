@@ -56,7 +56,11 @@ export default function Showcase() {
               </button>
             ))}
           </div>
-          <p className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-gray-500">
+          <p
+            id="showcase-panel"
+            role="tabpanel"
+            className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-gray-500"
+          >
             {current.body}
           </p>
         </div>
