@@ -30,7 +30,11 @@ export default function Showcase() {
           <h2 className="mt-5 font-display text-[clamp(2.25rem,5vw,4rem)] leading-[1.02] tracking-[-0.03em] text-ink">
             Run your whole business from one screen.
           </h2>
-          <div role="tablist" className="mt-8 inline-flex rounded-full bg-gray-100 p-1"></div>
+          <div
+            role="tablist"
+            aria-label="What you can do in Yinne"
+            className="mt-8 inline-flex rounded-full bg-gray-100 p-1"
+          ></div>
         </div>
 
         <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]">
