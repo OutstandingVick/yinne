@@ -60,6 +60,7 @@ export default function Showcase() {
             id="showcase-panel"
             role="tabpanel"
             aria-labelledby={`showcase-tab-${active}`}
+            aria-live="polite"
             className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-gray-500"
           >
             {current.body}
