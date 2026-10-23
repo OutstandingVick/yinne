@@ -6,6 +6,11 @@ const tabs = [
     label: "Sell",
     body: "List products, track stock across locations and take orders — all from one screen.",
   },
+  {
+    id: "get-paid",
+    label: "Get paid",
+    body: "Send payment links, run hosted checkout and handle refunds without leaving Yinne.",
+  },
 ];
 
 /** Section 2: product showcase. */
