@@ -35,7 +35,7 @@ export default function Showcase() {
           <div
             role="tablist"
             aria-label="What you can do in Yinne"
-            className="mt-8 inline-flex rounded-full bg-gray-100 p-1"
+            className="mt-8 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1"
           >
             {tabs.map((tab) => (
               <button
