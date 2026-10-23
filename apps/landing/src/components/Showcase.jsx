@@ -22,6 +22,8 @@ const tabs = [
 /** Section 2: product showcase. */
 export default function Showcase() {
   const [active, setActive] = useState(tabs[0].id);
+  const current = tabs.find((tab) => tab.id === active);
+
   return (
     <section className="border-b border-gray-100 bg-white">
       <div className="mx-auto max-w-[1600px] px-4 py-24 sm:px-6 lg:py-32">
@@ -54,6 +56,7 @@ export default function Showcase() {
               </button>
             ))}
           </div>
+          <p>{current.body}</p>
         </div>
 
         <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]">
