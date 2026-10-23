@@ -508,8 +508,8 @@ function query<T extends object>(params: T): string {
  *   for await (const order of paginate(client.orders.list, { limit: 100 })) { ... }
  */
 export async function* paginate<T, P extends { after?: string }>(
-  fetchPage: (params: P) => Promise<Page<T>>,
-  params: P = {} as P,
+  fetchPage: (params?: P) => Promise<Page<T>>,
+  params: NoInfer<P> = {} as P,
 ): AsyncGenerator<T, void, undefined> {
   let cursor = params.after;
   for (;;) {
