@@ -1241,4 +1241,37 @@ export class YinnePublicClient {
       }).then((value) => value.checkout_session);
     },
   };
+  readonly marketplace = {
+    search: (
+      params: {
+        q?: string;
+        category?: string;
+        merchant?: string;
+        currency?: string;
+        limit?: number;
+      } = {},
+    ) =>
+      this.request<{ data: MarketplaceListing[]; has_more: boolean }>(
+        `/v1/public/marketplace${query(params)}`,
+      ),
+    listing: (id: string) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/public/marketplace/listings/${id}`).then(
+        (value) => value.listing,
+      ),
+    checkout: (
+      id: string,
+      input: { variant_id: string; quantity: number },
+      options: { idempotencyKey?: string } = {},
+    ) => {
+      const idempotencyKey = options.idempotencyKey ?? crypto.randomUUID();
+      return this.request<{ checkout_session: CheckoutSession }>(
+        `/v1/public/marketplace/listings/${id}/checkout`,
+        {
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          body: JSON.stringify({ ...input, idempotency_key: idempotencyKey }),
+        },
+      ).then((value) => value.checkout_session);
+    },
+  };
 }
