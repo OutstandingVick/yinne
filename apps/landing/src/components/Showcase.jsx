@@ -41,6 +41,7 @@ export default function Showcase() {
                 type="button"
                 role="tab"
                 aria-selected={active === tab.id}
+                aria-controls="showcase-panel"
                 onClick={() => setActive(tab.id)}
               >
                 {tab.label}
