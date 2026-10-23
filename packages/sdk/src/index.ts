@@ -940,6 +940,11 @@ export class YinneClient {
         method: "POST",
         body: JSON.stringify(input),
       }).then((value) => value.assignment),
+    removeLocation: (id: string, locationId: string) =>
+      this.request<{ assignment: Record<string, unknown> }>(
+        `/v1/employees/${id}/locations${query({ location_id: locationId })}`,
+        { method: "DELETE" },
+      ).then((value) => value.assignment),
   };
   readonly invoices = {
     list: (
