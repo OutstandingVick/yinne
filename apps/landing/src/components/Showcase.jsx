@@ -36,7 +36,7 @@ export default function Showcase() {
             className="mt-8 inline-flex rounded-full bg-gray-100 p-1"
           >
             {tabs.map((tab) => (
-              <button key={tab.id} type="button">
+              <button key={tab.id} type="button" onClick={() => setActive(tab.id)}>
                 {tab.label}
               </button>
             ))}
