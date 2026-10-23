@@ -462,6 +462,8 @@ export interface YinneClientOptions {
   apiKey: string;
   baseUrl?: string;
   fetch?: typeof globalThis.fetch;
+  /** Abort a request that takes longer than this many milliseconds. Defaults to 30 000. */
+  timeoutMs?: number;
 }
 function query<T extends object>(params: T): string {
   const search = new URLSearchParams();
@@ -483,6 +485,7 @@ export class YinneClient {
     try {
       response = await this.fetcher(`${this.baseUrl}${path}`, {
         ...init,
+        signal: init.signal ?? AbortSignal.timeout(this.options.timeoutMs ?? 30_000),
         headers: {
           Authorization: `Bearer ${this.options.apiKey}`,
           Accept: "application/json",
@@ -491,6 +494,11 @@ export class YinneClient {
         },
       });
     } catch (error) {
+      if (error instanceof DOMException && error.name === "TimeoutError")
+        throw new YinneConnectionError(
+          `The Yinne API did not respond within ${this.options.timeoutMs ?? 30_000}ms.`,
+          error,
+        );
       throw new YinneConnectionError(`Could not reach the Yinne API at ${this.baseUrl}.`, error);
     }
     const text = await response.text();
