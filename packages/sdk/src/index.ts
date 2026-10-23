@@ -1,5 +1,47 @@
-import type { CapitalProfile, CapitalSignal } from "@yinne/contracts";
-
+export interface CapitalSignal {
+  key: string;
+  dimension: string;
+  status: "available" | "not_applicable" | "insufficient";
+  raw: Record<string, unknown>;
+  normalized_score: number | null;
+  base_weight: number;
+  effective_weight: number;
+  contribution: number;
+  reason: string;
+  explanation: string;
+}
+export interface CapitalDimension {
+  key: string;
+  label: string;
+  score: number;
+  effective_weight: number;
+  contribution: number;
+}
+export interface CapitalProfile {
+  id: string;
+  organization_id: string;
+  environment: "test" | "live";
+  status: "scored" | "insufficient_data";
+  model_version: "rules-1";
+  currency: string;
+  score: number | null;
+  band: "limited" | "developing" | "stable" | "highly_stable" | null;
+  data_sufficiency: "insufficient" | "limited" | "sufficient" | "strong";
+  calculated_at: string;
+  lookback_start: string;
+  lookback_end: string;
+  dimensions: CapitalDimension[];
+  signals: CapitalSignal[];
+  strengths: string[];
+  watch_areas: string[];
+  missing_requirements: string[];
+  score_change: {
+    delta: number;
+    previous_profile_id: string;
+    contributors: Array<{ key: string; delta: number; direction: "up" | "down" }>;
+  } | null;
+  limitations: string[];
+}
 export interface Page<T> {
   data: T[];
   has_more: boolean;
