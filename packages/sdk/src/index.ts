@@ -1226,4 +1226,19 @@ export class YinnePublicClient {
         body: JSON.stringify(input),
       }).then((value) => value.checkout_session),
   };
+  readonly invoices = {
+    retrieve: (token: string) =>
+      this.request<{ invoice: Invoice }>(`/v1/public/invoices/${token}`).then(
+        (value) => value.invoice,
+      ),
+    /** Starts a hosted checkout to pay an issued invoice. */
+    pay: (token: string, options: { idempotencyKey?: string } = {}) => {
+      const idempotencyKey = options.idempotencyKey ?? crypto.randomUUID();
+      return this.request<{ checkout_session: CheckoutSession }>(`/v1/public/invoices/${token}`, {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: JSON.stringify({ idempotency_key: idempotencyKey }),
+      }).then((value) => value.checkout_session);
+    },
+  };
 }
