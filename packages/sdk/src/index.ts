@@ -1185,4 +1185,26 @@ export class YinnePublicClient {
         `/v1/public/stores/${slug}/products/${productSlug}`,
       ),
   };
+  readonly paymentLinks = {
+    retrieve: (token: string) =>
+      this.request<{ payment_link: PaymentLink }>(`/v1/public/payment-links/${token}`).then(
+        (value) => value.payment_link,
+      ),
+    /** Starts a checkout from a payment link; pass `amount` for pay-what-you-want links. */
+    open: (
+      token: string,
+      input: { amount?: string } = {},
+      options: { idempotencyKey?: string } = {},
+    ) => {
+      const idempotencyKey = options.idempotencyKey ?? crypto.randomUUID();
+      return this.request<{ checkout_session: CheckoutSession }>(
+        `/v1/public/payment-links/${token}`,
+        {
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          body: JSON.stringify({ ...input, idempotency_key: idempotencyKey }),
+        },
+      ).then((value) => value.checkout_session);
+    },
+  };
 }
