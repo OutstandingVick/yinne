@@ -19,7 +19,7 @@ const tabs = [
   },
 ];
 
-/** Section 2: product showcase. */
+/** Section 2: the product itself — a tabbed headline over a framed dashboard screenshot. */
 export default function Showcase() {
   const [active, setActive] = useState(tabs[0].id);
   const current = tabs.find((tab) => tab.id === active);
