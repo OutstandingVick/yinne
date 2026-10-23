@@ -34,7 +34,13 @@ export default function Showcase() {
             role="tablist"
             aria-label="What you can do in Yinne"
             className="mt-8 inline-flex rounded-full bg-gray-100 p-1"
-          ></div>
+          >
+            {tabs.map((tab) => (
+              <button key={tab.id} type="button">
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]">
