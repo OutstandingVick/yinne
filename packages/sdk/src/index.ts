@@ -406,6 +406,12 @@ export interface Subscription {
   cancel_at_period_end: boolean;
   retry_count: number;
 }
+export interface MarketplaceModerationInput {
+  /** Short machine-readable reason, e.g. "policy_ok" or "prohibited_item". */
+  reason_code: string;
+  /** Human-readable explanation recorded with the decision. */
+  explanation: string;
+}
 export interface VariantInput {
   sku: string;
   title: string;
@@ -1114,6 +1120,22 @@ export class YinneClient {
     archive: (id: string) =>
       this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/archive`, {
         method: "POST",
+      }).then((v) => v.listing),
+    /** Marketplace moderation; requires an operator key with marketplace review permission. */
+    approve: (id: string, input: MarketplaceModerationInput) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/approve`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((v) => v.listing),
+    reject: (id: string, input: MarketplaceModerationInput) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/reject`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((v) => v.listing),
+    suspend: (id: string, input: MarketplaceModerationInput) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/suspend`, {
+        method: "POST",
+        body: JSON.stringify(input),
       }).then((v) => v.listing),
   };
 }
