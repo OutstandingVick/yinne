@@ -447,6 +447,17 @@ export class YinneApiError extends Error {
   }
 }
 
+/** Raised when the request never got an HTTP response (DNS, TLS, offline, aborted). */
+export class YinneConnectionError extends Error {
+  constructor(
+    message: string,
+    public readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = "YinneConnectionError";
+  }
+}
+
 export interface YinneClientOptions {
   apiKey: string;
   baseUrl?: string;
@@ -468,15 +479,20 @@ export class YinneClient {
     this.fetcher = options.fetch ?? globalThis.fetch;
   }
   private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const response = await this.fetcher(`${this.baseUrl}${path}`, {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${this.options.apiKey}`,
-        Accept: "application/json",
-        ...(init.body ? { "Content-Type": "application/json" } : {}),
-        ...init.headers,
-      },
-    });
+    let response: Response;
+    try {
+      response = await this.fetcher(`${this.baseUrl}${path}`, {
+        ...init,
+        headers: {
+          Authorization: `Bearer ${this.options.apiKey}`,
+          Accept: "application/json",
+          ...(init.body ? { "Content-Type": "application/json" } : {}),
+          ...init.headers,
+        },
+      });
+    } catch (error) {
+      throw new YinneConnectionError(`Could not reach the Yinne API at ${this.baseUrl}.`, error);
+    }
     const body = (await response.json()) as T | ErrorEnvelope;
     if (!response.ok) {
       const error = (body as ErrorEnvelope).error;
