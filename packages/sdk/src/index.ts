@@ -520,14 +520,21 @@ export async function* paginate<T, P extends { after?: string }>(
   }
 }
 
-export class YinneClient {
+interface TransportOptions extends Omit<YinneClientOptions, "apiKey"> {
+  apiKey?: string;
+  /** Send the X-Yinne-SDK header; browsers calling public endpoints skip it to avoid preflights. */
+  identify?: boolean;
+}
+
+/** Shared HTTP core: auth, timeouts, safe retries and error mapping for every client. */
+class Transport {
   private readonly baseUrl: string;
   private readonly fetcher: typeof globalThis.fetch;
-  constructor(private readonly options: YinneClientOptions) {
+  constructor(private readonly options: TransportOptions) {
     this.baseUrl = (options.baseUrl ?? "https://app.yinne.store").replace(/\/$/, "");
     this.fetcher = options.fetch ?? globalThis.fetch;
   }
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const method = (init.method ?? "GET").toUpperCase();
     const headers = new Headers(init.headers);
     const retrySafe = method === "GET" || method === "HEAD" || headers.has("Idempotency-Key");
@@ -553,9 +560,9 @@ export class YinneClient {
         ...init,
         signal: init.signal ?? AbortSignal.timeout(this.options.timeoutMs ?? 30_000),
         headers: {
-          Authorization: `Bearer ${this.options.apiKey}`,
+          ...(this.options.apiKey ? { Authorization: `Bearer ${this.options.apiKey}` } : {}),
           Accept: "application/json",
-          "X-Yinne-SDK": `js/${SDK_VERSION}`,
+          ...(this.options.identify === false ? {} : { "X-Yinne-SDK": `js/${SDK_VERSION}` }),
           ...(init.body ? { "Content-Type": "application/json" } : {}),
           ...init.headers,
         },
@@ -599,6 +606,16 @@ export class YinneClient {
       );
     }
     return body as T;
+  }
+}
+
+export class YinneClient {
+  private readonly transport: Transport;
+  constructor(options: YinneClientOptions) {
+    this.transport = new Transport(options);
+  }
+  private request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    return this.transport.request<T>(path, init);
   }
   readonly customers = {
     list: (params: ListParams & { email?: string } = {}) =>
