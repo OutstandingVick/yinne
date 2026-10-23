@@ -11,7 +11,12 @@ export default function Showcase() {
           </h2>
         </div>
 
-        <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]"></figure>
+        <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]">
+          <img
+            src="/dashboard.webp"
+            className="block w-full rounded-[14px] border border-gray-200 bg-white"
+          />
+        </figure>
       </div>
     </section>
   );
