@@ -532,7 +532,8 @@ class Transport {
   private readonly fetcher: typeof globalThis.fetch;
   constructor(private readonly options: TransportOptions) {
     this.baseUrl = (options.baseUrl ?? "https://app.yinne.store").replace(/\/$/, "");
-    this.fetcher = options.fetch ?? globalThis.fetch;
+    // Bound so browsers do not throw "Illegal invocation" when fetch is called as a method.
+    this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
   }
   async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const method = (init.method ?? "GET").toUpperCase();
