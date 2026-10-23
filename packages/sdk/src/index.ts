@@ -1157,3 +1157,32 @@ export class YinneClient {
       }).then((v) => v.listing),
   };
 }
+
+export interface YinnePublicClientOptions {
+  baseUrl?: string;
+  fetch?: typeof globalThis.fetch;
+  timeoutMs?: number;
+  maxRetries?: number;
+}
+
+/**
+ * Client for Yinne's public endpoints — storefronts, payment links, checkout, invoices and the
+ * marketplace. It needs no API key, so it is safe to use in the browser for headless storefronts.
+ */
+export class YinnePublicClient {
+  private readonly transport: Transport;
+  constructor(options: YinnePublicClientOptions = {}) {
+    this.transport = new Transport({ ...options, identify: false });
+  }
+  private request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    return this.transport.request<T>(path, init);
+  }
+  readonly stores = {
+    retrieve: (slug: string) =>
+      this.request<{ store: Store }>(`/v1/public/stores/${slug}`).then((value) => value.store),
+    product: (slug: string, productSlug: string) =>
+      this.request<{ store: Store; product: StorefrontProduct }>(
+        `/v1/public/stores/${slug}/products/${productSlug}`,
+      ),
+  };
+}
