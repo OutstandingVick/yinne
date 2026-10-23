@@ -38,6 +38,7 @@ export default function Showcase() {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
+                id={`showcase-tab-${tab.id}`}
                 type="button"
                 role="tab"
                 aria-selected={active === tab.id}
