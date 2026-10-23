@@ -11,6 +11,11 @@ const tabs = [
     label: "Get paid",
     body: "Send payment links, run hosted checkout and handle refunds without leaving Yinne.",
   },
+  {
+    id: "grow",
+    label: "Grow",
+    body: "Watch revenue and customers in real time, and plan with numbers you can trust.",
+  },
 ];
 
 /** Section 2: product showcase. */
