@@ -473,6 +473,9 @@ export interface YinneClientOptions {
   maxRetries?: number;
 }
 
+/** Reported to the API so SDK traffic can be told apart in logs. */
+export const SDK_VERSION = "0.1.0";
+
 const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
 
 function wait(ms: number) {
@@ -528,6 +531,7 @@ export class YinneClient {
         headers: {
           Authorization: `Bearer ${this.options.apiKey}`,
           Accept: "application/json",
+          "X-Yinne-SDK": `js/${SDK_VERSION}`,
           ...(init.body ? { "Content-Type": "application/json" } : {}),
           ...init.headers,
         },
