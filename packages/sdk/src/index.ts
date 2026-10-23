@@ -1207,4 +1207,23 @@ export class YinnePublicClient {
       ).then((value) => value.checkout_session);
     },
   };
+  readonly checkout = {
+    retrieve: (token: string) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/public/checkout/${token}`).then(
+        (value) => value.checkout_session,
+      ),
+    confirm: (
+      token: string,
+      input: { customer?: { name?: string; email?: string; phone?: string } } & Record<
+        string,
+        unknown
+      > = {},
+      options: { idempotencyKey?: string } = {},
+    ) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/public/checkout/${token}`, {
+        method: "POST",
+        headers: { "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() },
+        body: JSON.stringify(input),
+      }).then((value) => value.checkout_session),
+  };
 }
