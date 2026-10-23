@@ -1,4 +1,13 @@
 import Eyebrow from "./ui/Eyebrow.jsx";
+
+const tabs = [
+  {
+    id: "sell",
+    label: "Sell",
+    body: "List products, track stock across locations and take orders — all from one screen.",
+  },
+];
+
 /** Section 2: product showcase. */
 export default function Showcase() {
   return (
