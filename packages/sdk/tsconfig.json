@@ -1,5 +1,5 @@
 {
   "extends": "../../tooling/typescript/base.json",
   "compilerOptions": { "noEmit": true },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "tsup.config.ts"]
 }
