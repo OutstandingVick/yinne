@@ -56,7 +56,9 @@ export default function Showcase() {
               </button>
             ))}
           </div>
-          <p>{current.body}</p>
+          <p className="mt-6 max-w-[46ch] text-[15px] leading-relaxed text-gray-500">
+            {current.body}
+          </p>
         </div>
 
         <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]">
