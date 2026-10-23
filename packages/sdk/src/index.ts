@@ -666,6 +666,22 @@ export class YinneClient {
         method: "POST",
         body: JSON.stringify(input),
       }).then((value) => value.variant),
+    updateVariant: (
+      productId: string,
+      variantId: string,
+      input: Partial<{
+        sku: string;
+        title: string;
+        unit_amount: string;
+        currency: string;
+        track_inventory: boolean;
+        status: "archived";
+      }>,
+    ) =>
+      this.request<{ variant: Variant }>(`/v1/products/${productId}/variants/${variantId}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      }).then((value) => value.variant),
   };
   readonly inventory = {
     list: (params: ListParams & { location_id?: string; variant_id?: string } = {}) =>
