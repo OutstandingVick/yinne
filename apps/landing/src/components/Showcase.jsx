@@ -15,6 +15,8 @@ export default function Showcase() {
           <img
             src="/dashboard.webp"
             alt="Yinne dashboard home: collected, unpaid and refunded balances, a monthly revenue chart, this month's collections and top customers."
+            width="2000"
+            height="1085"
             className="block w-full rounded-[14px] border border-gray-200 bg-white"
           />
         </figure>
