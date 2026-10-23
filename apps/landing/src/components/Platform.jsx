@@ -89,7 +89,7 @@ export default function Platform() {
         </p>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[1.35fr_1fr]">
-          <div className="rounded-[12px] border border-gray-200 bg-gray-50/60 p-4 sm:p-6">
+          <div className="min-w-0 rounded-[12px] border border-gray-200 bg-gray-50/60 p-4 sm:p-6">
             <p className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-400">
               ⓘ Call it from anywhere
             </p>
@@ -111,7 +111,7 @@ export default function Platform() {
             </ul>
           </div>
 
-          <div className="flex flex-col justify-between rounded-[12px] border border-gray-200 bg-white p-6">
+          <div className="flex min-w-0 flex-col justify-between rounded-[12px] border border-gray-200 bg-white p-6">
             <div>
               <span className="inline-block rounded-[4px] border border-gray-200 px-2 py-1 font-bit text-[10px] uppercase tracking-[0.12em] text-gray-500">
                 Read & write
