@@ -493,7 +493,22 @@ export class YinneClient {
     } catch (error) {
       throw new YinneConnectionError(`Could not reach the Yinne API at ${this.baseUrl}.`, error);
     }
-    const body = (await response.json()) as T | ErrorEnvelope;
+    const text = await response.text();
+    let body: T | ErrorEnvelope;
+    try {
+      body = (text ? JSON.parse(text) : {}) as T | ErrorEnvelope;
+    } catch {
+      // A proxy or gateway answered with something other than Yinne's JSON envelope.
+      throw new YinneApiError(
+        response.status,
+        "api_error",
+        "invalid_response",
+        `Expected JSON from the Yinne API but received ${response.headers.get("content-type") ?? "an unknown content type"} (HTTP ${response.status}).`,
+        response.headers.get("x-request-id") ?? "",
+        null,
+        [],
+      );
+    }
     if (!response.ok) {
       const error = (body as ErrorEnvelope).error;
       throw new YinneApiError(
