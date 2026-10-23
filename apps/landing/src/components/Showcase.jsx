@@ -44,6 +44,11 @@ export default function Showcase() {
                 aria-selected={active === tab.id}
                 aria-controls="showcase-panel"
                 onClick={() => setActive(tab.id)}
+                className={`rounded-full px-6 py-2.5 font-mono text-[13px] uppercase tracking-[0.06em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt ${
+                  active === tab.id
+                    ? "bg-white text-ink shadow-[0_1px_3px_rgba(23,23,23,0.12)]"
+                    : "text-gray-500 hover:text-ink"
+                }`}
               >
                 {tab.label}
               </button>
