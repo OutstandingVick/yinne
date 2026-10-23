@@ -74,6 +74,7 @@ export default function Showcase() {
             width="2000"
             height="1085"
             loading="lazy"
+            decoding="async"
             className="block w-full rounded-[14px] border border-gray-200 bg-white"
           />
         </figure>
