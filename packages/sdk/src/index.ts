@@ -998,6 +998,9 @@ export class YinneClient {
       this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}/archive`, {
         method: "POST",
       }).then((value) => value.plan),
+    listPrices: (
+      params: { limit?: number; plan_id?: string; status?: SubscriptionPlan["status"] } = {},
+    ) => this.request<Page<RecurringPrice>>(`/v1/recurring-prices${query(params)}`),
     createPrice: (input: Record<string, unknown>) =>
       this.request<{ price: RecurringPrice }>("/v1/recurring-prices", {
         method: "POST",
