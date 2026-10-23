@@ -138,14 +138,10 @@ export default function Platform() {
         </div>
 
         <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {modules.map((module, index) => (
+          {modules.map((module) => (
             <li
               key={module.title}
-              className={`rounded-[12px] border p-6 transition-colors ${
-                index === 0
-                  ? "border-vanilla bg-vanilla"
-                  : "border-gray-200 bg-white hover:border-ink"
-              }`}
+              className="rounded-[12px] border border-gray-200 bg-white p-6 transition-colors hover:border-vanilla hover:bg-vanilla"
             >
               <p className="font-bit text-[10px] uppercase tracking-[0.14em] text-gray-500">
                 {module.tag}
