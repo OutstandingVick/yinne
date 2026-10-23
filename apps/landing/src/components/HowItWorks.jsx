@@ -27,7 +27,7 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section id="how-it-works" className="scroll-mt-24 bg-ink text-white">
-      <div className="mx-auto max-w-[1320px] px-4 py-24 sm:px-6 lg:py-32">
+      <div className="mx-auto max-w-[1600px] px-4 py-24 sm:px-6 lg:py-32">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-end">
           <div>
             <Eyebrow tone="dark">How it works</Eyebrow>

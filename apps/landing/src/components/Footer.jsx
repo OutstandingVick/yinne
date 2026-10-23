@@ -23,7 +23,7 @@ const columns = [
 export default function Footer() {
   return (
     <footer className="bg-white">
-      <div className="mx-auto max-w-[1320px] px-4 pt-24 sm:px-6 lg:pt-32">
+      <div className="mx-auto max-w-[1600px] px-4 pt-24 sm:px-6 lg:pt-32">
         <div className="relative overflow-hidden rounded-[16px] bg-cobalt px-6 py-16 text-white sm:px-12 lg:py-24">
           <span
             aria-hidden="true"

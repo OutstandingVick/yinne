@@ -20,7 +20,7 @@ export default function Hero() {
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white" />
       </div>
       <Navbar />
-      <div className="relative mx-auto grid max-w-[1320px] items-center gap-12 px-4 pb-20 pt-36 sm:px-6 lg:grid-cols-[1.25fr_1fr] lg:pb-28 lg:pt-44">
+      <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-4 pb-20 pt-36 sm:px-6 lg:grid-cols-[1.25fr_1fr] lg:pb-28 lg:pt-44">
         <div>
           <Eyebrow>Commerce infrastructure</Eyebrow>
           <h1 className="mt-6 font-display text-[clamp(3rem,7vw,5.5rem)] leading-[0.95] tracking-[-0.03em] text-ink">
@@ -37,12 +37,6 @@ export default function Hero() {
             <Button href="#how-it-works" variant="secondary">
               See how it works
             </Button>
-          </div>
-          <div className="mt-10 inline-flex items-center gap-3 rounded-[6px] border border-gray-200 bg-white/80 px-3 py-2">
-            <span className="h-2 w-2 rounded-full bg-cobalt" aria-hidden="true" />
-            <span className="font-bit text-[11px] uppercase tracking-[0.12em] text-gray-500">
-              Built in Lagos · Test mode live
-            </span>
           </div>
         </div>
       </div>
