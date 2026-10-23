@@ -496,6 +496,24 @@ function query<T extends object>(params: T): string {
   return encoded ? `?${encoded}` : "";
 }
 
+/**
+ * Iterates every item of a paginated list, fetching the next page only when needed.
+ *
+ *   for await (const order of paginate(client.orders.list, { limit: 100 })) { ... }
+ */
+export async function* paginate<T, P extends { after?: string }>(
+  fetchPage: (params: P) => Promise<Page<T>>,
+  params: P = {} as P,
+): AsyncGenerator<T, void, undefined> {
+  let cursor = params.after;
+  for (;;) {
+    const page = await fetchPage({ ...params, ...(cursor ? { after: cursor } : {}) });
+    yield* page.data;
+    if (!page.has_more || !page.next_cursor) return;
+    cursor = page.next_cursor;
+  }
+}
+
 export class YinneClient {
   private readonly baseUrl: string;
   private readonly fetcher: typeof globalThis.fetch;
