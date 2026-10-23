@@ -10,6 +10,8 @@ export default function Showcase() {
             Run your whole business from one screen.
           </h2>
         </div>
+
+        <figure className="mx-auto mt-14 max-w-[1280px] rounded-[22px] border border-gray-200 bg-gray-100 p-2 shadow-[0_30px_80px_rgba(23,23,23,0.10)]"></figure>
       </div>
     </section>
   );
