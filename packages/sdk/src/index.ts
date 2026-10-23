@@ -441,6 +441,8 @@ export class YinneApiError extends Error {
     public readonly requestId: string,
     public readonly param: string | null,
     public readonly details: Array<Record<string, unknown>>,
+    /** The raw HTTP response, when one was received. */
+    public readonly response?: Response,
   ) {
     super(message);
     this.name = "YinneApiError";
@@ -464,6 +466,24 @@ export interface YinneClientOptions {
   fetch?: typeof globalThis.fetch;
   /** Abort a request that takes longer than this many milliseconds. Defaults to 30 000. */
   timeoutMs?: number;
+  /**
+   * Retries for rate limits, server errors and network failures. Only safe requests are retried:
+   * reads, and writes that carry an Idempotency-Key. Defaults to 2.
+   */
+  maxRetries?: number;
+}
+
+const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Exponential backoff with jitter, honouring Retry-After when the API sends it. */
+function retryDelay(attempt: number, response?: Response) {
+  const retryAfter = Number(response?.headers.get("retry-after"));
+  if (Number.isFinite(retryAfter) && retryAfter > 0) return Math.min(retryAfter * 1000, 20_000);
+  return Math.min(500 * 2 ** attempt, 8_000) * (0.75 + Math.random() * 0.5);
 }
 function query<T extends object>(params: T): string {
   const search = new URLSearchParams();
@@ -481,6 +501,25 @@ export class YinneClient {
     this.fetcher = options.fetch ?? globalThis.fetch;
   }
   private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    const method = (init.method ?? "GET").toUpperCase();
+    const headers = new Headers(init.headers);
+    const retrySafe = method === "GET" || method === "HEAD" || headers.has("Idempotency-Key");
+    const maxRetries = retrySafe ? (this.options.maxRetries ?? 2) : 0;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.send<T>(path, init);
+      } catch (error) {
+        const retryable =
+          error instanceof YinneConnectionError ||
+          (error instanceof YinneApiError && RETRYABLE_STATUS.has(error.status));
+        if (!retryable || attempt >= maxRetries) throw error;
+        await wait(
+          retryDelay(attempt, error instanceof YinneApiError ? error.response : undefined),
+        );
+      }
+    }
+  }
+  private async send<T>(path: string, init: RequestInit): Promise<T> {
     let response: Response;
     try {
       response = await this.fetcher(`${this.baseUrl}${path}`, {
@@ -515,6 +554,7 @@ export class YinneClient {
         response.headers.get("x-request-id") ?? "",
         null,
         [],
+        response,
       );
     }
     if (!response.ok) {
@@ -527,6 +567,7 @@ export class YinneClient {
         error.request_id,
         error.param,
         error.details,
+        response,
       );
     }
     return body as T;
