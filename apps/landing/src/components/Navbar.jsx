@@ -17,7 +17,7 @@ export default function Navbar() {
     <header className="absolute inset-x-0 top-0 z-20">
       <nav
         aria-label="Primary"
-        className="mx-auto flex max-w-[1320px] items-center justify-between px-4 py-4 sm:px-6"
+        className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 sm:px-6"
       >
         <a
           href="/"
