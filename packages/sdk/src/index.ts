@@ -422,7 +422,7 @@ export class YinneClient {
   private readonly baseUrl: string;
   private readonly fetcher: typeof globalThis.fetch;
   constructor(private readonly options: YinneClientOptions) {
-    this.baseUrl = (options.baseUrl ?? "https://api.yinne.com").replace(/\/$/, "");
+    this.baseUrl = (options.baseUrl ?? "https://app.yinne.store").replace(/\/$/, "");
     this.fetcher = options.fetch ?? globalThis.fetch;
   }
   private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
