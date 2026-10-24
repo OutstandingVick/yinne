@@ -1,18 +1,64 @@
 {
   "name": "@yinne/sdk",
   "version": "0.1.0",
-  "private": true,
+  "description": "Official TypeScript SDK for the Yinne commerce and payments API.",
+  "license": "Apache-2.0",
   "type": "module",
+  "keywords": [
+    "yinne",
+    "payments",
+    "commerce",
+    "checkout",
+    "invoices",
+    "sdk",
+    "api"
+  ],
+  "homepage": "https://www.yinne.store",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OutstandingVick/yinne.git",
+    "directory": "packages/sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/OutstandingVick/yinne/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/index.cjs"
+        }
+      }
+    }
+  },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "pnpm build"
   },
-  "dependencies": {
-    "@yinne/contracts": "workspace:*"
-  },
-  "devDependencies": {}
+  "devDependencies": {
+    "tsup": "8.5.0"
+  }
 }

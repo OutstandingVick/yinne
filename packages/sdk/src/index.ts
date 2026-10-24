@@ -1,5 +1,47 @@
-import type { CapitalProfile, CapitalSignal } from "@yinne/contracts";
-
+export interface CapitalSignal {
+  key: string;
+  dimension: string;
+  status: "available" | "not_applicable" | "insufficient";
+  raw: Record<string, unknown>;
+  normalized_score: number | null;
+  base_weight: number;
+  effective_weight: number;
+  contribution: number;
+  reason: string;
+  explanation: string;
+}
+export interface CapitalDimension {
+  key: string;
+  label: string;
+  score: number;
+  effective_weight: number;
+  contribution: number;
+}
+export interface CapitalProfile {
+  id: string;
+  organization_id: string;
+  environment: "test" | "live";
+  status: "scored" | "insufficient_data";
+  model_version: "rules-1";
+  currency: string;
+  score: number | null;
+  band: "limited" | "developing" | "stable" | "highly_stable" | null;
+  data_sufficiency: "insufficient" | "limited" | "sufficient" | "strong";
+  calculated_at: string;
+  lookback_start: string;
+  lookback_end: string;
+  dimensions: CapitalDimension[];
+  signals: CapitalSignal[];
+  strengths: string[];
+  watch_areas: string[];
+  missing_requirements: string[];
+  score_change: {
+    delta: number;
+    previous_profile_id: string;
+    contributors: Array<{ key: string; delta: number; direction: "up" | "down" }>;
+  } | null;
+  limitations: string[];
+}
 export interface Page<T> {
   data: T[];
   has_more: boolean;
@@ -364,6 +406,12 @@ export interface Subscription {
   cancel_at_period_end: boolean;
   retry_count: number;
 }
+export interface MarketplaceModerationInput {
+  /** Short machine-readable reason, e.g. "policy_ok" or "prohibited_item". */
+  reason_code: string;
+  /** Human-readable explanation recorded with the decision. */
+  explanation: string;
+}
 export interface VariantInput {
   sku: string;
   title: string;
@@ -399,9 +447,22 @@ export class YinneApiError extends Error {
     public readonly requestId: string,
     public readonly param: string | null,
     public readonly details: Array<Record<string, unknown>>,
+    /** The raw HTTP response, when one was received. */
+    public readonly response?: Response,
   ) {
     super(message);
     this.name = "YinneApiError";
+  }
+}
+
+/** Raised when the request never got an HTTP response (DNS, TLS, offline, aborted). */
+export class YinneConnectionError extends Error {
+  constructor(
+    message: string,
+    public readonly cause?: unknown,
+  ) {
+    super(message);
+    this.name = "YinneConnectionError";
   }
 }
 
@@ -409,6 +470,29 @@ export interface YinneClientOptions {
   apiKey: string;
   baseUrl?: string;
   fetch?: typeof globalThis.fetch;
+  /** Abort a request that takes longer than this many milliseconds. Defaults to 30 000. */
+  timeoutMs?: number;
+  /**
+   * Retries for rate limits, server errors and network failures. Only safe requests are retried:
+   * reads, and writes that carry an Idempotency-Key. Defaults to 2.
+   */
+  maxRetries?: number;
+}
+
+/** Reported to the API so SDK traffic can be told apart in logs. */
+export const SDK_VERSION = "0.1.0";
+
+const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Exponential backoff with jitter, honouring Retry-After when the API sends it. */
+function retryDelay(attempt: number, response?: Response) {
+  const retryAfter = Number(response?.headers.get("retry-after"));
+  if (Number.isFinite(retryAfter) && retryAfter > 0) return Math.min(retryAfter * 1000, 20_000);
+  return Math.min(500 * 2 ** attempt, 8_000) * (0.75 + Math.random() * 0.5);
 }
 function query<T extends object>(params: T): string {
   const search = new URLSearchParams();
@@ -418,24 +502,97 @@ function query<T extends object>(params: T): string {
   return encoded ? `?${encoded}` : "";
 }
 
-export class YinneClient {
+/**
+ * Iterates every item of a paginated list, fetching the next page only when needed.
+ *
+ *   for await (const order of paginate(client.orders.list, { limit: 100 })) { ... }
+ */
+export async function* paginate<T, P extends { after?: string }>(
+  fetchPage: (params?: P) => Promise<Page<T>>,
+  params: NoInfer<P> = {} as P,
+): AsyncGenerator<T, void, undefined> {
+  let cursor = params.after;
+  for (;;) {
+    const page = await fetchPage({ ...params, ...(cursor ? { after: cursor } : {}) });
+    yield* page.data;
+    if (!page.has_more || !page.next_cursor) return;
+    cursor = page.next_cursor;
+  }
+}
+
+interface TransportOptions extends Omit<YinneClientOptions, "apiKey"> {
+  apiKey?: string;
+  /** Send the X-Yinne-SDK header; browsers calling public endpoints skip it to avoid preflights. */
+  identify?: boolean;
+}
+
+/** Shared HTTP core: auth, timeouts, safe retries and error mapping for every client. */
+class Transport {
   private readonly baseUrl: string;
   private readonly fetcher: typeof globalThis.fetch;
-  constructor(private readonly options: YinneClientOptions) {
-    this.baseUrl = (options.baseUrl ?? "https://api.yinne.com").replace(/\/$/, "");
-    this.fetcher = options.fetch ?? globalThis.fetch;
+  constructor(private readonly options: TransportOptions) {
+    this.baseUrl = (options.baseUrl ?? "https://app.yinne.store").replace(/\/$/, "");
+    // Bound so browsers do not throw "Illegal invocation" when fetch is called as a method.
+    this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
   }
-  private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const response = await this.fetcher(`${this.baseUrl}${path}`, {
-      ...init,
-      headers: {
-        Authorization: `Bearer ${this.options.apiKey}`,
-        Accept: "application/json",
-        ...(init.body ? { "Content-Type": "application/json" } : {}),
-        ...init.headers,
-      },
-    });
-    const body = (await response.json()) as T | ErrorEnvelope;
+  async request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    const method = (init.method ?? "GET").toUpperCase();
+    const headers = new Headers(init.headers);
+    const retrySafe = method === "GET" || method === "HEAD" || headers.has("Idempotency-Key");
+    const maxRetries = retrySafe ? (this.options.maxRetries ?? 2) : 0;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this.send<T>(path, init);
+      } catch (error) {
+        const retryable =
+          error instanceof YinneConnectionError ||
+          (error instanceof YinneApiError && RETRYABLE_STATUS.has(error.status));
+        if (!retryable || attempt >= maxRetries) throw error;
+        await wait(
+          retryDelay(attempt, error instanceof YinneApiError ? error.response : undefined),
+        );
+      }
+    }
+  }
+  private async send<T>(path: string, init: RequestInit): Promise<T> {
+    let response: Response;
+    try {
+      response = await this.fetcher(`${this.baseUrl}${path}`, {
+        ...init,
+        signal: init.signal ?? AbortSignal.timeout(this.options.timeoutMs ?? 30_000),
+        headers: {
+          ...(this.options.apiKey ? { Authorization: `Bearer ${this.options.apiKey}` } : {}),
+          Accept: "application/json",
+          ...(this.options.identify === false ? {} : { "X-Yinne-SDK": `js/${SDK_VERSION}` }),
+          ...(init.body ? { "Content-Type": "application/json" } : {}),
+          ...init.headers,
+        },
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "TimeoutError")
+        throw new YinneConnectionError(
+          `The Yinne API did not respond within ${this.options.timeoutMs ?? 30_000}ms.`,
+          error,
+        );
+      throw new YinneConnectionError(`Could not reach the Yinne API at ${this.baseUrl}.`, error);
+    }
+    const text = await response.text();
+    let body: T | ErrorEnvelope;
+    try {
+      body = (text ? JSON.parse(text) : {}) as T | ErrorEnvelope;
+    } catch {
+      // A proxy or gateway answered with something other than Yinne's JSON envelope.
+      throw new YinneApiError(
+        response.status,
+        "api_error",
+        "invalid_response",
+        `Expected JSON from the Yinne API but received ${response.headers.get("content-type") ?? "an unknown content type"} (HTTP ${response.status}).`,
+        response.headers.get("x-request-id") ?? "",
+        null,
+        [],
+        response,
+      );
+    }
     if (!response.ok) {
       const error = (body as ErrorEnvelope).error;
       throw new YinneApiError(
@@ -446,9 +603,20 @@ export class YinneClient {
         error.request_id,
         error.param,
         error.details,
+        response,
       );
     }
     return body as T;
+  }
+}
+
+export class YinneClient {
+  private readonly transport: Transport;
+  constructor(options: YinneClientOptions) {
+    this.transport = new Transport(options);
+  }
+  private request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    return this.transport.request<T>(path, init);
   }
   readonly customers = {
     list: (params: ListParams & { email?: string } = {}) =>
@@ -520,6 +688,22 @@ export class YinneClient {
     createVariant: (productId: string, input: VariantInput) =>
       this.request<{ variant: Variant }>(`/v1/products/${productId}/variants`, {
         method: "POST",
+        body: JSON.stringify(input),
+      }).then((value) => value.variant),
+    updateVariant: (
+      productId: string,
+      variantId: string,
+      input: Partial<{
+        sku: string;
+        title: string;
+        unit_amount: string;
+        currency: string;
+        track_inventory: boolean;
+        status: "archived";
+      }>,
+    ) =>
+      this.request<{ variant: Variant }>(`/v1/products/${productId}/variants/${variantId}`, {
+        method: "PATCH",
         body: JSON.stringify(input),
       }).then((value) => value.variant),
   };
@@ -780,6 +964,11 @@ export class YinneClient {
         method: "POST",
         body: JSON.stringify(input),
       }).then((value) => value.assignment),
+    removeLocation: (id: string, locationId: string) =>
+      this.request<{ assignment: Record<string, unknown> }>(
+        `/v1/employees/${id}/locations${query({ location_id: locationId })}`,
+        { method: "DELETE" },
+      ).then((value) => value.assignment),
   };
   readonly invoices = {
     list: (
@@ -833,6 +1022,9 @@ export class YinneClient {
       this.request<{ plan: SubscriptionPlan }>(`/v1/subscription-plans/${id}/archive`, {
         method: "POST",
       }).then((value) => value.plan),
+    listPrices: (
+      params: { limit?: number; plan_id?: string; status?: SubscriptionPlan["status"] } = {},
+    ) => this.request<Page<RecurringPrice>>(`/v1/recurring-prices${query(params)}`),
     createPrice: (input: Record<string, unknown>) =>
       this.request<{ price: RecurringPrice }>("/v1/recurring-prices", {
         method: "POST",
@@ -947,5 +1139,139 @@ export class YinneClient {
       this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/archive`, {
         method: "POST",
       }).then((v) => v.listing),
+    /** Marketplace moderation; requires an operator key with marketplace review permission. */
+    approve: (id: string, input: MarketplaceModerationInput) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/approve`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((v) => v.listing),
+    reject: (id: string, input: MarketplaceModerationInput) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/reject`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((v) => v.listing),
+    suspend: (id: string, input: MarketplaceModerationInput) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/marketplace/listings/${id}/suspend`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }).then((v) => v.listing),
+  };
+}
+
+export interface YinnePublicClientOptions {
+  baseUrl?: string;
+  fetch?: typeof globalThis.fetch;
+  timeoutMs?: number;
+  maxRetries?: number;
+}
+
+/**
+ * Client for Yinne's public endpoints — storefronts, payment links, checkout, invoices and the
+ * marketplace. It needs no API key, so it is safe to use in the browser for headless storefronts.
+ */
+export class YinnePublicClient {
+  private readonly transport: Transport;
+  constructor(options: YinnePublicClientOptions = {}) {
+    this.transport = new Transport({ ...options, identify: false });
+  }
+  private request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    return this.transport.request<T>(path, init);
+  }
+  readonly stores = {
+    retrieve: (slug: string) =>
+      this.request<{ store: Store }>(`/v1/public/stores/${slug}`).then((value) => value.store),
+    product: (slug: string, productSlug: string) =>
+      this.request<{ store: Store; product: StorefrontProduct }>(
+        `/v1/public/stores/${slug}/products/${productSlug}`,
+      ),
+  };
+  readonly paymentLinks = {
+    retrieve: (token: string) =>
+      this.request<{ payment_link: PaymentLink }>(`/v1/public/payment-links/${token}`).then(
+        (value) => value.payment_link,
+      ),
+    /** Starts a checkout from a payment link; pass `amount` for pay-what-you-want links. */
+    open: (
+      token: string,
+      input: { amount?: string } = {},
+      options: { idempotencyKey?: string } = {},
+    ) => {
+      const idempotencyKey = options.idempotencyKey ?? crypto.randomUUID();
+      return this.request<{ checkout_session: CheckoutSession }>(
+        `/v1/public/payment-links/${token}`,
+        {
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          body: JSON.stringify({ ...input, idempotency_key: idempotencyKey }),
+        },
+      ).then((value) => value.checkout_session);
+    },
+  };
+  readonly checkout = {
+    retrieve: (token: string) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/public/checkout/${token}`).then(
+        (value) => value.checkout_session,
+      ),
+    confirm: (
+      token: string,
+      input: { customer?: { name?: string; email?: string; phone?: string } } & Record<
+        string,
+        unknown
+      > = {},
+      options: { idempotencyKey?: string } = {},
+    ) =>
+      this.request<{ checkout_session: CheckoutSession }>(`/v1/public/checkout/${token}`, {
+        method: "POST",
+        headers: { "Idempotency-Key": options.idempotencyKey ?? crypto.randomUUID() },
+        body: JSON.stringify(input),
+      }).then((value) => value.checkout_session),
+  };
+  readonly invoices = {
+    retrieve: (token: string) =>
+      this.request<{ invoice: Invoice }>(`/v1/public/invoices/${token}`).then(
+        (value) => value.invoice,
+      ),
+    /** Starts a hosted checkout to pay an issued invoice. */
+    pay: (token: string, options: { idempotencyKey?: string } = {}) => {
+      const idempotencyKey = options.idempotencyKey ?? crypto.randomUUID();
+      return this.request<{ checkout_session: CheckoutSession }>(`/v1/public/invoices/${token}`, {
+        method: "POST",
+        headers: { "Idempotency-Key": idempotencyKey },
+        body: JSON.stringify({ idempotency_key: idempotencyKey }),
+      }).then((value) => value.checkout_session);
+    },
+  };
+  readonly marketplace = {
+    search: (
+      params: {
+        q?: string;
+        category?: string;
+        merchant?: string;
+        currency?: string;
+        limit?: number;
+      } = {},
+    ) =>
+      this.request<{ data: MarketplaceListing[]; has_more: boolean }>(
+        `/v1/public/marketplace${query(params)}`,
+      ),
+    listing: (id: string) =>
+      this.request<{ listing: MarketplaceListing }>(`/v1/public/marketplace/listings/${id}`).then(
+        (value) => value.listing,
+      ),
+    checkout: (
+      id: string,
+      input: { variant_id: string; quantity: number },
+      options: { idempotencyKey?: string } = {},
+    ) => {
+      const idempotencyKey = options.idempotencyKey ?? crypto.randomUUID();
+      return this.request<{ checkout_session: CheckoutSession }>(
+        `/v1/public/marketplace/listings/${id}/checkout`,
+        {
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          body: JSON.stringify({ ...input, idempotency_key: idempotencyKey }),
+        },
+      ).then((value) => value.checkout_session);
+    },
   };
 }
