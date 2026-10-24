@@ -1,0 +1,28 @@
+{
+  "name": "@yinne/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for safe AI-agent access to Yinne merchant accounts.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "yinne-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@yinne/sdk": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsup": "8.5.0"
+  }
+}
