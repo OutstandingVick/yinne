@@ -10,7 +10,7 @@ const links = [
   { label: "How it works", href: "#how-it-works" },
 ];
 
-/** Floating header: wordmark on the left; a frosted pill with a menu and Open app on the right. */
+/** Floating header: wordmark on the left; a frosted pill with the links (a menu below 1280px) and Open app. */
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -56,7 +56,7 @@ export default function Navbar() {
             aria-expanded={open}
             aria-controls="site-menu"
             onClick={() => setOpen((value) => !value)}
-            className="flex h-10 w-11 items-center justify-center rounded-[10px] text-ink transition-colors hover:bg-vanilla focus-visible:outline focus-visible:outline-2 focus-visible:outline-cobalt"
+            className="flex h-10 w-11 items-center justify-center rounded-[10px] text-ink xl:hidden transition-colors hover:bg-vanilla focus-visible:outline focus-visible:outline-2 focus-visible:outline-cobalt"
           >
             <svg
               aria-hidden="true"
@@ -71,6 +71,15 @@ export default function Navbar() {
               {open ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
             </svg>
           </button>
+          {links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="hidden rounded-[10px] px-4 py-2.5 font-mono text-[13px] uppercase tracking-[0.06em] text-ink/80 transition-colors hover:bg-vanilla hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-cobalt xl:block"
+            >
+              {link.label}
+            </a>
+          ))}
           <a
             href="https://app.yinne.store"
             className="rounded-[10px] bg-ink px-5 py-2.5 font-mono text-[13px] uppercase tracking-[0.06em] text-white transition-colors hover:bg-cobalt focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
@@ -80,7 +89,7 @@ export default function Navbar() {
           {open ? (
             <ul
               id="site-menu"
-              className="absolute right-0 top-[calc(100%+8px)] w-56 rounded-[14px] border border-white/70 bg-white/90 p-1.5 shadow-[0_16px_40px_rgba(23,23,23,0.12)] backdrop-blur-md"
+              className="absolute right-0 xl:hidden top-[calc(100%+8px)] w-56 rounded-[14px] border border-white/70 bg-white/90 p-1.5 shadow-[0_16px_40px_rgba(23,23,23,0.12)] backdrop-blur-md"
             >
               {links.map((link) => (
                 <li key={link.label}>
