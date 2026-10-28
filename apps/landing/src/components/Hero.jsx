@@ -42,7 +42,7 @@ export default function Hero() {
               className="h-full w-full object-cover object-[60%_70%]"
             />
           </div>
-          <div className="absolute -bottom-6 left-3 w-[min(85%,320px)] lg:-bottom-10 lg:left-0">
+          <div className="absolute -bottom-6 left-3 w-[min(85%,320px)] lg:-bottom-10 lg:-left-6">
             <span className="sr-only">
               Yinne payment received: ₦12,500.00 for order ORD-01A1, paid by Ada O. through a
               payment link today at 10:42. Stock updated for one item.
@@ -53,7 +53,7 @@ export default function Hero() {
             >
               <div className="flex items-center gap-2 border-b border-ink/10 pb-2">
                 <img src="/yinne-icon.svg" alt="" width="26" height="26" className="rounded-md" />
-                <span className="flex-1 font-bit text-[9px] uppercase tracking-wide text-ink">
+                <span className="flex-1 font-bit text-[10px] uppercase tracking-wide text-ink">
                   Payment received
                 </span>
                 <span className="grid h-5 w-5 place-items-center rounded-full bg-cobalt text-xs font-bold text-white">
@@ -81,7 +81,7 @@ export default function Hero() {
                   <span>Today, 10:42</span>
                 </div>
               </div>
-              <div className="mt-2 flex items-center gap-2 border-t border-ink/10 pt-2 font-bit text-[8px] uppercase tracking-wide text-ink sm:text-[9px]">
+              <div className="mt-2 flex items-center gap-2 border-t border-ink/10 pt-2 font-bit text-[10px] uppercase tracking-wide text-ink">
                 <span className="h-2 w-2 rounded-full bg-canary ring-1 ring-ink/20" />
                 Stock updated · 1 item
               </div>
