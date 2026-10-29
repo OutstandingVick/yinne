@@ -6,19 +6,10 @@ import Eyebrow from "./ui/Eyebrow.jsx";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden border-b border-gray-100 bg-white">
-      {/* Store-aisle photo blended into the hero palette: a cobalt multiply tint, a white wash
-          that keeps the headline readable, the vanilla glow and a fade into the next section. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <img
-          src="/hero-store.jpg"
-          alt=""
-          className="h-full w-full object-cover object-[70%_center] saturate-[0.85]"
-        />
-        <div className="absolute inset-0 bg-cobalt/25 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/75 lg:via-white/85 lg:to-white/25" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#F6F5AE_0%,rgba(246,245,174,0)_55%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-white" />
-      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,#F6F5AE_0%,rgba(246,245,174,0)_55%)]"
+      />
       <Navbar />
       <div className="relative mx-auto grid max-w-[1600px] items-center gap-12 px-4 pb-20 pt-36 sm:px-6 lg:grid-cols-[1.25fr_1fr] lg:pb-28 lg:pt-44">
         <div>
@@ -37,6 +28,64 @@ export default function Hero() {
             <Button href="#how-it-works" variant="secondary">
               See how it works
             </Button>
+          </div>
+        </div>
+        <div className="relative min-w-0 lg:pl-6">
+          <div className="relative aspect-[4/3] max-h-[560px] overflow-hidden rounded-[28px] shadow-[0_30px_80px_rgba(23,23,23,0.12)] ring-1 ring-ink/10 lg:aspect-[4/5]">
+            <img
+              src="/hero-market.webp"
+              alt="At a market stall, a customer hands a banknote to a seller over fresh produce"
+              width="1200"
+              height="1797"
+              loading="eager"
+              fetchPriority="high"
+              className="h-full w-full object-cover object-[60%_70%]"
+            />
+          </div>
+          <div className="absolute -bottom-6 left-3 w-[min(85%,320px)] lg:-bottom-10 lg:-left-6">
+            <span className="sr-only">
+              Yinne payment received: ₦12,500.00 for order ORD-01A1, paid by Ada O. through a
+              payment link today at 10:42. Stock updated for one item.
+            </span>
+            <div
+              aria-hidden="true"
+              className="relative rounded-2xl bg-white p-4 shadow-[0_16px_48px_rgba(23,23,23,0.16)] ring-1 ring-ink/10 sm:p-5"
+            >
+              <div className="flex items-center gap-2 border-b border-ink/10 pb-2">
+                <img src="/yinne-icon.svg" alt="" width="26" height="26" className="rounded-md" />
+                <span className="flex-1 font-bit text-[10px] uppercase tracking-wide text-ink">
+                  Payment received
+                </span>
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-cobalt text-xs font-bold text-white">
+                  ✓
+                </span>
+              </div>
+              <p className="py-2 font-display text-3xl leading-none tracking-tight text-ink sm:text-4xl">
+                ₦12,500.00
+              </p>
+              <div className="space-y-1 border-t border-dashed border-ink/20 pt-2 font-mono text-[10px] leading-4 text-ink sm:text-[11px]">
+                <div className="flex justify-between gap-2">
+                  <span>Order</span>
+                  <span>ORD-01A1</span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span>Method</span>
+                  <span>Payment link</span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span>Customer</span>
+                  <span>Ada O.</span>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <span>Time</span>
+                  <span>Today, 10:42</span>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center gap-2 border-t border-ink/10 pt-2 font-bit text-[10px] uppercase tracking-wide text-ink">
+                <span className="h-2 w-2 rounded-full bg-canary ring-1 ring-ink/20" />
+                Stock updated · 1 item
+              </div>
+            </div>
           </div>
         </div>
       </div>
