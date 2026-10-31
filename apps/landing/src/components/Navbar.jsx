@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 // Placeholder targets until Products, Solutions, Resources and Pricing pages exist.
 const links = [
-  { label: "Products", href: "#platform" },
+  { label: "Products", href: "#products" },
   { label: "Solutions", href: "#how-it-works" },
   { label: "Resources", href: "https://github.com/OutstandingVick/yinne" },
   { label: "Pricing", href: "mailto:hello@yinne.store?subject=Pricing" },
